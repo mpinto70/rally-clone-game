@@ -116,13 +116,13 @@ format: directory_message format_local $(SUBDIRS)
 
 format_local:
 ifneq ($(strip $(shell ls *.h 2>/dev/null)),)
-	$(SILENT)astyle.sh *.h
+	$(SILENT)astyle *.h
 endif
 ifneq ($(strip $(shell ls *.cpp 2>/dev/null)),)
-	$(SILENT)astyle.sh *.cpp
+	$(SILENT)astyle *.cpp
 endif
 ifneq ($(strip $(shell ls *.c 2>/dev/null)),)
-	$(SILENT)astyle.sh *.c
+	$(SILENT)astyle *.c
 endif
 
 $(SUBDIRS):
