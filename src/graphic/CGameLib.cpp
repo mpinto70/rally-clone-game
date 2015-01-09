@@ -6,45 +6,41 @@
 #include "CGameLib.h"
 
 namespace graphic {
-// Este cara tem que ser visto por todo mundo que deseja desenhar
-// na tela, como pretende fazer isso? No megaman fica numa global :D
-// Fica nessa class? Criar uma outra classe pra isso e passar a referencia
-// pro init?
-BITMAP * GameLib::buffer = NULL;
 
-int GameLib::Init(unsigned int uiWidth, unsigned int uiHeight) {
-    int iAllegResult = allegro_init();
+GameLib::GameLib(unsigned int uiWidth, unsigned int uiHeight)
+    : buffer_(nullptr) {
+    int allegResult = allegro_init();
 
-    if (iAllegInitResult != 0)
-        ;// exception? retorna valor? ignora?
+    if (allegResult != 0)
+        throw CException("Error initializing graphics", allegResult);
 
-    iAllegResult += install_keyboard();
-    iAllegResult += install_timer();
+    allegResult = install_keyboard();
+    if (allegResult != 0)
+        throw CException("Error initializing keyboard", allegResult);
 
-    if (iAllegInitResult != 0)
-        ;// exception? retorna valor? ignora?
+    allegResult += install_timer();
+    if (allegResult != 0)
+        throw CException("Error initializing timer", allegResult);
 
-    iAllegInitResult = install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);
+    allegResult = install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, nullptr);
 
-    if (iAllegInitResult != 0)
-        ;//Desliga o som ou trata como erro?
+    if (allegResult != 0)
+        throw CException("Error initializing sound", allegResult);
 
     set_color_depth(32);
-    iAllegInitResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, uiWidth, uiHeight, 0, 0);
-    if (iAllegInitResult != 0)
-        ;//Tenta mudar para outro color depht ou aborta?
+    allegResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, uiWidth, uiHeight, 0, 0);
+    if (allegResult != 0) // acho que é melhor tentar outras profundidades de cor, mas por enquanto interrompe
+        throw CException("Error initializing screen", allegResult);
 
-    // Cria buffer com a mesma resolução WxH da tela.
-    buffer = create_bitmap(SCREEN_W, SCREEN_H);
-    if (buffer == NULL)
-        ;// E ai??
-
-    return 0;
+    // Cria buffer_ com a mesma resolução WxH da tela.
+    buffer_ = create_bitmap(SCREEN_W, SCREEN_H);
+    if (buffer_ == nullptr)
+        throw CException("Error initializing system memory", -1);
 }
 
-void GameLib::End() {
-    destroy_bitmap(buffer);
-    buffer = NULL;
+GameLib::~GameLib() {
+    destroy_bitmap(buffer_);
+    buffer_ = nullptr;
 
     // Vale a pena? o processo tá morrendo... Do manual:
     // Note that after you call this function, other functions like destroy_bitmap() will most likely crash.

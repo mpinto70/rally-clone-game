@@ -11,10 +11,10 @@ namespace graphic {
 
 class GameLib {
     public:
-        static BITMAP * buffer;
-
-        int Init(unsigned int uiWidth, unsigned int uiHeight);
-        void End();
+        GameLib(unsigned int width, unsigned int height);
+        ~GameLib();
+    private:
+        BITMAP * buffer_;
 };
 
 }

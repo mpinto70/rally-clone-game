@@ -4,7 +4,6 @@
 #include <cxxtest/TestSuite.h>
 
 namespace util {
-namespace tst {
 
 class TestCWait: public CxxTest::TestSuite {
     public:
@@ -13,6 +12,5 @@ class TestCWait: public CxxTest::TestSuite {
 };
 
 }
-}
-using util::tst::TestCWait;
+using util::TestCWait;
 

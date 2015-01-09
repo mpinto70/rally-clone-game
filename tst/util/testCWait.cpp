@@ -29,7 +29,6 @@ double operator - (const timeval & lhs, const timeval & rhs) {
 }
 
 namespace util {
-namespace tst {
 
 static void print(const std::string & id,
                   const timeval & val) {
@@ -113,6 +112,5 @@ void TestCWait::testEnd() {
     }
 }
 
-}
 }
 
