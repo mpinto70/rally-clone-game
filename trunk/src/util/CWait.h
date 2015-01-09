@@ -1,6 +1,5 @@
 
-#ifndef CWAIT_RALLY
-#define CWAIT_RALLY
+#pragma once
 
 #include <sys/time.h>
 #include <cstdio>
@@ -29,6 +28,4 @@ class CWait {
 };
 
 }
-
-#endif
 
