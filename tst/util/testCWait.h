@@ -1,6 +1,5 @@
 
-#ifndef TESTCWAIT_RALLY
-#define TESTCWAIT_RALLY
+#pragma once
 
 #include <cxxtest/TestSuite.h>
 
@@ -16,6 +15,4 @@ class TestCWait: public CxxTest::TestSuite {
 }
 }
 using util::tst::TestCWait;
-
-#endif
 
