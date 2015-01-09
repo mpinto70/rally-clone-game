@@ -12,6 +12,7 @@ CWait::CWait(const size_t milliseconds)
 }
 
 static constexpr suseconds_t MILLION = 1000 * 1000;
+
 void CWait::reset() {
     gettimeofday(&end_, nullptr);
     end_.tv_usec += microseconds_;
