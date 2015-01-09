@@ -7,11 +7,15 @@
 
 #include <allegro.h>
 
-class GameLib
-{
-  public:
-    static BITMAP * buffer;
- 
-    int Init(unsigned int uiWidth, unsigned int uiHeight);
-    void End();
+namespace graphic {
+
+class GameLib {
+    public:
+        static BITMAP * buffer;
+
+        int Init(unsigned int uiWidth, unsigned int uiHeight);
+        void End();
 };
+
+}
+
