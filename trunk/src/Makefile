@@ -3,13 +3,15 @@ default: subdirs
 
 LIBDIRS =	\
 			util \
+			gamelib \
 
 SUBDIRS =	\
 			$(LIBDIRS) \
+#			rally \
 
-colunas:	$(LIBDIRS) \
+rally:	$(LIBDIRS) \
 
-subdirs: $(SUBDIRS)
+subdirs: $(SUBDIRS) \
 
 include src.mk
 

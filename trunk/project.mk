@@ -2,7 +2,7 @@
 .SUFFIXES:
 .SUFFIXES: .cpp .c .o
 
-.PHONY: $(SUBDIRS)
+.PHONY: $(SUBDIRS) dirtarget
 
 ifeq ($(DEBUG_MAKE),)
 SILENT=@

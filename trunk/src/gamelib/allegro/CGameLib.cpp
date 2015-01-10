@@ -7,9 +7,10 @@
 #include "util/CException.h"
 
 namespace gamelib {
-
-GameLib::GameLib(unsigned int uiWidth, unsigned int uiHeight)
+namespace allegro {
+CGameLib::CGameLib(unsigned int uiWidth, unsigned int uiHeight)
     : buffer_(nullptr) {
+    using util::CException;
     int allegResult = allegro_init();
 
     if (allegResult != 0)
@@ -39,7 +40,7 @@ GameLib::GameLib(unsigned int uiWidth, unsigned int uiHeight)
         throw CException("Error initializing system memory", -1);
 }
 
-GameLib::~GameLib() {
+CGameLib::~CGameLib() {
     destroy_bitmap(buffer_);
     buffer_ = nullptr;
 
@@ -51,5 +52,6 @@ GameLib::~GameLib() {
     allegro_exit();
 }
 
+}
 }
 
