@@ -14,7 +14,7 @@ LIBS =	\
 SUBDIRS =
 
 OBJS =	\
-		main.o \
+		rally.o \
 
 include $(RALLY_ROOT)/src/src.mk
 
