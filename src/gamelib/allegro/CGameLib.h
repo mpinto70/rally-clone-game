@@ -5,8 +5,12 @@
 
 #pragma once
 
+#include "gamelib/allegro/CGraphic.h"
+#include "gamelib/allegro/CKeyboard.h"
+#include "gamelib/allegro/CSound.h"
+#include "gamelib/allegro/CTimer.h"
+
 #include "gamelib/IGameLib.h"
-#include <allegro.h>
 
 namespace gamelib {
 namespace allegro {
@@ -14,9 +18,18 @@ namespace allegro {
 class CGameLib : public IGameLib {
     public:
         CGameLib(unsigned int width, unsigned int height);
-        virtual ~CGameLib();
+        ~CGameLib() override;
+
+        CGraphic & graphic() override { return *graphic_; }
+        CSound & sound() override { return *sound_; }
+        CTimer & timer() override { return *timer_; }
+        CKeyboard & keyboard() override { return *keyboard_; }
+
     private:
-        BITMAP * buffer_;
+        CGraphic * graphic_;
+        CKeyboard * keyboard_;
+        CSound * sound_;
+        CTimer * timer_;
 };
 
 }
