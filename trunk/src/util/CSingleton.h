@@ -23,6 +23,10 @@ public:
         instance_ = std::move(u);
     }
 
+    static void destroy() {
+        instance_.reset(nullptr);
+    }
+
     static T& instance() {
         if (instance_.get() == nullptr)
             throw std::logic_error("CSingleton::instance - not created");

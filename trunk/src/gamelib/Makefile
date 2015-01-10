@@ -1,10 +1,12 @@
 
-default: subdirs
+default: libbothtarget
 
 SUBDIRS =	\
 			allegro \
 
-subdirs: $(SUBDIRS)
+OBJS =	\
+		IGameLib.o \
+
 
 include $(RALLY_ROOT)/src/src.mk
 

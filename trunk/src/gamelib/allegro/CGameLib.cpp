@@ -5,50 +5,33 @@
 
 #include "CGameLib.h"
 #include "util/CException.h"
+#include <allegro.h>
 
 namespace gamelib {
 namespace allegro {
-CGameLib::CGameLib(unsigned int uiWidth, unsigned int uiHeight)
-    : buffer_(nullptr) {
+
+CGameLib::CGameLib(unsigned int width, unsigned int height)
+    : graphic_(nullptr),
+      keyboard_(nullptr),
+      sound_(nullptr),
+      timer_(nullptr) {
     using util::CException;
-    int allegResult = allegro_init();
-
+    const int allegResult = allegro_init();
     if (allegResult != 0)
-        throw CException("Error initializing graphics", allegResult);
+        throw CException("CGameLib::CGameLib - Error initializing graphics", allegResult);
 
-    allegResult = install_keyboard();
-    if (allegResult != 0)
-        throw CException("Error initializing keyboard", allegResult);
-
-    allegResult += install_timer();
-    if (allegResult != 0)
-        throw CException("Error initializing timer", allegResult);
-
-    allegResult = install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, nullptr);
-
-    if (allegResult != 0)
-        throw CException("Error initializing sound", allegResult);
-
-    set_color_depth(32);
-    allegResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, uiWidth, uiHeight, 0, 0);
-    if (allegResult != 0) // acho que é melhor tentar outras profundidades de cor, mas por enquanto interrompe
-        throw CException("Error initializing screen", allegResult);
-
-    // Cria buffer_ com a mesma resolução WxH da tela.
-    buffer_ = create_bitmap(SCREEN_W, SCREEN_H);
-    if (buffer_ == nullptr)
-        throw CException("Error initializing system memory", -1);
+    keyboard_ = new CKeyboard();
+    timer_ = new CTimer();
+    sound_ = new CSound();
+    graphic_ = new CGraphic(width, height);
 }
 
 CGameLib::~CGameLib() {
-    destroy_bitmap(buffer_);
-    buffer_ = nullptr;
+    delete graphic_;
+    delete sound_;
+    delete timer_;
+    delete keyboard_;
 
-    // Vale a pena? o processo tá morrendo... Do manual:
-    // Note that after you call this function, other functions like destroy_bitmap() will most likely crash.
-    // This is a problem for C++ global destructors, which usually get called after atexit(), so don't put
-    // Allegro calls in them. You can write the destructor code in another method which you can manually call
-    // before your program exits, avoiding this problem.
     allegro_exit();
 }
 
