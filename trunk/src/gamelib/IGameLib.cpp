@@ -8,5 +8,8 @@ IGameLib & IGameLib::instance() {
     return util::CSingleton<IGameLib>::instance();
 }
 
+IGameLib::~IGameLib() {
+}
+
 }
 

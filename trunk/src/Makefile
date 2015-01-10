@@ -7,7 +7,7 @@ LIBDIRS =	\
 
 SUBDIRS =	\
 			$(LIBDIRS) \
-#			rally \
+			rally \
 
 rally:	$(LIBDIRS) \
 
