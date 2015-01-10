@@ -7,8 +7,9 @@ LIBS =	\
 SUBDIRS =
 
 OBJS =	\
-		testCWait.o \
 		testCException.o \
+		testCSingleton.o \
+		testCWait.o \
 
 include $(RALLY_ROOT)/tst/tst.mk
 
