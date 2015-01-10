@@ -4,8 +4,9 @@
  */
 
 #include "CGameLib.h"
+#include "util/CException.h"
 
-namespace graphic {
+namespace gamelib {
 
 GameLib::GameLib(unsigned int uiWidth, unsigned int uiHeight)
     : buffer_(nullptr) {

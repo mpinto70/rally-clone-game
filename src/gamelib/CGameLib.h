@@ -7,7 +7,7 @@
 
 #include <allegro.h>
 
-namespace graphic {
+namespace gamelib {
 
 class GameLib {
     public:
