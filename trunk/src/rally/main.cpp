@@ -3,7 +3,7 @@
  main code.
  */
 
-#include "graphic/CGameLib.h"
+#include "gamelib/CGameLib.h"
 #include "util/CException.h"
 
 #include <iostream>
@@ -13,7 +13,7 @@ static const unsigned int UTIL_W = 480, UTIL_H = 240;
 
 int main() {
     try {
-        graphic::GameLib gameLib(UTIL_W, UTIL_H);
+        gamelib::GameLib gameLib(UTIL_W, UTIL_H);
         return 0;
     } catch (const util::CException & e) {
         std::cout << "An ERROR occurred" << std::endl;
