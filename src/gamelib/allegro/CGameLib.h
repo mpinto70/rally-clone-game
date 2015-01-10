@@ -5,17 +5,20 @@
 
 #pragma once
 
+#include "gamelib/IGameLib.h"
 #include <allegro.h>
 
 namespace gamelib {
+namespace allegro {
 
-class GameLib {
+class CGameLib : public IGameLib {
     public:
-        GameLib(unsigned int width, unsigned int height);
-        ~GameLib();
+        CGameLib(unsigned int width, unsigned int height);
+        virtual ~CGameLib();
     private:
         BITMAP * buffer_;
 };
 
+}
 }
 
