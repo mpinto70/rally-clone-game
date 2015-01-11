@@ -14,6 +14,8 @@ class CKeyboard : public IKeyboard {
     public:
         CKeyboard();
         ~CKeyboard() override;
+		
+        virtual bool isKeyPressed(KEYS keyCode) override;
 };
 
 }
