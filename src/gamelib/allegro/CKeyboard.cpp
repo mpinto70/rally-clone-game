@@ -19,31 +19,29 @@ CKeyboard::CKeyboard() {
 CKeyboard::~CKeyboard() {
 }
 
-bool CKeyboard::isKeyPressed(KEYS keyCode) {
-  unsigned int keyCode = 0;
+static unsigned int translateKey(KEYS keyCode) {
+    switch (keyCode) {
+        case KEYS::ENTER:
+            return KEY_ENTER;
+        case KEYS::LEFT:
+            return KEY_LEFT;
+        case KEYS::RIGHT:
+            return KEY_RIGHT;
+        case KEYS::UP:
+            return KEY_UP;
+        case KEYS::DOWN:
+            return KEY_DOWN;
+        case KEYS::SPACE:
+            return KEY_SPACE;
+        default:
+            return -1;
+    }
+}
 
-  switch(keyCode) {
-    case IKeyboard::GLIB_KEY_ENTER:
-	  keyCode = KEY_ENTER;
-	break;
-    case IKeyboard::GLIB_KEY_LEFT:
-	  keyCode = KEY_LEFT;
-	break;
-    case IKeyboard::GLIB_KEY_RIGHT:
-	  keyCode = KEY_RIGHT;
-	break;
-    case IKeyboard::GLIB_KEY_UP:
-	  keyCode = KEY_UP;
-	break;
-    case IKeyboard::GLIB_KEY_DOWN:
-	  keyCode = KEY_DOWN;
-	break;
-    case IKeyboard::GLIB_KEY_SPACE:
-	  keyCode = KEY_SPACE;
-	break;
-  }
-  
-  return (key[keyCode] != 0);
+bool CKeyboard::isKeyPressed(KEYS keyCode) {
+    const unsigned int allegroKey = translateKey(keyCode);
+
+    return (allegroKey != (unsigned int) - 1 && key[allegroKey] != 0);
 }
 
 }
