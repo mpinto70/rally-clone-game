@@ -29,13 +29,18 @@
 // Usando os defines no megaman, temos que rever isso aqui.
 // O jogo original tem uma resolução de 288 x 224, sugiro que a gente dobre: 576 x 448
 // Verificar tamanho dos tiles e setar um novo pra gente.
-constexpr unsigned int TILE_SIZE    = 32;
-constexpr unsigned int UTIL_W       = 512;
-constexpr unsigned int UTIL_H       = 480;
-constexpr unsigned int UTIL_H_EX    = 420;
-constexpr unsigned int TS_X_TLS     = 15;
-constexpr unsigned int TILES_X      = UTIL_W / TILE_SIZE;
-constexpr unsigned int TILES_Y      = UTIL_H / TILE_SIZE;
+static constexpr unsigned int TILE_SIZE     = 32;
+static constexpr unsigned int TILE_GAP      = 4;
+static constexpr unsigned int TILE_SPACE    = TILE_SIZE + 2 * TILE_GAP;
+static constexpr unsigned int UTIL_COLUMNS  = 16;
+static constexpr unsigned int UTIL_ROWS     = 15;
+static constexpr unsigned int UTIL_W        = TILE_SIZE * UTIL_COLUMNS;
+static constexpr unsigned int UTIL_H        = TILE_SIZE * UTIL_ROWS;
+static constexpr unsigned int UTIL_H_EX     = 250;
+static constexpr unsigned int TILES_X       = UTIL_W / TILE_SIZE;
+static constexpr unsigned int TILES_Y       = UTIL_H / TILE_SIZE;
+static constexpr unsigned int STEP_X        = TILE_SIZE * TILES_X;
+static constexpr unsigned int STEP_Y        = TILE_SIZE * TILES_Y;
 
 typedef struct {
     unsigned char tile_number; // Indice na tabela de desenhos
@@ -45,16 +50,16 @@ typedef struct {
 } MAP_INFO;
 
 // Y linhas com X colunas.
-MAP_INFO **g_map;
+static MAP_INFO **g_map;
 
-unsigned int g_cur_tile = 0;
-unsigned int g_cur_act  = 0;
-unsigned int g_map_drawx, g_map_drawy;
-unsigned int g_max_x, g_max_y;
-unsigned char g_default_tile;
+static unsigned int g_cur_tile = 0;
+static unsigned int g_cur_act  = 0;
+static unsigned int g_map_drawx, g_map_drawy;
+static unsigned int g_max_x, g_max_y;
+static unsigned char g_default_tile;
 
 // Tabela de desenhos para a fase.
-BITMAP * g_tileset;
+static BITMAP * g_tileset;
 
 struct point_t {
     unsigned int x, y;
@@ -64,22 +69,22 @@ struct tiles_t {
     std::vector<BITMAP*> tile_img;
     std::vector<point_t> xy_pos;
 };
-tiles_t g_tiles;
+static tiles_t g_tiles;
 
 struct actions_t {
     BITMAP ** tile_img;
     point_t * coords;
 };
-actions_t g_actions;
+static actions_t g_actions;
 
 // Variaveis usadas pelo CTRL+C CTRL+V
-int g_cur_copy_point = 0;
-point_t g_pt_ini_point;
-point_t g_pt_end_point;
-bool g_draw_selection = false;
-bool g_take_shot = false;
-MAP_INFO * g_selection_data = nullptr;
-BITMAP * g_selection_preview;
+static int g_cur_copy_point = 0;
+static point_t g_pt_ini_point;
+static point_t g_pt_end_point;
+static bool g_draw_selection = false;
+static bool g_take_shot = false;
+static MAP_INFO * g_selection_data = nullptr;
+static BITMAP * g_selection_preview;
 
 static void map_save(char * filename) {
     FILE * fp = fopen(filename, "wb+");
@@ -181,28 +186,24 @@ static void map_draw(BITMAP * bmp, int map_drawx, int map_drawy, bool draw_actio
 }
 
 static void draw_tilesbar(BITMAP * bmp, int tiles_num, int y) {
-    rectfill(bmp, 0, y, 512, y + UTIL_H_EX, makecol(30, 40, 100));
-
-    int x = 8;
-    for (int i = 0, j = 0; i < tiles_num; i++) {
-        g_tiles.xy_pos[i].x = x + 1;
-        g_tiles.xy_pos[i].y = y + 8;
-        draw_sprite(bmp, g_tiles.tile_img[i], g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
-        x += 33;
-
-        j++;
-        if (j == TS_X_TLS) {
-            j = 0;
-            y += 33;
-            x = 8;
+    rectfill(bmp, 0, y, UTIL_W, y + UTIL_H_EX, makecol(30, 40, 100));
+    constexpr unsigned int MARGIN = 8;
+    unsigned int x = MARGIN;
+    for (int i = 0; i < tiles_num; i++) {
+        if (x + TILE_SPACE > UTIL_W) {
+            x = MARGIN;
+            y += TILE_SPACE;
         }
+        g_tiles.xy_pos[i].x = x + TILE_GAP;
+        g_tiles.xy_pos[i].y = y + MARGIN;
+        draw_sprite(bmp, g_tiles.tile_img[i], g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
+        x += TILE_SPACE;
     }
 
     x = g_tiles.xy_pos[g_cur_tile].x;
     y = g_tiles.xy_pos[g_cur_tile].y;
 
-    rect(bmp, x,  y,  x + 32, y + 32, makecol(255, 10, 10));
-    rect(bmp, x - 1, y - 1, x + 33, y + 33, makecol(255, 255, 255));
+    rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SPACE - TILE_GAP, y + TILE_SPACE - TILE_GAP, makecol(255, 255, 255));
 }
 
 // Desenha painel das actions
@@ -248,14 +249,14 @@ static void draw_actionsbar(BITMAP *bmp, unsigned int act_num, unsigned int x) {
 // Captura qual tile deve ser o corrente.
 static void handle_tilebar(int tiles_num) {
     if (mouse_b & 1) {
-        if (mouse_y >= 480) {
+        if ((unsigned int) mouse_y >= UTIL_H) {
             const unsigned int y = mouse_y;
             const unsigned int x = mouse_x;
             for (int i = 0; i < tiles_num; i++) {
                 if ((x >= g_tiles.xy_pos[i].x)    &&
-                        (x <= g_tiles.xy_pos[i].x + 33) &&
+                        (x <= g_tiles.xy_pos[i].x + TILE_SIZE) &&
                         (y >= g_tiles.xy_pos[i].y)    &&
-                        (y <= g_tiles.xy_pos[i].y + 33))
+                        (y <= g_tiles.xy_pos[i].y + TILE_SIZE))
                 { g_cur_tile = i; break; }
             }
         }
@@ -470,8 +471,6 @@ int main(int argc, char *argv[]) {
     load_actions("./actions", act_num);
     load_tiles(argv[1], tiles_num);
 
-    constexpr unsigned int stepx = TILE_SIZE * TILES_X;
-    constexpr unsigned int stepy = TILE_SIZE * TILES_Y;
     bool draw_actions = false;
     bool ignoreVoid   = false;
     while (!key[KEY_ESC]) {
@@ -504,30 +503,30 @@ int main(int argc, char *argv[]) {
         }
 
         if (key[KEY_D] && g_draw_selection == false) {
-            g_map_drawx += stepx;
+            g_map_drawx += STEP_X;
             if (g_map_drawx / TILE_SIZE >= (g_max_x - TILES_X))
                 g_map_drawx = (g_max_x - TILES_X) * TILE_SIZE;
 
             hold_while_pressed(KEY_D);
         } else if (key[KEY_A] && g_draw_selection == false) {
-            if (g_map_drawx < stepx)
+            if (g_map_drawx < STEP_X)
                 g_map_drawx = 0;
             else
-                g_map_drawx -= stepx;
+                g_map_drawx -= STEP_X;
 
             hold_while_pressed(KEY_A);
         }
 
         if (key[KEY_W] && g_draw_selection == false) {
-            if (g_map_drawy < stepy)
+            if (g_map_drawy < STEP_Y)
                 g_map_drawy = 0;
             else
-                g_map_drawy -= stepy;
+                g_map_drawy -= STEP_Y;
 
 
             hold_while_pressed(KEY_W);
         } else if (key[KEY_S] && g_draw_selection == false) {
-            g_map_drawy += stepy;
+            g_map_drawy += STEP_Y;
             if (g_map_drawy / TILE_SIZE >= (g_max_y - TILES_Y))
                 g_map_drawy = (g_max_y - TILES_Y) * TILE_SIZE;
 
