@@ -19,6 +19,9 @@ TSTDIR = $(RALLY_ROOT)/tst
 TSTBIN = $(TSTDIR)/bin
 MCKDIR = $(RALLY_ROOT)/mck
 MCKBIN = $(MCKDIR)/bin
+TLSDIR = $(RALLY_ROOT)/tools
+TLSLIB = $(TLSDIR)/bin/lib
+TLSAPP = $(TLSDIR)/bin/app
 
 INCDIR =	\
 			-I ./ \
@@ -96,8 +99,8 @@ $(EXE): $(OBJS) $(OTHER_OBJS) $(LIBDIR) $(MAIN_CPP) $(OTHERLIBDIR)
 	$(SILENT)$(RM) $@
 	$(SILENT)$(CXX) $(EXEFLAGS) -o $@ $(OBJS) $(OTHER_OBJS) $(INCLIBDIR) $(OTHERINCLIBDIR) $(OTHER_EXE_PARMS) $(LIBS)
 ifneq ($(MOVE_TO_BINDIR),)
-	$(SILENT)$(RM) $(APPDIR)/$(EXE)
-	$(SILENT)$(MV) $@ $(APPDIR)
+	$(SILENT)$(RM) $(DESTAPPDIR)/$(EXE)
+	$(SILENT)$(MV) $@ $(DESTAPPDIR)
 endif
 endif
 
@@ -174,3 +177,4 @@ distclean: clean
 reset: distclean
 	$(SILENT)$(RM)  \
 					depend.mk \
+
