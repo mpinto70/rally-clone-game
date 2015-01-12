@@ -1,10 +1,11 @@
 
-VPATH = .:$(LIBDIR):$(APPDIR)
+VPATH = .:$(TLSLIB):$(TLSAPP)
 
 MOVE_TO_BINDIR=1
 
-DESTLIBDIR=$(LIBDIR)
-DESTAPPDIR=$(APPDIR)
+DESTLIBDIR=$(TLSLIB)
+DESTAPPDIR=$(TLSAPP)
+OTHERINCLIBDIR = -L$(TLSLIB) \
 
 LIB_BASE_NAME = lib$(subst /,,$(subst $(RALLY_ROOT)/src,,$(shell pwd)))
 LIBA=$(LIB_BASE_NAME).a
@@ -25,13 +26,13 @@ exectarget: directory_message $(EXEC) $(SUBDIRS)
 local: $(LIBA) $(LIBSO) $(EXE)
 
 ifneq ($(LIBA),)
-OTHER_DISTCLEAN+= $(LIBDIR)/$(LIBA)
+OTHER_DISTCLEAN+= $(DESTLIBDIR)/$(LIBA)
 endif
 ifneq ($(LIBSO),)
-OTHER_DISTCLEAN+= $(LIBDIR)/$(LIBSO)
+OTHER_DISTCLEAN+= $(DESTLIBDIR)/$(LIBSO)
 endif
 ifneq ($(EXE),)
-OTHER_DISTCLEAN+= $(APPDIR)/$(EXE)
+OTHER_DISTCLEAN+= $(DESTAPPDIR)/$(EXE)
 endif
 
 run_local: run
