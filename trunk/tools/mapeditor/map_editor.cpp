@@ -29,13 +29,13 @@
 // Usando os defines no megaman, temos que rever isso aqui.
 // O jogo original tem uma resolução de 288 x 224, sugiro que a gente dobre: 576 x 448
 // Verificar tamanho dos tiles e setar um novo pra gente.
-constexpr int  TILE_SIZE = 32;
-constexpr int  UTIL_W    = 512;
-constexpr int  UTIL_H    = 480;
-constexpr int  UTIL_H_EX = 420;
-constexpr int  TS_X_TLS  = 15;
-constexpr int  TILES_X   = UTIL_W / TILE_SIZE;
-constexpr int  TILES_Y   = UTIL_H / TILE_SIZE;
+constexpr unsigned int TILE_SIZE  = 32;
+constexpr unsigned int UTIL_W     = 512;
+constexpr unsigned int UTIL_H     = 480;
+constexpr unsigned int UTIL_H_EX  = 420;
+constexpr unsigned int TS_X_TLS   = 15;
+constexpr unsigned int TILES_X    = UTIL_W / TILE_SIZE;
+constexpr unsigned int TILES_Y    = UTIL_H / TILE_SIZE;
 
 typedef struct {
     unsigned char tile_number; // Indice na tabela de desenhos
@@ -47,17 +47,17 @@ typedef struct {
 // Y linhas com X colunas.
 MAP_INFO **g_map;
 
-int g_cur_tile = 0;
-int g_cur_act  = 0;
-int g_map_drawx, g_map_drawy;
-int g_max_x, g_max_y;
+unsigned int g_cur_tile = 0;
+unsigned int g_cur_act  = 0;
+unsigned int g_map_drawx, g_map_drawy;
+unsigned int g_max_x, g_max_y;
 unsigned char g_default_tile;
 
 // Tabela de desenhos para a fase.
 BITMAP * g_tileset;
 
 struct point_t {
-    int x, y;
+    unsigned int x, y;
 };
 
 struct tiles_t {
@@ -91,7 +91,7 @@ void map_save(char * filename) {
     // Qual o tile default (valor usado para inicializar o mapa)
     fwrite(&g_default_tile, sizeof(unsigned char), 1, fp);
 
-    for (int i = 0; i < g_max_y; i++) {
+    for (unsigned int i = 0; i < g_max_y; i++) {
         fwrite(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp);
     }
 
@@ -104,9 +104,9 @@ int map_load(FILE * fp) {
     if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1) return 3;
 
     g_map = (MAP_INFO**) malloc(sizeof(MAP_INFO*) * g_max_y);
-    for (int i = 0; i < g_max_y; i++) {
+    for (unsigned int i = 0; i < g_max_y; i++) {
         g_map[i] = (MAP_INFO*) malloc(sizeof(MAP_INFO) * g_max_x);
-        if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != (unsigned int) g_max_x) return 4;
+        if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x) return 4;
     }
 
     fclose(fp);
@@ -122,24 +122,20 @@ void tile_draw(BITMAP * bmp, int tile_number, int x, int y) {
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 void map_draw(BITMAP * bmp, int map_drawx, int map_drawy, bool draw_actions, bool ignoreVoid) {
-    int i, j;
-    int mapx, mapy;
-    int map_xoff, map_yoff;
     static int color[] = {makecol32(30, 30, 30), makecol32(255, 0, 0), makecol32(255, 255, 255)};
 
-    mapx = map_drawx / TILE_SIZE;
-    mapy = map_drawy / TILE_SIZE;
+    unsigned int mapx = map_drawx / TILE_SIZE;
+    unsigned int mapy = map_drawy / TILE_SIZE;
 
-    map_xoff = map_drawx & (TILE_SIZE - 1);
-    map_yoff = map_drawy & (TILE_SIZE - 1);
+    unsigned int map_xoff = map_drawx & (TILE_SIZE - 1);
+    unsigned int map_yoff = map_drawy & (TILE_SIZE - 1);
 
-    int x, y;
-    int xdisp = mapx + TILES_X == g_max_x ? 0 : 1;
-    int ydisp = mapy + TILES_Y == g_max_y ? 0 : 1;
-    for (i = 0; i < TILES_Y + ydisp; i++) {
-        for (j = 0; j < TILES_X + xdisp; j++) {
-            x = j * TILE_SIZE - map_xoff;
-            y = i * TILE_SIZE - map_yoff;
+    const unsigned int xdisp = mapx + TILES_X == g_max_x ? 0 : 1;
+    const unsigned int ydisp = mapy + TILES_Y == g_max_y ? 0 : 1;
+    for (unsigned int i = 0; i < TILES_Y + ydisp; i++) {
+        for (unsigned int j = 0; j < TILES_X + xdisp; j++) {
+            unsigned int x = j * TILE_SIZE - map_xoff;
+            unsigned int y = i * TILE_SIZE - map_yoff;
 
             tile_draw(bmp, g_map[mapy + i][mapx + j].tile_number, x, y);
             if (ignoreVoid == true) {
@@ -188,11 +184,11 @@ void draw_tilesbar(BITMAP * bmp, int tiles_num, int y) {
 }
 
 // Desenha painel das actions
-void draw_actionsbar(BITMAP *bmp, int act_num, int x) {
+void draw_actionsbar(BITMAP *bmp, unsigned int act_num, unsigned int x) {
     rectfill(bmp, x, 0, x + 200, SCREEN_H, makecol(255, 255, 255));
     rectfill(bmp, x + 4, 4, x + 196, SCREEN_H - 4, makecol(0, 50, 50));
 
-    for (int i = 0; i < act_num; i++) {
+    for (unsigned int i = 0; i < act_num; i++) {
         draw_sprite(bmp, g_actions.tile_img[i], x + g_actions.coords[i].x, g_actions.coords[i].y);
         if (g_cur_act == i) {
             rect(bmp, (x + g_actions.coords[i].x) - 2,
@@ -203,7 +199,7 @@ void draw_actionsbar(BITMAP *bmp, int act_num, int x) {
         }
     }
 
-    if (mouse_x < UTIL_W && mouse_y < UTIL_H) {
+    if ((unsigned int) mouse_x < UTIL_W && (unsigned int) mouse_y < UTIL_H) {
         int mx = mouse_x / TILE_SIZE;
         int my = mouse_y / TILE_SIZE;
         char tmp[80];
@@ -221,7 +217,7 @@ void draw_actionsbar(BITMAP *bmp, int act_num, int x) {
     }
 
     if (key[KEY_O])
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02d", mouse_x % TILE_SIZE);
+        textprintf_ex(bmp, font, x + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02u", (unsigned int) mouse_x % TILE_SIZE);
 
     if (g_draw_selection == true)
         textprintf_ex(bmp, font, x + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
@@ -231,8 +227,8 @@ void draw_actionsbar(BITMAP *bmp, int act_num, int x) {
 void handle_tilebar(int tiles_num) {
     if (mouse_b & 1) {
         if (mouse_y >= 480) {
-            int x = mouse_x;
-            int y = mouse_y;
+            const unsigned int y = mouse_y;
+            const unsigned int x = mouse_x;
             for (int i = 0; i < tiles_num; i++) {
                 if ((x >= g_tiles.xy_pos[i].x)    &&
                         (x <= g_tiles.xy_pos[i].x + 33) &&
@@ -249,8 +245,8 @@ void handle_actbar(int act_num) {
     // botão da direita do mouse precionado.
     if (mouse_b & 2) {
         if (mouse_x >= 512) {
-            int x = mouse_x;
-            int y = mouse_y;
+            const unsigned int x = mouse_x;
+            const unsigned int y = mouse_y;
             for (int i = 0; i < act_num; i++) {
                 if (x >= g_actions.coords[i].x + 512 &&
                         x <= g_actions.coords[i].x + 512 + 40 &&
@@ -310,15 +306,15 @@ void handle_click(int x, int y, int button) {
                     if (g_selection_data == NULL) {
                         g_selection_data = (MAP_INFO*) malloc(sizeof(MAP_INFO) * (pt_data_len.x * pt_data_len.y));
 
-                        for (int ys = 0; ys < pt_data_len.y; ++ys) {
-                            for (int xs = 0; xs < pt_data_len.x; ++xs) {
+                        for (unsigned int ys = 0; ys < pt_data_len.y; ++ys) {
+                            for (unsigned int xs = 0; xs < pt_data_len.x; ++xs) {
                                 g_selection_data[ys * (pt_data_len.x) + xs] = g_map[g_pt_ini_point.y + ys][g_pt_ini_point.x + xs];
                             }
                         }
                     }
 
-                    for (int ys = 0; ys < pt_data_len.y; ++ys) {
-                        for (int xs = 0; xs < pt_data_len.x; ++xs) {
+                    for (unsigned int ys = 0; ys < pt_data_len.y; ++ys) {
+                        for (unsigned int xs = 0; xs < pt_data_len.x; ++xs) {
                             g_map[y + ys][x + xs] = g_selection_data[ys * (pt_data_len.x) + xs];
                         }
                     }
@@ -371,7 +367,7 @@ void load_actions(char * path, int num_actions) {
 }
 
 // Carrega todos os tiles do arquivo de imagens.
-void load_tiles(char * dir, int & tiles_num) {
+void load_tiles(char * dir, unsigned int & tiles_num) {
     char tile_name[80];
     sprintf(tile_name, "%s/tileset.bmp", dir);
     g_tileset = load_bitmap(tile_name, NULL);
@@ -381,13 +377,11 @@ void load_tiles(char * dir, int & tiles_num) {
         exit(-1);
     }
 
-    int w, h;
+    const unsigned int w = g_tileset->w;
+    const unsigned int h = g_tileset->h;
 
-    w = g_tileset->w;
-    h = g_tileset->h;
-
-    for (int y = 2; y < (h - TILE_SIZE); y += 34) {
-        for (int x = 2; x < (w - TILE_SIZE); x += 34) {
+    for (unsigned int y = 2; y < (h - TILE_SIZE); y += 34) {
+        for (unsigned int x = 2; x < (w - TILE_SIZE); x += 34) {
             // Um subbitmap meio que compartilha a memória do bitmap pai.
             g_tiles.tile_img.push_back(create_sub_bitmap(g_tileset, x, y, TILE_SIZE, TILE_SIZE));
             point_t xy = {0, 0};
@@ -411,8 +405,8 @@ void draw_grid(BITMAP * bmp) {
 
 int main(int argc, char *argv[]) {
     BITMAP * buffer;
-    int tiles_num = 0;
-    int act_num = 7;
+    unsigned int tiles_num = 0;
+    unsigned int act_num = 7;
     FILE *fp;
 
     g_map_drawx = g_map_drawy = 0;
@@ -452,11 +446,11 @@ int main(int argc, char *argv[]) {
         g_default_tile = atoi(argv[4]);
 
         g_map = (MAP_INFO**) malloc(sizeof(MAP_INFO*) * g_max_y);
-        for (int i = 0; i < g_max_y; i++)
+        for (unsigned int i = 0; i < g_max_y; i++)
             g_map[i] = (MAP_INFO*) malloc(sizeof(MAP_INFO) * g_max_x);
 
-        for (int i = 0; i < g_max_y; i++)
-            for (int j = 0; j < g_max_x; j++) {
+        for (unsigned int i = 0; i < g_max_y; i++)
+            for (unsigned int j = 0; j < g_max_x; j++) {
                 g_map[i][j].tile_number = g_default_tile;
                 g_map[i][j].action = 0;
                 g_map[i][j].xOffset = 0;
@@ -467,15 +461,15 @@ int main(int argc, char *argv[]) {
     load_actions((char*)"./actions", act_num);
     load_tiles(argv[1], tiles_num);
 
-    int stepx = TILE_SIZE * TILES_X;
-    int stepy = TILE_SIZE * TILES_Y;
+    unsigned int stepx = TILE_SIZE * TILES_X;
+    unsigned int stepy = TILE_SIZE * TILES_Y;
     bool draw_actions = false;
     bool ignoreVoid   = false;
     while (!key[KEY_ESC]) {
         handle_tilebar(tiles_num);
         handle_actbar(act_num);
 
-        if (mouse_x < UTIL_W && mouse_y < UTIL_H) {
+        if ((unsigned int) mouse_x < UTIL_W && (unsigned int) mouse_y < UTIL_H) {
             if (mouse_b & 1) handle_click(mouse_x, mouse_y, 1);
             if (mouse_b & 2) handle_click(mouse_x, mouse_y, 2);
         }
