@@ -196,7 +196,7 @@ void draw_actionsbar(BITMAP *bmp, int act_num, int x) {
         draw_sprite(bmp, g_actions.tile_img[i], x + g_actions.coords[i].x, g_actions.coords[i].y);
         if (g_cur_act == i) {
             rect(bmp, (x + g_actions.coords[i].x) - 2,
-                            g_actions.coords[i].y - 2,
+                 g_actions.coords[i].y - 2,
                  (x + g_actions.coords[i].x) + 33,
                  g_actions.coords[i].y + 33,
                  makecol(255, 50, 50));
