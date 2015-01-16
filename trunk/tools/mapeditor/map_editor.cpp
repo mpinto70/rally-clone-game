@@ -87,12 +87,24 @@ static bool g_take_shot = false;
 static MAP_INFO * g_selection_data = nullptr;
 static BITMAP * g_selection_preview;
 
-static void map_save(const char * filename) {
-    FILE * fp = fopen(filename, "wb");
+std::string get_error_message() {
+    return std::to_string(errno) + " " + std::string(strerror(errno));
+}
+
+void throw_file_error(const std::string & filename) {
+    const std::string msg = std::string(filename) + " " + get_error_message();
+    throw std::runtime_error(msg);
+}
+
+void throw_allegro_error(const std::string & filename) {
+    const std::string msg = std::string(filename) + " " + allegro_error;
+    throw std::runtime_error(msg);
+}
+
+static void map_save(const std::string & filename) {
+    FILE * fp = fopen(filename.c_str(), "wb");
     if (fp == nullptr) {
-        const std::string msg = "Could not open file " + std::string(filename)
-                                + " " + std::to_string(errno) + " " + std::string(strerror(errno));
-        throw std::runtime_error(msg);
+        throw_file_error(filename);
     }
     // Tamanho em x e y
     fwrite(&g_max_x, sizeof(g_max_x), 1, fp);
@@ -388,18 +400,22 @@ static void handle_click(int x,
 }
 
 /// loads actions
-static void load_actions(const char * path,
+static void load_actions(const std::string & path,
                          const int num_actions) {
     g_actions.tile_img = (BITMAP **) malloc(sizeof(BITMAP*)*num_actions);
     g_actions.coords = new point_t[num_actions];
     int x = 20, y = 10;
 
-    char img_name[80];
+    char img_name[16];
     for (int i = 0; i < num_actions; ++i) {
-        sprintf(img_name, "%s/%02d.bmp", path, i);
-        printf("carregando action [%s]\n", img_name);
+        sprintf(img_name, "/%02d.bmp", i);
+        const std::string full_name = path + img_name;
+        printf("carregando action [%s]\n", full_name.c_str());
 
-        g_actions.tile_img[i] = load_bitmap(img_name, nullptr);
+        BITMAP * tile = load_bitmap(full_name.c_str(), nullptr);
+        if (tile == nullptr)
+            throw_allegro_error(full_name);
+        g_actions.tile_img[i] = tile;
         g_actions.coords[i].x = x;
         g_actions.coords[i].y = y;
 
@@ -409,16 +425,13 @@ static void load_actions(const char * path,
 }
 
 /// loads all tiles from file.
-static void load_tiles(const char * dir,
+static void load_tiles(const std::string & dir,
                        unsigned & tiles_num) {
-    char tile_name[80];
-    sprintf(tile_name, "%s/tileset.bmp", dir);
-    g_tileset = load_bitmap(tile_name, nullptr);
+    const std::string tile_name = dir + "/tileset.bmp";
+    g_tileset = load_bitmap(tile_name.c_str(), nullptr);
 
-    if (g_tileset == nullptr) {
-        fprintf(stderr, "TILESET image not found! [%s]\n", dir);
-        exit(-1);
-    }
+    if (g_tileset == nullptr)
+        throw_allegro_error(tile_name);
 
     const unsigned w = g_tileset->w;
     const unsigned h = g_tileset->h;
@@ -427,7 +440,10 @@ static void load_tiles(const char * dir,
     for (unsigned y = GAP; y < (h - TILE_SIZE); y += TILE_SIZE + GAP) {
         for (unsigned x = 2; x < (w - TILE_SIZE); x += TILE_SIZE + GAP) {
             // Um subbitmap meio que compartilha a memória do bitmap pai.
-            g_tiles.tile_img.push_back(create_sub_bitmap(g_tileset, x, y, TILE_SIZE, TILE_SIZE));
+            BITMAP * sub = create_sub_bitmap(g_tileset, x, y, TILE_SIZE, TILE_SIZE);
+            if (sub == nullptr)
+                throw_allegro_error(tile_name);
+            g_tiles.tile_img.push_back(sub);
             point_t xy = {0, 0};
             g_tiles.xy_pos.push_back(xy);
         }
