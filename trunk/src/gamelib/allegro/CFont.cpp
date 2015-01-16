@@ -10,7 +10,9 @@
 namespace gamelib {
 namespace allegro {
 
-CFont::CFont() {
+CFont::CFont()
+: font_(nullptr),
+  menuFont_(nullptr) {
     menuFont_ = load_font("resource_dir_address", NULL, NULL);
 	
 	if (menuFont_ == NULL)
@@ -22,18 +24,18 @@ CFont::CFont() {
 CFont::~CFont() {
 }
 
-void setFont(GFONT font) {
+void CFont::setFont(GFONT font) {
   switch(font) {
-    case SYSTEM_FONT:
+    case GFONT::SYSTEM_FONT:
 	  font_ = font;
 	break;
-	case MENU_FONT:
+	case GFONT::MENU_FONT:
 	  font_ = menuFont_;
 	break;
   }
 }
 
-void printText(std::string text, BITMAP * buffer, unsigned x, unsigned y, int foregroundColor, int backgroundColor) {
+void CFont::printText(std::string text, BITMAP * buffer, unsigned x, unsigned y, int foregroundColor, int backgroundColor) {
   if (buffer == NULL); // this have zero reason to occur...
 
   // Just return, don't see any reason to treat it like an error.
