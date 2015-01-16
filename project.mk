@@ -53,8 +53,21 @@ MV = mv
 # echo
 ECHO = @echo
 
-CFLAGS += -DRELEASE -DNDEBUG -Wall -Werror -Wparentheses -fpic -Os $(INCDIR)
-CPPFLAGS = $(CFLAGS) -fno-enforce-eh-specs -pedantic-errors -Wno-long-long -std=c++11
+CFLAGS += 	-DRELEASE \
+			-DNDEBUG \
+			-DRALLY_ROOT="\"$(RALLY_ROOT)\"" \
+			-Wall \
+			-Werror \
+			-Wparentheses \
+			-fpic \
+			-Os \
+			$(INCDIR) \
+			
+CPPFLAGS = 	$(CFLAGS) \
+			-fno-enforce-eh-specs \
+			-pedantic-errors \
+			-Wno-long-long \
+			-std=c++11 \
 
 .cpp.o:
 	$(ECHO) "[C++   ] $< "

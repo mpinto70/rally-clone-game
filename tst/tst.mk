@@ -29,7 +29,6 @@ endif
 include $(RALLY_ROOT)/project.mk
 
 CFLAGS +=	-I$(CXXTEST_INC) \
-			-DRALLY_ROOT="\"$(RALLY_ROOT)\"" \
 			-DCXXTEST_HAVE_STD \
 			-DCXXTEST_HAVE_EH \
 
