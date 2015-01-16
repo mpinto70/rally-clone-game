@@ -15,11 +15,11 @@ class CFont : public IFont {
         CFont();
         ~CFont() override;
 
-		void setFont(GFONT font) override;
-		void printText(std::string text, BITMAP * buffer, unsigned x, unsigned y, int foregroundColor, int backgroundColor) override;
-	private:
-		FONT * font_;
-		FONT * menuFont_;
+        void setFont(GFONT font) override;
+        void printText(std::string text, BITMAP * buffer, unsigned x, unsigned y, int foregroundColor, int backgroundColor) override;
+    private:
+        FONT * font_;
+        FONT * menuFont_;
 };
 
 }

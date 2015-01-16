@@ -454,182 +454,182 @@ static void hold_while_pressed(const int index) {
 
 int main(int argc, char *argv[]) {
     try {
-    unsigned tiles_num = 0;
-    unsigned act_num = 7;
+        unsigned tiles_num = 0;
+        unsigned act_num = 7;
 
-    g_map_drawx = g_map_drawy = 0;
+        g_map_drawx = g_map_drawy = 0;
 
-    allegro_init();
-    install_mouse();
-    install_keyboard();
-    install_timer();
+        allegro_init();
+        install_mouse();
+        install_keyboard();
+        install_timer();
 
-    set_color_depth(32);
-    set_gfx_mode(GFX_AUTODETECT_WINDOWED, UTIL_W + 200, UTIL_H + UTIL_H_EX, 0, 0);
+        set_color_depth(32);
+        set_gfx_mode(GFX_AUTODETECT_WINDOWED, UTIL_W + 200, UTIL_H + UTIL_H_EX, 0, 0);
 
-    BITMAP * buffer     = create_bitmap(SCREEN_W, SCREEN_H);
-    g_selection_preview = create_bitmap(185, 150);
+        BITMAP * buffer     = create_bitmap(SCREEN_W, SCREEN_H);
+        g_selection_preview = create_bitmap(185, 150);
 
-    clear_bitmap(g_selection_preview);
+        clear_bitmap(g_selection_preview);
 
-    char tmp[80] = {};
-    if (argc > 1) {
-        sprintf(tmp, "%s/stage.dat", argv[1]);
-    } else {
-        exit(-1);
-    }
-
-    FILE *fp = fopen(tmp, "rb");
-    if (fp != nullptr) {
-        map_load(fp);
-        fclose(fp);
-    } else {
-        if (argc < 5) {
+        char tmp[80] = {};
+        if (argc > 1) {
+            sprintf(tmp, "%s/stage.dat", argv[1]);
+        } else {
             exit(-1);
         }
-        create_clean_map(argv[2], argv[3], argv[4]);
-    }
 
-    load_actions("./actions", act_num);
-    load_tiles(argv[1], tiles_num);
-
-    bool draw_actions = false;
-    bool ignoreVoid   = false;
-    while (!key[KEY_ESC]) {
-        handle_tilebar(tiles_num);
-        handle_actbar(act_num);
-
-        if ((unsigned) mouse_x < UTIL_W && (unsigned) mouse_y < UTIL_H) {
-            if (mouse_b & 1) handle_click(mouse_x, mouse_y, 1);
-            if (mouse_b & 2) handle_click(mouse_x, mouse_y, 2);
-        }
-
-        if (key[KEY_RIGHT] && g_draw_selection == false) {
-            if ((g_map_drawx / TILE_SIZE) < (g_max_x - TILES_X)) {
-                g_map_drawx += TILE_SIZE;
-            }
-        } else if (key[KEY_LEFT] && g_draw_selection == false) {
-            if (g_map_drawx > 0) {
-                g_map_drawx -= TILE_SIZE;
-            }
-        }
-
-        if (key[KEY_UP] && g_draw_selection == false) {
-            if (g_map_drawy > 0) {
-                g_map_drawy -= TILE_SIZE;
-            }
-        } else if (key[KEY_DOWN] && g_draw_selection == false) {
-            if ((g_map_drawy / TILE_SIZE) < (g_max_y - TILES_Y)) {
-                g_map_drawy += TILE_SIZE;
-            }
-        }
-
-        if (key[KEY_D] && g_draw_selection == false) {
-            g_map_drawx += STEP_X;
-            if (g_map_drawx / TILE_SIZE >= (g_max_x - TILES_X))
-                g_map_drawx = (g_max_x - TILES_X) * TILE_SIZE;
-
-            hold_while_pressed(KEY_D);
-        } else if (key[KEY_A] && g_draw_selection == false) {
-            if (g_map_drawx < STEP_X)
-                g_map_drawx = 0;
-            else
-                g_map_drawx -= STEP_X;
-
-            hold_while_pressed(KEY_A);
-        }
-
-        if (key[KEY_W] && g_draw_selection == false) {
-            if (g_map_drawy < STEP_Y)
-                g_map_drawy = 0;
-            else
-                g_map_drawy -= STEP_Y;
-
-
-            hold_while_pressed(KEY_W);
-        } else if (key[KEY_S] && g_draw_selection == false) {
-            g_map_drawy += STEP_Y;
-            if (g_map_drawy / TILE_SIZE >= (g_max_y - TILES_Y))
-                g_map_drawy = (g_max_y - TILES_Y) * TILE_SIZE;
-
-            hold_while_pressed(KEY_S);
-        }
-
-        if (key[KEY_LSHIFT]) {
-            map_save(tmp);
-            // Evita que fique salvando loucamente o mapa, segura até o sujeito soltar a tecla.
-            hold_while_pressed(KEY_LSHIFT);
-        }
-
-        if (key[KEY_SPACE]) {
-            draw_actions = true;
+        FILE *fp = fopen(tmp, "rb");
+        if (fp != nullptr) {
+            map_load(fp);
+            fclose(fp);
         } else {
-            draw_actions = false;
-        }
-
-        if (key[KEY_M])
-            ignoreVoid = true;
-        else
-            ignoreVoid = false;
-
-        if (key[KEY_X]) {
-            g_cur_copy_point = 0;
-            g_draw_selection = false;
-        }
-
-        map_draw(buffer, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
-
-        if (!key[KEY_G]) {
-            if (g_take_shot == false)
-                draw_grid(buffer);
-        }
-        draw_tilesbar(buffer, tiles_num, UTIL_H);
-        draw_actionsbar(buffer, act_num, UTIL_W);
-
-        if (key[KEY_I]) {
-            int xpos, ypos;
-            xpos = mouse_x / TILE_SIZE * TILE_SIZE;
-            if (key[KEY_O]) xpos += mouse_x % TILE_SIZE;
-            ypos = mouse_y / TILE_SIZE * TILE_SIZE;
-            draw_sprite(buffer, g_actions.tile_img[g_cur_act], xpos, ypos);
-        } else if (g_take_shot == false) {
-            circlefill(buffer, mouse_x, mouse_y, 5, 0);
-            circlefill(buffer, mouse_x, mouse_y, 3,  makecol(255, 255, 255));
-        }
-
-        if (g_draw_selection == true) {
-            int xini, yini, xend, yend;
-
-            xini = (g_pt_ini_point.x * TILE_SIZE) - g_map_drawx;
-            yini = g_pt_ini_point.y * TILE_SIZE;
-            xend = xini + TILE_SIZE - g_map_drawx;
-            yend = yini + TILE_SIZE;
-
-            if (g_take_shot == true) {
-                stretch_blit(buffer, g_selection_preview, xini, yini, xend - xini, yend - yini,
-                             0, 0, g_selection_preview->w, g_selection_preview->h);
-                g_take_shot = false;
+            if (argc < 5) {
+                exit(-1);
             }
-            rect(buffer, SCREEN_W - 194, SCREEN_H - 392,
-                 SCREEN_W - 194 + g_selection_preview->w + 3, SCREEN_H - 392 + g_selection_preview->h + 3,
-                 makecol(255, 255, 255));
-
-            blit(g_selection_preview, buffer, 0, 0, SCREEN_W - 192, SCREEN_H - 390, g_selection_preview->w, g_selection_preview->h);
-
-            set_trans_blender(128, 128, 128, 128);
-            drawing_mode(DRAW_MODE_TRANS, nullptr, 0, 0);
-            rectfill(buffer, xini, yini, xend, yend, makecol(30, 30, 255));
-            drawing_mode(DRAW_MODE_SOLID, nullptr, 0, 0);
-            rect(buffer, xini, yini, xend, yend, 0);
-            rect(buffer, xini + 1, yini + 1, xend - 1, yend - 1, 0);
+            create_clean_map(argv[2], argv[3], argv[4]);
         }
 
-        vsync();
-        blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        clear_bitmap(buffer);
-    }
+        load_actions("./actions", act_num);
+        load_tiles(argv[1], tiles_num);
 
-    return 0;
+        bool draw_actions = false;
+        bool ignoreVoid   = false;
+        while (!key[KEY_ESC]) {
+            handle_tilebar(tiles_num);
+            handle_actbar(act_num);
+
+            if ((unsigned) mouse_x < UTIL_W && (unsigned) mouse_y < UTIL_H) {
+                if (mouse_b & 1) handle_click(mouse_x, mouse_y, 1);
+                if (mouse_b & 2) handle_click(mouse_x, mouse_y, 2);
+            }
+
+            if (key[KEY_RIGHT] && g_draw_selection == false) {
+                if ((g_map_drawx / TILE_SIZE) < (g_max_x - TILES_X)) {
+                    g_map_drawx += TILE_SIZE;
+                }
+            } else if (key[KEY_LEFT] && g_draw_selection == false) {
+                if (g_map_drawx > 0) {
+                    g_map_drawx -= TILE_SIZE;
+                }
+            }
+
+            if (key[KEY_UP] && g_draw_selection == false) {
+                if (g_map_drawy > 0) {
+                    g_map_drawy -= TILE_SIZE;
+                }
+            } else if (key[KEY_DOWN] && g_draw_selection == false) {
+                if ((g_map_drawy / TILE_SIZE) < (g_max_y - TILES_Y)) {
+                    g_map_drawy += TILE_SIZE;
+                }
+            }
+
+            if (key[KEY_D] && g_draw_selection == false) {
+                g_map_drawx += STEP_X;
+                if (g_map_drawx / TILE_SIZE >= (g_max_x - TILES_X))
+                    g_map_drawx = (g_max_x - TILES_X) * TILE_SIZE;
+
+                hold_while_pressed(KEY_D);
+            } else if (key[KEY_A] && g_draw_selection == false) {
+                if (g_map_drawx < STEP_X)
+                    g_map_drawx = 0;
+                else
+                    g_map_drawx -= STEP_X;
+
+                hold_while_pressed(KEY_A);
+            }
+
+            if (key[KEY_W] && g_draw_selection == false) {
+                if (g_map_drawy < STEP_Y)
+                    g_map_drawy = 0;
+                else
+                    g_map_drawy -= STEP_Y;
+
+
+                hold_while_pressed(KEY_W);
+            } else if (key[KEY_S] && g_draw_selection == false) {
+                g_map_drawy += STEP_Y;
+                if (g_map_drawy / TILE_SIZE >= (g_max_y - TILES_Y))
+                    g_map_drawy = (g_max_y - TILES_Y) * TILE_SIZE;
+
+                hold_while_pressed(KEY_S);
+            }
+
+            if (key[KEY_LSHIFT]) {
+                map_save(tmp);
+                // Evita que fique salvando loucamente o mapa, segura até o sujeito soltar a tecla.
+                hold_while_pressed(KEY_LSHIFT);
+            }
+
+            if (key[KEY_SPACE]) {
+                draw_actions = true;
+            } else {
+                draw_actions = false;
+            }
+
+            if (key[KEY_M])
+                ignoreVoid = true;
+            else
+                ignoreVoid = false;
+
+            if (key[KEY_X]) {
+                g_cur_copy_point = 0;
+                g_draw_selection = false;
+            }
+
+            map_draw(buffer, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
+
+            if (!key[KEY_G]) {
+                if (g_take_shot == false)
+                    draw_grid(buffer);
+            }
+            draw_tilesbar(buffer, tiles_num, UTIL_H);
+            draw_actionsbar(buffer, act_num, UTIL_W);
+
+            if (key[KEY_I]) {
+                int xpos, ypos;
+                xpos = mouse_x / TILE_SIZE * TILE_SIZE;
+                if (key[KEY_O]) xpos += mouse_x % TILE_SIZE;
+                ypos = mouse_y / TILE_SIZE * TILE_SIZE;
+                draw_sprite(buffer, g_actions.tile_img[g_cur_act], xpos, ypos);
+            } else if (g_take_shot == false) {
+                circlefill(buffer, mouse_x, mouse_y, 5, 0);
+                circlefill(buffer, mouse_x, mouse_y, 3,  makecol(255, 255, 255));
+            }
+
+            if (g_draw_selection == true) {
+                int xini, yini, xend, yend;
+
+                xini = (g_pt_ini_point.x * TILE_SIZE) - g_map_drawx;
+                yini = g_pt_ini_point.y * TILE_SIZE;
+                xend = xini + TILE_SIZE - g_map_drawx;
+                yend = yini + TILE_SIZE;
+
+                if (g_take_shot == true) {
+                    stretch_blit(buffer, g_selection_preview, xini, yini, xend - xini, yend - yini,
+                                 0, 0, g_selection_preview->w, g_selection_preview->h);
+                    g_take_shot = false;
+                }
+                rect(buffer, SCREEN_W - 194, SCREEN_H - 392,
+                     SCREEN_W - 194 + g_selection_preview->w + 3, SCREEN_H - 392 + g_selection_preview->h + 3,
+                     makecol(255, 255, 255));
+
+                blit(g_selection_preview, buffer, 0, 0, SCREEN_W - 192, SCREEN_H - 390, g_selection_preview->w, g_selection_preview->h);
+
+                set_trans_blender(128, 128, 128, 128);
+                drawing_mode(DRAW_MODE_TRANS, nullptr, 0, 0);
+                rectfill(buffer, xini, yini, xend, yend, makecol(30, 30, 255));
+                drawing_mode(DRAW_MODE_SOLID, nullptr, 0, 0);
+                rect(buffer, xini, yini, xend, yend, 0);
+                rect(buffer, xini + 1, yini + 1, xend - 1, yend - 1, 0);
+            }
+
+            vsync();
+            blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+            clear_bitmap(buffer);
+        }
+
+        return 0;
     } catch (std::exception & e) {
         fprintf(stderr, "ERROR: %s", e.what());
         return 1;
