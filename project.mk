@@ -67,7 +67,7 @@ CPPFLAGS = 	$(CFLAGS) \
 			-fno-enforce-eh-specs \
 			-pedantic-errors \
 			-Wno-long-long \
-			-std=c++11 \
+			-std=c++1y \
 
 .cpp.o:
 	$(ECHO) "[C++   ] $< "
