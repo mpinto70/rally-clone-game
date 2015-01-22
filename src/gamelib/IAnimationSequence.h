@@ -2,38 +2,36 @@
 
 #include <vector>
 
-class IAnimSequence
-{
-  public:
-  	AnimSequence(const char * seqFile);
-  	~AnimSequence();
+class IAnimSequence {
+    public:
+        IAnimSequence(const char * seqFile);
+        virtual ~IAnimSequence();
 
-	bool nextAnimFrame();
-    int getCurrFrameDuration();
-    virtual void setAnimSeq(unsigned newAnimSeq);
-    void resetAnimSeq(unsigned animSeq);
-	
-    BITMAP * getFrame(unsigned int frame_idx);
+        bool nextAnimFrame();
+        int getCurrFrameDuration();
+        virtual void setAnimSeq(unsigned newAnimSeq);
+        void resetAnimSeq(unsigned animSeq);
 
-    std::vector<std::vector<FrameInfoSt> > getAnimSeq();
+        BITMAP * getFrame(unsigned int frame_idx);
 
-  private:
-    struct FrameInfoSt
-    {
-      int frameNumber;
-      int frameDuration;
-    };
+        std::vector<std::vector<FrameInfoSt>> getAnimSeq();
 
-    void loadSprites(const char * seqFile);
-    void loadSequences(const char * seqFile);
-  	void unload();
+    private:
+        struct FrameInfoSt {
+            int frameNumber;
+            int frameDuration;
+        };
 
-  	BITMAP * seqBmp;
-	
-	unsigned curAnimFrame;
-    unsigned curAnimFrameDuration;
-    unsigned curAnimSeq;
+        void loadSprites(const char * seqFile);
+        void loadSequences(const char * seqFile);
+        void unload();
 
-  	std::vector<BITMAP *> seqFrames;
-    std::vector<std::vector<FrameInfoSt> > anim_seqs;
+        BITMAP * seqBmp;
+
+        unsigned curAnimFrame;
+        unsigned curAnimFrameDuration;
+        unsigned curAnimSeq;
+
+        std::vector<BITMAP *> seqFrames;
+        std::vector<std::vector<FrameInfoSt> > anim_seqs;
 };
