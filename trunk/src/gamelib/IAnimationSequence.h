@@ -14,14 +14,14 @@ class IAnimSequence {
 
         BITMAP * getFrame(unsigned int frame_idx);
 
-        std::vector<std::vector<FrameInfoSt>> getAnimSeq();
-
-    private:
         struct FrameInfoSt {
             int frameNumber;
             int frameDuration;
         };
 
+        std::vector<std::vector<FrameInfoSt>> getAnimSeq();
+
+    private:
         void loadSprites(const char * seqFile);
         void loadSequences(const char * seqFile);
         void unload();
