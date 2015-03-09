@@ -2,10 +2,10 @@
 
 #include <vector>
 
-class IAnimSequence {
+class IAnimationSequence {
     public:
-        IAnimSequence(const char * seqFile);
-        virtual ~IAnimSequence();
+        IAnimationSequence(const char * seqFile);
+        virtual ~IAnimationSequence();
 
         bool nextAnimFrame();
         int getCurrFrameDuration();

@@ -53,7 +53,7 @@ class Stage {
 
         int defaultTile;
 
-        std::map<unsigned int, AnimSequence *> preLoadedSprites;
+        std::map<unsigned int, IAnimationSequence *> preLoadedSprites;
 
         std::map<int, int> offsetMap;
 
