@@ -37,6 +37,14 @@ endif
 
 run_local: run
 
-run:
-	$(ECHO) -n ""
+ifneq ($(EXE),)
+run: run_app
+else
+run: run_noapp
+endif
 
+run_app:
+	@$(TLSAPP)/$(EXE) $(EXE_PARAMS)
+
+run_noapp:
+	$(ECHO) -n ""

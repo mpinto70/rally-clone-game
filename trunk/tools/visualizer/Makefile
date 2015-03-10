@@ -1,24 +1,24 @@
 
 default: exetarget
 
-EXE=map_editor.exe
+EXE=visualizer.exe
 
 GRAPHLIBS =	\
 			-lalleg-4.2.3 \
 			-lalleg_unsharable \
 
 LIBS =	\
-		-lgameliballegro \
-		-lgamelib \
 		-lutil \
+		-lgamelib \
+		-lgameliballegro \
 		$(GRAPHLIBS) \
 
 SUBDIRS =
 
 OBJS =	\
-		map_editor.o \
+		visualizer.o \
 
-EXE_PARAMS=stages/stage_type0 1 2 4
+EXE_PARAMS=$(RALLY_ROOT)/Stuff/car_player.bmp 16
 
 include $(RALLY_ROOT)/tools/tools.mk
 
