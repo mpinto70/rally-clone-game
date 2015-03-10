@@ -26,24 +26,11 @@ struct MAP_INFO {
     int xOffset;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
 };
 
-
-static unsigned g_map_drawx, g_map_drawy;
-
-// Tabela de desenhos para a fase.
-static BITMAP * g_images;
-
-struct point_t {
-    unsigned x, y;
+struct tile_set_t {
+    BITMAP * full_image;
+    std::vector<BITMAP*> tiles;
+    tile_set_t(BITMAP * img, const std::vector<BITMAP*> & tls) : full_image(img), tiles(tls) {}
 };
-
-struct tiles_t {
-    std::vector<BITMAP*> tile_img;
-    std::vector<point_t> xy_pos;
-};
-static tiles_t g_tiles;
-
-// Variaveis usadas pelo CTRL+C CTRL+V
-static BITMAP * g_selection_preview;
 
 std::string get_error_message() {
     return std::to_string(errno) + " " + std::string(strerror(errno));
@@ -59,39 +46,38 @@ void throw_allegro_error(const std::string & filename) {
     throw std::runtime_error(msg);
 }
 
-static void draw_tiles(BITMAP * canvas) {
-    draw_sprite(canvas, g_images, 10, 30);
+static void draw_full_image(BITMAP * canvas, BITMAP * img) {
+    draw_sprite(canvas, img, 10, 30);
 }
 
 /// loads all tiles from file.
-static void load_images(const std::string & full_path,
-                        const unsigned tile_width,
-                        unsigned & num_tiles) {
-    g_images = load_bitmap(full_path.c_str(), nullptr);
+static tile_set_t load_images(const std::string & full_path,
+                              const unsigned tile_width) {
+    BITMAP * full_image = load_bitmap(full_path.c_str(), nullptr);
 
-    if (g_images == nullptr) {
+    if (full_image == nullptr) {
         throw_allegro_error("could not load " + full_path);
     }
 
-    const unsigned w = g_images->w;
-    const unsigned h = g_images->h;
+    const unsigned w = full_image->w;
+    const unsigned h = full_image->h;
     constexpr unsigned GAP = 1;
     if (w % (tile_width + GAP) != 0)
         throw_allegro_error("The image (" + full_path + " - " + std::to_string(w) + ") has not space for images of size (" + std::to_string(tile_width) + ")");
 
-    num_tiles = w / (tile_width + GAP);
+    const unsigned num_tiles = w / (tile_width + GAP);
 
+    std::vector<BITMAP *> tiles;
     for (unsigned x = 0, i = 0; i < num_tiles; ++i, x += tile_width + GAP) {
         // Um subbitmap meio que compartilha a memória do bitmap pai.
-        BITMAP * sub = create_sub_bitmap(g_images, x, GAP, tile_width, h - GAP);
+        BITMAP * sub = create_sub_bitmap(full_image, x, GAP, tile_width, h - GAP);
         if (sub == nullptr)
             throw_allegro_error(full_path + " " + std::to_string(x));
-        g_tiles.tile_img.push_back(sub);
-        point_t xy = {0, 0};
-        g_tiles.xy_pos.push_back(xy);
+        tiles.push_back(sub);
     }
 
-    printf("TILESET loaded! w = %d h = %d num_tiles = %d tiles = %lu\n", w, h, num_tiles, g_tiles.tile_img.size());
+    printf("TILESET loaded! w = %d h = %d num_tiles = %d tiles = %lu\n", w, h, num_tiles, tiles.size());
+    return tile_set_t(full_image, tiles);
 }
 
 static void draw_tile(BITMAP * canvas,
@@ -115,9 +101,6 @@ int main(int argc, char *argv[]) {
 
         const std::string file_name = argv[1];
         const unsigned width_of_image = std::stoul(argv[2]);
-        unsigned num_of_tiles = 0;
-
-        g_map_drawx = g_map_drawy = 0;
 
         allegro_init();
         install_mouse();
@@ -129,11 +112,8 @@ int main(int argc, char *argv[]) {
             throw_allegro_error("set_gfx_mode");
 
         BITMAP * carnvas    = create_bitmap(SCREEN_W, SCREEN_H);
-        g_selection_preview = create_bitmap(185, 150);
 
-        clear_bitmap(g_selection_preview);
-
-        load_images(argv[1], width_of_image, num_of_tiles);
+        auto set = load_images(argv[1], width_of_image);
 
         //exit_visualizer("leaving for no reason");
 
@@ -141,8 +121,8 @@ int main(int argc, char *argv[]) {
         unsigned cur_tile = 0;
         while (!key[KEY_ESC]) {
             rectfill(carnvas, 0, 0, WINDOW_W, WINDOW_H, makecol(0xDE, 0x97, 0x47));
-            draw_tile(carnvas, g_tiles.tile_img[cur_tile], 40, 150);
-            draw_tiles(carnvas);
+            draw_tile(carnvas, set.tiles[cur_tile], 40, 150);
+            draw_full_image(carnvas, set.full_image);
             vsync();
             blit(carnvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
             clear_bitmap(carnvas);
@@ -150,14 +130,14 @@ int main(int argc, char *argv[]) {
             wait.reset();
             if (key[KEY_RIGHT]) {
                 ++cur_tile;
-                if (cur_tile == num_of_tiles)
+                if (cur_tile == set.tiles.size())
                     cur_tile = 0;
 
                 wait.wait();
             } else if (key[KEY_LEFT]) {
                 --cur_tile;
-                if (cur_tile > num_of_tiles) // overflow
-                    cur_tile = num_of_tiles - 1;
+                if (cur_tile > set.tiles.size()) // overflow
+                    cur_tile = set.tiles.size() - 1;
 
                 wait.wait();
             }
