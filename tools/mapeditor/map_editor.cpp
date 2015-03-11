@@ -17,6 +17,8 @@
 // CTRL+V + (MOUSE) - Efetua copia partindo do ponto atual.
 // CTRL+X - Desfaz seleção.
 
+#include "../tools/util/helpers.h"
+
 #include <allegro.h>
 
 #include <stdlib.h>
@@ -87,24 +89,10 @@ static bool g_take_shot = false;
 static MAP_INFO * g_selection_data = nullptr;
 static BITMAP * g_selection_preview;
 
-std::string get_error_message() {
-    return std::to_string(errno) + " " + std::string(strerror(errno));
-}
-
-void throw_file_error(const std::string & filename) {
-    const std::string msg = std::string(filename) + " " + get_error_message();
-    throw std::runtime_error(msg);
-}
-
-void throw_allegro_error(const std::string & filename) {
-    const std::string msg = std::string(filename) + " " + allegro_error;
-    throw std::runtime_error(msg);
-}
-
 static void map_save(const std::string & filename) {
     FILE * fp = fopen(filename.c_str(), "wb");
     if (fp == nullptr) {
-        throw_file_error(filename);
+        tools::throw_file_error(filename);
     }
     // Tamanho em x e y
     fwrite(&g_max_x, sizeof(g_max_x), 1, fp);
@@ -414,7 +402,7 @@ static void load_actions(const std::string & path,
 
         BITMAP * tile = load_bitmap(full_name.c_str(), nullptr);
         if (tile == nullptr)
-            throw_allegro_error(full_name);
+            tools::throw_allegro_error(full_name);
         g_actions.tile_img[i] = tile;
         g_actions.coords[i].x = x;
         g_actions.coords[i].y = y;
@@ -431,7 +419,7 @@ static void load_tiles(const std::string & dir,
     g_tileset = load_bitmap(tile_name.c_str(), nullptr);
 
     if (g_tileset == nullptr)
-        throw_allegro_error(tile_name);
+        tools::throw_allegro_error(tile_name);
 
     const unsigned w = g_tileset->w;
     const unsigned h = g_tileset->h;
@@ -442,7 +430,7 @@ static void load_tiles(const std::string & dir,
             // Um subbitmap meio que compartilha a memória do bitmap pai.
             BITMAP * sub = create_sub_bitmap(g_tileset, x, y, TILE_SIZE, TILE_SIZE);
             if (sub == nullptr)
-                throw_allegro_error(tile_name);
+                tools::throw_allegro_error(tile_name);
             g_tiles.tile_img.push_back(sub);
             point_t xy = {0, 0};
             g_tiles.xy_pos.push_back(xy);
@@ -461,11 +449,6 @@ static void draw_grid(BITMAP * bmp) {
 
     for (int i = 0; i < SCREEN_H; i += TILE_SIZE)
         hline(bmp, 0, i, SCREEN_W, color);
-}
-
-static void hold_while_pressed(const int index) {
-    while (key[index])
-        usleep(1000);
 }
 
 int main(int argc, char *argv[]) {
@@ -545,14 +528,14 @@ int main(int argc, char *argv[]) {
                 if (g_map_drawx / TILE_SIZE >= (g_max_x - TILES_X))
                     g_map_drawx = (g_max_x - TILES_X) * TILE_SIZE;
 
-                hold_while_pressed(KEY_D);
+                tools::hold_while_pressed(KEY_D);
             } else if (key[KEY_A] && g_draw_selection == false) {
                 if (g_map_drawx < STEP_X)
                     g_map_drawx = 0;
                 else
                     g_map_drawx -= STEP_X;
 
-                hold_while_pressed(KEY_A);
+                tools::hold_while_pressed(KEY_A);
             }
 
             if (key[KEY_W] && g_draw_selection == false) {
@@ -562,19 +545,19 @@ int main(int argc, char *argv[]) {
                     g_map_drawy -= STEP_Y;
 
 
-                hold_while_pressed(KEY_W);
+                tools::hold_while_pressed(KEY_W);
             } else if (key[KEY_S] && g_draw_selection == false) {
                 g_map_drawy += STEP_Y;
                 if (g_map_drawy / TILE_SIZE >= (g_max_y - TILES_Y))
                     g_map_drawy = (g_max_y - TILES_Y) * TILE_SIZE;
 
-                hold_while_pressed(KEY_S);
+                tools::hold_while_pressed(KEY_S);
             }
 
             if (key[KEY_LSHIFT]) {
                 map_save(tmp);
                 // Evita que fique salvando loucamente o mapa, segura até o sujeito soltar a tecla.
-                hold_while_pressed(KEY_LSHIFT);
+                tools::hold_while_pressed(KEY_LSHIFT);
             }
 
             if (key[KEY_SPACE]) {

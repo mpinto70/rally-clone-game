@@ -11,6 +11,7 @@ LIBS =	\
 		-lutil \
 		-lgamelib \
 		-lgameliballegro \
+		-ltoolsutil \
 		$(GRAPHLIBS) \
 
 SUBDIRS =

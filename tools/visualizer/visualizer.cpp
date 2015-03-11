@@ -1,4 +1,5 @@
 
+#include "../tools/util/helpers.h"
 #include "util/CWait.h"
 #include <allegro.h>
 
@@ -32,20 +33,6 @@ struct tile_set_t {
     tile_set_t(BITMAP * img, const std::vector<BITMAP*> & tls) : full_image(img), tiles(tls) {}
 };
 
-std::string get_error_message() {
-    return std::to_string(errno) + " " + std::string(strerror(errno));
-}
-
-void throw_file_error(const std::string & filename) {
-    const std::string msg = std::string(filename) + " " + get_error_message();
-    throw std::runtime_error(msg);
-}
-
-void throw_allegro_error(const std::string & filename) {
-    const std::string msg = std::string(filename) + " " + allegro_error;
-    throw std::runtime_error(msg);
-}
-
 static void draw_full_image(BITMAP * canvas, BITMAP * img) {
     draw_sprite(canvas, img, 10, 30);
 }
@@ -56,14 +43,14 @@ static tile_set_t load_images(const std::string & full_path,
     BITMAP * full_image = load_bitmap(full_path.c_str(), nullptr);
 
     if (full_image == nullptr) {
-        throw_allegro_error("could not load " + full_path);
+        tools::throw_allegro_error("could not load " + full_path);
     }
 
     const unsigned w = full_image->w;
     const unsigned h = full_image->h;
     constexpr unsigned GAP = 1;
     if (w % (tile_width + GAP) != 0)
-        throw_allegro_error("The image (" + full_path + " - " + std::to_string(w) + ") has not space for images of size (" + std::to_string(tile_width) + ")");
+        tools::throw_allegro_error("The image (" + full_path + " - " + std::to_string(w) + ") has not space for images of size (" + std::to_string(tile_width) + ")");
 
     const unsigned num_tiles = w / (tile_width + GAP);
 
@@ -72,7 +59,7 @@ static tile_set_t load_images(const std::string & full_path,
         // Um subbitmap meio que compartilha a memória do bitmap pai.
         BITMAP * sub = create_sub_bitmap(full_image, x, GAP, tile_width, h - GAP);
         if (sub == nullptr)
-            throw_allegro_error(full_path + " " + std::to_string(x));
+            tools::throw_allegro_error(full_path + " " + std::to_string(x));
         tiles.push_back(sub);
     }
 
@@ -109,7 +96,7 @@ int main(int argc, char *argv[]) {
 
         set_color_depth(32);
         if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_W, WINDOW_H, 0, 0) != 0)
-            throw_allegro_error("set_gfx_mode");
+            tools::throw_allegro_error("set_gfx_mode");
 
         BITMAP * carnvas    = create_bitmap(SCREEN_W, SCREEN_H);
 

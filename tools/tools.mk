@@ -7,7 +7,7 @@ DESTLIBDIR=$(TLSLIB)
 DESTAPPDIR=$(TLSAPP)
 OTHERINCLIBDIR = -L$(TLSLIB) \
 
-LIB_BASE_NAME = lib$(subst /,,$(subst $(RALLY_ROOT)/src,,$(shell pwd)))
+LIB_BASE_NAME = lib$(subst /,,$(subst $(RALLY_ROOT),,$(shell pwd)))
 LIBA=$(LIB_BASE_NAME).a
 LIBSO=$(LIB_BASE_NAME).so
 
