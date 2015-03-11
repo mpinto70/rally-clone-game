@@ -15,6 +15,7 @@
 
 static constexpr unsigned WINDOW_W  = 500;  ///< map window width
 static constexpr unsigned WINDOW_H  = 400;  ///< map window height
+static constexpr unsigned X_IMAGES  = 30;
 
 struct tile_set_t {
     BITMAP * full_image;
@@ -22,8 +23,8 @@ struct tile_set_t {
     tile_set_t(BITMAP * img, const std::vector<BITMAP*> & tls) : full_image(img), tiles(tls) {}
 };
 
-static void draw_full_image(BITMAP * canvas, BITMAP * img) {
-    draw_sprite(canvas, img, 10, 30);
+static void draw_full_image(BITMAP * canvas, BITMAP * img, unsigned x, unsigned y) {
+    draw_sprite(canvas, img, x, y);
 }
 
 /// loads all tiles from file.
@@ -69,6 +70,18 @@ static void exit_visualizer(const std::string & msg) {
     exit(1);
 }
 
+static void move_right(unsigned & cur_tile, const unsigned max) {
+    ++cur_tile;
+    if (cur_tile == max)
+        cur_tile = 0;
+}
+
+static void move_left(unsigned & cur_tile, const unsigned max) {
+    --cur_tile;
+    if (cur_tile > max) // overflow
+        cur_tile = max - 1;
+}
+
 int main(int argc, char *argv[]) {
     try {
         if (argc != 3) {
@@ -87,7 +100,7 @@ int main(int argc, char *argv[]) {
         if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_W, WINDOW_H, 0, 0) != 0)
             tools::throw_allegro_error("set_gfx_mode");
 
-        BITMAP * carnvas    = create_bitmap(SCREEN_W, SCREEN_H);
+        BITMAP * canvas    = create_bitmap(SCREEN_W, SCREEN_H);
 
         auto set = load_images(argv[1], width_of_image);
 
@@ -95,27 +108,29 @@ int main(int argc, char *argv[]) {
 
         util::CWait wait(50);
         unsigned cur_tile = 0;
+        const int bg = makecol(0xDE, 0x97, 0x47);
         while (!key[KEY_ESC]) {
-            rectfill(carnvas, 0, 0, WINDOW_W, WINDOW_H, makecol(0xDE, 0x97, 0x47));
-            draw_tile(carnvas, set.tiles[cur_tile], 40, 150);
-            draw_full_image(carnvas, set.full_image);
+            rectfill(canvas, 0, 0, WINDOW_W, WINDOW_H, bg);
+            textprintf_ex(canvas, font, X_IMAGES, 40, 0, bg, "number of tiles: %lu / tile size: (%02d x %02d)", set.tiles.size(), set.tiles[cur_tile]->w, set.tiles[cur_tile]->h);
+            draw_full_image(canvas, set.full_image, X_IMAGES, 60);
+            draw_tile(canvas, set.tiles[cur_tile], X_IMAGES, 150);
             vsync();
-            blit(carnvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-            clear_bitmap(carnvas);
+            blit(canvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+            clear_bitmap(canvas);
 
             wait.reset();
             if (key[KEY_RIGHT]) {
-                ++cur_tile;
-                if (cur_tile == set.tiles.size())
-                    cur_tile = 0;
-
+                move_right(cur_tile, set.tiles.size());
                 wait.wait();
             } else if (key[KEY_LEFT]) {
-                --cur_tile;
-                if (cur_tile > set.tiles.size()) // overflow
-                    cur_tile = set.tiles.size() - 1;
-
+                move_left(cur_tile, set.tiles.size());
                 wait.wait();
+            } else if (key[KEY_D]) {
+                move_right(cur_tile, set.tiles.size());
+                tools::hold_while_pressed(KEY_D);
+            } else if (key[KEY_A]) {
+                move_left(cur_tile, set.tiles.size());
+                tools::hold_while_pressed(KEY_A);
             }
         }
 
