@@ -118,7 +118,7 @@ endif
 endif
 
 # if there are .o files to be created, create depend.mk
-depend: warning_env depend_local $(SUBDIRS)
+depend: environment depend_local $(SUBDIRS)
 
 depend_local:
 ifneq ($(strip $(OBJS)),)
@@ -144,7 +144,7 @@ endif
 $(SUBDIRS):
 	$(SILENT)$(MAKE) $(MAKECMDGOALS) --no-print-directory -C $@
 
-warning_env:
+environment:
 	@if test "$(RALLY_ROOT)+set" = "+set" ;\
 	then echo "==========================================================="     ;\
 	echo "Error: the environment variable RALLY_ROOT is undefined"              ;\
@@ -167,10 +167,10 @@ warning_env:
 	echo "==========================================================="          ;\
 	exit 1 ; fi ;
 
-directory_message: warning_env
+directory_message: environment
 	$(ECHO) "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ $(subst $(RALLY_ROOT),,$(shell pwd))"
 
-clean: warning_env clean_local $(SUBDIRS)
+clean: environment clean_local $(SUBDIRS)
 
 clean_local:
 	$(ECHO) "[CLEAN ] $(subst $(RALLY_ROOT),,$(shell pwd)) "
