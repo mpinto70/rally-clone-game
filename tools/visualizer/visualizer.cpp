@@ -13,19 +13,8 @@
 #include <iostream>
 #include <fstream>
 
-// TODO:
-// Usando os defines no megaman, temos que rever isso aqui.
-// O jogo original tem uma resolução de 288 x 224, sugiro que a gente dobre: 576 x 448
-// Verificar tamanho dos tiles e setar um novo pra gente.
 static constexpr unsigned WINDOW_W  = 500;  ///< map window width
 static constexpr unsigned WINDOW_H  = 400;  ///< map window height
-
-struct MAP_INFO {
-    unsigned char tile_number; // index to the drawing table
-    unsigned char is_solid;    // is it solid?
-    unsigned char action;      // is there an associated action? Create enemy, create rock?
-    int xOffset;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
-};
 
 struct tile_set_t {
     BITMAP * full_image;

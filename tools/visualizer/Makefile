@@ -19,7 +19,7 @@ SUBDIRS =
 OBJS =	\
 		visualizer.o \
 
-EXE_PARAMS=$(RALLY_ROOT)/Stuff/car_player.bmp 16
+EXE_PARAMS=$(RALLY_ROOT)/Stuff/car_player_32.bmp 32
 
 include $(RALLY_ROOT)/tools/tools.mk
 
