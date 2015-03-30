@@ -28,6 +28,8 @@
 *.app
 
 .settings
+.cproject
+.project
 
 unit_test_main
 unit_test_main.cpp
