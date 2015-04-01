@@ -3,6 +3,7 @@ default: subdirs
 
 LIBDIRS =	\
 			util \
+			map \
 			gamelib \
 
 SUBDIRS =	\
