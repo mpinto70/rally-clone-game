@@ -5,7 +5,7 @@
 #include <cstdio>
 
 namespace util {
-/** Responsible for time lapse garantee. */
+/** responsible for time lapse garantee. */
 class CWait {
     public:
         /** creates object

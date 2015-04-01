@@ -2,8 +2,9 @@
 
 #include <cstdint>
 
+/** namespaces of elements related to maps. */
 namespace map {
-/** Responsible for time lapse garantee. */
+/** Types of tiles. */
 enum class ETile : std::uint8_t {
     ROAD,
     GRASS,
