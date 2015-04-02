@@ -35,7 +35,7 @@ enum class ETile : tile_t {
 };
 
 template <typename T>
-ETile convertToETile(T t) {
+ETile to_ETile(T t) {
     constexpr T first = static_cast<T>(ETile::FIRST);
     constexpr T last = static_cast<T>(ETile::LAST);
     if (t < first || t >= last) {

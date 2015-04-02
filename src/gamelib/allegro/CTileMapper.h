@@ -22,7 +22,7 @@ class CTileMapper {
 
         template<typename T>
         BITMAP * tile(T t) const {
-            map::ETile tl = map::convertToETile(t);
+            map::ETile tl = map::to_ETile<T>(t);
             return tile(tl);
         }
     private:
