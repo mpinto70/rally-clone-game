@@ -19,11 +19,15 @@
 
 #include "../tools/util/helpers.h"
 
+#include "gamelib/allegro/CTileMapper.h"
+#include "util/CEnumIterator.h"
+
 #include <allegro.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <memory>
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -61,18 +65,15 @@ static unsigned g_map_drawx, g_map_drawy;
 static unsigned g_max_x, g_max_y;
 static unsigned char g_default_tile;
 
-// Tabela de desenhos para a fase.
-static BITMAP * g_tileset;
-
 struct point_t {
     unsigned x, y;
 };
 
 struct tiles_t {
-    std::vector<BITMAP*> tile_img;
     std::vector<point_t> xy_pos;
 };
 static tiles_t g_tiles;
+std::unique_ptr<gamelib::allegro::CTileMapper> g_tileMapper;
 
 struct actions_t {
     BITMAP ** tile_img;
@@ -150,7 +151,8 @@ static void tile_draw(BITMAP * bmp,
                       const int tile_number,
                       const int x,
                       const int y) {
-    draw_sprite(bmp, g_tiles.tile_img[tile_number], x, y);
+    const auto tile_bmp = g_tileMapper->tile(tile_number);
+    draw_sprite(bmp, tile_bmp, x, y);
 }
 
 // Desenha o mapa partindo do map_drawx, map_drawy.
@@ -210,7 +212,7 @@ static void draw_tilesbar(BITMAP * bmp,
         }
         g_tiles.xy_pos[i].x = x + TILE_GAP;
         g_tiles.xy_pos[i].y = y + MARGIN;
-        draw_sprite(bmp, g_tiles.tile_img[i], g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
+        tile_draw(bmp, i, g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
         x += TILE_SPACE;
     }
 
@@ -416,28 +418,12 @@ static void load_actions(const std::string & path,
 static void load_tiles(const std::string & dir,
                        unsigned & tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
-    g_tileset = load_bitmap(tile_name.c_str(), nullptr);
-
-    if (g_tileset == nullptr)
-        tools::throw_allegro_error(tile_name);
-
-    const unsigned w = g_tileset->w;
-    const unsigned h = g_tileset->h;
     constexpr unsigned GAP = 2;
-
-    for (unsigned y = GAP; y < (h - TILE_SIZE); y += TILE_SIZE + GAP) {
-        for (unsigned x = 2; x < (w - TILE_SIZE); x += TILE_SIZE + GAP) {
-            // Um subbitmap meio que compartilha a memória do bitmap pai.
-            BITMAP * sub = create_sub_bitmap(g_tileset, x, y, TILE_SIZE, TILE_SIZE);
-            if (sub == nullptr)
-                tools::throw_allegro_error(tile_name);
-            g_tiles.tile_img.push_back(sub);
-            point_t xy = {0, 0};
-            g_tiles.xy_pos.push_back(xy);
-        }
-    }
-
-    tiles_num = g_tiles.tile_img.size();
+    g_tileMapper.reset(new gamelib::allegro::CTileMapper(tile_name, TILE_SIZE, GAP));
+    constexpr point_t xy = {0, 0};
+    constexpr size_t qttyTiles = static_cast<map::tile_t>(map::ETile::LAST);
+    g_tiles.xy_pos = std::vector<point_t>(qttyTiles, xy);
+    tiles_num = qttyTiles;
 
     printf("TILESET loaded!\n");
 }
