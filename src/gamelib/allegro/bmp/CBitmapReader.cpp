@@ -5,6 +5,7 @@
 
 namespace gamelib {
 namespace allegro {
+namespace bmp {
 
 CBitmapReader::tiles_t CBitmapReader::readTiles(const std::string& fileName,
                                                 const unsigned tileWidth,
@@ -60,5 +61,6 @@ CBitmapReader::tiles_t CBitmapReader::readTiles(const std::string& fileName,
     return std::make_pair(std::move(fullBitmap), std::move(tiles));
 }
 
+}
 }
 }

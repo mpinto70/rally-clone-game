@@ -19,7 +19,7 @@
 
 #include "../tools/util/helpers.h"
 
-#include "gamelib/allegro/CTileMapper.h"
+#include "gamelib/allegro/bmp/CTileMapper.h"
 #include "util/CEnumIterator.h"
 
 #include <allegro.h>
@@ -73,7 +73,7 @@ struct tiles_t {
     std::vector<point_t> xy_pos;
 };
 static tiles_t g_tiles;
-std::unique_ptr<gamelib::allegro::CTileMapper> g_tileMapper;
+std::unique_ptr<gamelib::allegro::bmp::CTileMapper> g_tileMapper;
 
 struct actions_t {
     BITMAP ** tile_img;
@@ -419,7 +419,7 @@ static void load_tiles(const std::string & dir,
                        unsigned & tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
-    g_tileMapper.reset(new gamelib::allegro::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP));
+    g_tileMapper.reset(new gamelib::allegro::bmp::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP));
     constexpr point_t xy = {0, 0};
     constexpr size_t qttyTiles = static_cast<map::tile_t>(map::ETile::LAST);
     g_tiles.xy_pos = std::vector<point_t>(qttyTiles, xy);

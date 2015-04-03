@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/allegro/CBitmapReader.h"
+#include "gamelib/allegro/bmp/CBitmapReader.h"
 #include "map/ETile.h"
 
 #include <allegro.h>
@@ -9,6 +9,7 @@
 
 namespace gamelib {
 namespace allegro {
+namespace bmp {
 
 class CTileMapper {
     public:
@@ -32,5 +33,6 @@ class CTileMapper {
         std::map<map::ETile, BITMAP_PTR> tileMap_;
         BITMAP_PTR fullBitmap_;
 };
+}
 }
 }

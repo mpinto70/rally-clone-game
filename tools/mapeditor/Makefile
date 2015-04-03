@@ -10,6 +10,7 @@ GRAPHLIBS =	\
 LIBS =	\
 		-ltoolsutil \
 		-lgameliballegro \
+		-lgameliballegrobmp \
 		-lgamelib \
 		-lmap \
 		-lutil \

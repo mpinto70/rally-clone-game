@@ -10,6 +10,7 @@
 
 namespace gamelib {
 namespace allegro {
+namespace bmp {
 
 CTileMapper::CTileMapper(const std::string & fileName,
                          unsigned tileWidth,
@@ -50,5 +51,6 @@ BITMAP * CTileMapper::tile(map::ETile tile) const {
     else return it->second.get();
 }
 
+}
 }
 }

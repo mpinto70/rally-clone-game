@@ -8,6 +8,7 @@
 
 namespace gamelib {
 namespace allegro {
+namespace bmp {
 
 typedef std::unique_ptr<BITMAP, void(*)(BITMAP*)> BITMAP_PTR;
 
@@ -46,5 +47,6 @@ class CBitmapReader {
 
 };
 
+}
 }
 }
