@@ -613,9 +613,10 @@ int main(int argc, char *argv[]) {
             blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
             clear_bitmap(buffer);
         }
-
+        g_tileMapper.reset();
         return 0;
     } catch (std::exception & e) {
+        g_tileMapper.reset();
         fprintf(stderr, "ERROR: %s", e.what());
         return 1;
     }
