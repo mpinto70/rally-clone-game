@@ -36,12 +36,7 @@ enum class ETile : tile_t {
 
 template <typename T>
 ETile to_ETile(T t) {
-    constexpr T first = static_cast<T>(ETile::FIRST);
-    constexpr T last = static_cast<T>(ETile::LAST);
-    if (t < first || t >= last) {
-        throw std::invalid_argument("convertToETile - out of range (" + std::to_string(t) + ")");
-    }
-    return static_cast<ETile>(t);
+    return util::to_Enum<T, ETile>(t);
 }
 
 bool operator < (ETile lhs, ETile rhs) {

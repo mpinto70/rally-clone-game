@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stdexcept>
+#include <string>
+#include <typeinfo>
+
 namespace util {
 
 template< typename T >
@@ -39,4 +43,19 @@ template< typename T >
 typename CEnumIterator<T>::Iterator end(CEnumIterator<T>) {
     return typename CEnumIterator<T>::Iterator((typename CEnumIterator<T>::enumType) T::LAST);
 }
+
+template <typename E, typename T>
+E to_Enum(T t) {
+    constexpr T first = static_cast<T>(E::FIRST);
+    constexpr T last = static_cast<T>(E::LAST);
+    if (t < first || t >= last) {
+        throw std::invalid_argument("to_Enum of "
+                                    + std::string(typeid(E).name())
+                                    + " - out of range ("
+                                    + std::to_string(t)
+                                    + ")");
+    }
+    return static_cast<E>(t);
+}
+
 }

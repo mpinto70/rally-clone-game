@@ -10,7 +10,7 @@ OBJS =	\
 		testCException.o \
 		testCSingleton.o \
 		testCWait.o \
-		testCEnumIterator.o \
+		testEUtil.o \
 
 include $(RALLY_ROOT)/tst/tst.mk
 

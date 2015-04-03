@@ -20,7 +20,7 @@
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/bmp/CTileMapper.h"
-#include "util/CEnumIterator.h"
+#include "util/EUtil.h"
 
 #include <allegro.h>
 

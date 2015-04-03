@@ -1,7 +1,7 @@
 
-#include "testCEnumIterator.h"
+#include "testEUtil.h"
 
-#include "util/CEnumIterator.h"
+#include "util/EUtil.h"
 
 #include <sys/time.h>
 #include <vector>
@@ -16,7 +16,7 @@ enum class Enum : unsigned {
     FIRST = ONE
 };
 
-void TestCEnumIterator::testIteration() {
+void TestEUtil::testIteration() {
     const std::vector<Enum> enums = { Enum::ONE , Enum::TWO , Enum::THREE };
     size_t i = 0;
     for (auto e : CEnumIterator<Enum>()) {

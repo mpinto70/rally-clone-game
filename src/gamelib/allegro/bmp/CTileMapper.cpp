@@ -1,7 +1,7 @@
 
 #include "CTileMapper.h"
 
-#include "util/CEnumIterator.h"
+#include "util/EUtil.h"
 #include "util/CException.h"
 
 #include <string>

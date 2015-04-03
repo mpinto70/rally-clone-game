@@ -5,10 +5,10 @@
 
 namespace util {
 
-class TestCEnumIterator: public CxxTest::TestSuite {
+class TestEUtil: public CxxTest::TestSuite {
     public:
         void testIteration();
 };
 
 }
-using util::TestCEnumIterator;
+using util::TestEUtil;
