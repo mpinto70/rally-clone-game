@@ -55,8 +55,8 @@ class CTileMapper {
             return tile(tl);
         }
     private:
-        BITMAP_PTR fullBitmap_;
         std::map<map::ETile, BITMAP_PTR> tileMap_;
+        BITMAP_PTR fullBitmap_;
 };
 }
 }
