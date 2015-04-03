@@ -1,5 +1,6 @@
 
 #include "../tools/util/helpers.h"
+#include "gamelib/allegro/bmp/CCarMapper.h"
 #include "util/CWait.h"
 
 #include <allegro.h>
@@ -26,37 +27,6 @@ struct tile_set_t {
 
 static void draw_full_image(BITMAP * canvas, BITMAP * img, unsigned x, unsigned y) {
     draw_sprite(canvas, img, x, y);
-}
-
-/// loads all tiles from file.
-static tile_set_t load_images(const std::string & full_path,
-                              const unsigned tile_width) {
-    BITMAP * full_image = load_bitmap(full_path.c_str(), nullptr);
-
-    if (full_image == nullptr) {
-        tools::throw_allegro_error("could not load " + full_path);
-    }
-
-    const unsigned w = full_image->w;
-    const unsigned h = full_image->h;
-    constexpr unsigned GAP = 1;
-    const unsigned tile_height = h - 2 * GAP;
-    if ((w - GAP) % (tile_width + GAP) != 0)
-        tools::throw_allegro_error("The image (" + full_path + " - " + std::to_string(w) + ") has not space for images of size (" + std::to_string(tile_width) + ")");
-
-    const unsigned num_tiles = (w - GAP) / (tile_width + GAP);
-
-    std::vector<BITMAP *> tiles;
-    for (unsigned x = 1, i = 0; i < num_tiles; ++i, x += tile_width + GAP) {
-        // Um subbitmap meio que compartilha a memória do bitmap pai.
-        BITMAP * sub = create_sub_bitmap(full_image, x, GAP, tile_width, tile_height);
-        if (sub == nullptr)
-            tools::throw_allegro_error(full_path + " " + std::to_string(x));
-        tiles.push_back(sub);
-    }
-
-    printf("TILESET loaded! w = %d h = %d num_tiles = %d tiles = %lu\n", w, h, num_tiles, tiles.size());
-    return tile_set_t(full_image, tiles);
 }
 
 static void draw_tile(BITMAP * canvas,
@@ -104,8 +74,7 @@ int main(int argc, char *argv[]) {
 
         BITMAP * canvas    = create_bitmap(SCREEN_W, SCREEN_H);
 
-        auto set = load_images(argv[1], width_of_image);
-
+        gamelib::allegro::bmp::CCarMapper carMapper(argv[1], width_of_image, width_of_image, 1);
         //exit_visualizer("leaving for no reason");
 
         util::CWait wait(50);
@@ -113,25 +82,34 @@ int main(int argc, char *argv[]) {
         const int bg = makecol(0xDE, 0x97, 0x47);
         while (!key[KEY_ESC]) {
             rectfill(canvas, 0, 0, WINDOW_W, WINDOW_H, bg);
-            textprintf_ex(canvas, font, X_IMAGES, 40, 0, bg, "number of tiles: %lu / tile size: (%02d x %02d)", set.tiles.size(), set.tiles[cur_tile]->w, set.tiles[cur_tile]->h);
-            draw_full_image(canvas, set.full_image, X_IMAGES, 60);
-            draw_tile(canvas, set.tiles[cur_tile], X_IMAGES, 150);
+            textprintf_ex(canvas,
+                          font,
+                          X_IMAGES,
+                          40,
+                          0,
+                          bg,
+                          "number of tiles: %lu / tile size: (%02d x %02d)",
+                          carMapper.numBmps(),
+                          carMapper[cur_tile]->w,
+                          carMapper[cur_tile]->h);
+            draw_full_image(canvas, carMapper.fullBmp(), X_IMAGES, 60);
+            draw_tile(canvas, carMapper[cur_tile], X_IMAGES, 150);
             vsync();
             blit(canvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
             clear_bitmap(canvas);
 
             wait.reset();
             if (key[KEY_RIGHT]) {
-                move_right(cur_tile, set.tiles.size());
+                move_right(cur_tile, carMapper.numBmps());
                 wait.wait();
             } else if (key[KEY_LEFT]) {
-                move_left(cur_tile, set.tiles.size());
+                move_left(cur_tile, carMapper.numBmps());
                 wait.wait();
             } else if (key[KEY_D]) {
-                move_right(cur_tile, set.tiles.size());
+                move_right(cur_tile, carMapper.numBmps());
                 tools::hold_while_pressed(KEY_D);
             } else if (key[KEY_A]) {
-                move_left(cur_tile, set.tiles.size());
+                move_left(cur_tile, carMapper.numBmps());
                 tools::hold_while_pressed(KEY_A);
             }
         }

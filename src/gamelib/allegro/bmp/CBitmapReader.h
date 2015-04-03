@@ -40,7 +40,7 @@ class CBitmapReader {
                                                                                    width
          \endverbatim
          */
-        static tiles_t readTiles(const std::string& fileName,
+        static tiles_t readBmps(const std::string& fileName,
                                  const unsigned tileWidth,
                                  const unsigned tileHeight,
                                  const unsigned gap);

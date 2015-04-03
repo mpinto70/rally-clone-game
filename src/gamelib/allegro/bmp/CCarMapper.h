@@ -1,13 +1,13 @@
 #pragma once
 
 #include "gamelib/allegro/bmp/CBmpMapper.h"
-#include "map/ETile.h"
+#include "map/ECarDirection.h"
 
 namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-typedef CBmpMapper<map::ETile> CTileMapper;
+typedef CBmpMapper<map::ECarDirection> CCarMapper;
 
 }
 }
