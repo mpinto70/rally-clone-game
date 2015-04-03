@@ -1,6 +1,7 @@
 
 #include "../tools/util/helpers.h"
 #include "util/CWait.h"
+
 #include <allegro.h>
 
 #include <stdlib.h>
@@ -39,15 +40,16 @@ static tile_set_t load_images(const std::string & full_path,
     const unsigned w = full_image->w;
     const unsigned h = full_image->h;
     constexpr unsigned GAP = 1;
-    if (w % (tile_width + GAP) != 0)
+    const unsigned tile_height = h - 2 * GAP;
+    if ((w - GAP) % (tile_width + GAP) != 0)
         tools::throw_allegro_error("The image (" + full_path + " - " + std::to_string(w) + ") has not space for images of size (" + std::to_string(tile_width) + ")");
 
-    const unsigned num_tiles = w / (tile_width + GAP);
+    const unsigned num_tiles = (w - GAP) / (tile_width + GAP);
 
     std::vector<BITMAP *> tiles;
-    for (unsigned x = 0, i = 0; i < num_tiles; ++i, x += tile_width + GAP) {
+    for (unsigned x = 1, i = 0; i < num_tiles; ++i, x += tile_width + GAP) {
         // Um subbitmap meio que compartilha a memória do bitmap pai.
-        BITMAP * sub = create_sub_bitmap(full_image, x, GAP, tile_width, h - GAP);
+        BITMAP * sub = create_sub_bitmap(full_image, x, GAP, tile_width, tile_height);
         if (sub == nullptr)
             tools::throw_allegro_error(full_path + " " + std::to_string(x));
         tiles.push_back(sub);

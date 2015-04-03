@@ -8,10 +8,11 @@ GRAPHLIBS =	\
 			-lalleg_unsharable \
 
 LIBS =	\
-		-lutil \
-		-lgamelib \
-		-lgameliballegro \
 		-ltoolsutil \
+		-lgameliballegro \
+		-lgamelib \
+		-lmap \
+		-lutil \
 		$(GRAPHLIBS) \
 
 SUBDIRS =
