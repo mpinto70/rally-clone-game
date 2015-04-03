@@ -10,7 +10,6 @@ OBJS =	\
 		CSound.o \
 		CTimer.o \
 		CTileMapper.o \
-		CTileReader.o \
 
 include $(RALLY_ROOT)/src/src.mk
 

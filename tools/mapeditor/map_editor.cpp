@@ -419,7 +419,7 @@ static void load_tiles(const std::string & dir,
                        unsigned & tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
-    g_tileMapper.reset(new gamelib::allegro::CTileMapper(tile_name, TILE_SIZE, GAP));
+    g_tileMapper.reset(new gamelib::allegro::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP));
     constexpr point_t xy = {0, 0};
     constexpr size_t qttyTiles = static_cast<map::tile_t>(map::ETile::LAST);
     g_tiles.xy_pos = std::vector<point_t>(qttyTiles, xy);
