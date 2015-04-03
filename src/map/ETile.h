@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/EUtil.h"
 #include <cstdint>
 #include <stdexcept>
 
@@ -36,7 +37,7 @@ enum class ETile : tile_t {
 
 template <typename T>
 ETile to_ETile(T t) {
-    return util::to_Enum<T, ETile>(t);
+    return util::to_Enum<ETile, T>(t);
 }
 
 bool operator < (ETile lhs, ETile rhs) {

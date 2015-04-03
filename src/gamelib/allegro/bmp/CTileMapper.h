@@ -14,8 +14,7 @@ namespace bmp {
 class CTileMapper {
     public:
         CTileMapper(const std::string & fileName,
-                    unsigned tileWidth,
-                    unsigned tileHeight,
+                    unsigned tileSize,
                     unsigned gap);
         ~CTileMapper();
 
@@ -26,7 +25,7 @@ class CTileMapper {
 
         template<typename T>
         BITMAP * tile(T t) const {
-            map::ETile tl = map::to_ETile<T>(t);
+            auto tl = map::to_ETile<T>(t);
             return tile(tl);
         }
     private:

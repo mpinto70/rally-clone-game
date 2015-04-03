@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/EUtil.h"
+
 #include <cstdint>
 #include <stdexcept>
 

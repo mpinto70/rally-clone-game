@@ -13,11 +13,10 @@ namespace allegro {
 namespace bmp {
 
 CTileMapper::CTileMapper(const std::string & fileName,
-                         unsigned tileWidth,
-                         unsigned tileHeight,
+                         unsigned tileSize,
                          const unsigned gap)
     : fullBitmap_(nullptr, destroy_bitmap) {
-    auto tiles = CBitmapReader::readTiles(fileName, tileWidth, tileHeight, gap);
+    auto tiles = CBitmapReader::readTiles(fileName, tileSize, tileSize, gap);
     fullBitmap_.swap(tiles.first);
     using map::ETile;
     using map::tile_t;
