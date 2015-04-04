@@ -76,7 +76,7 @@ static tiles_t g_tiles;
 std::unique_ptr<gamelib::allegro::bmp::CTileMapper> g_tileMapper;
 
 struct actions_t {
-    BITMAP ** tile_img;
+    std::vector<BITMAP *> tile_img;
     point_t * coords;
 };
 static actions_t g_actions;
@@ -390,7 +390,7 @@ static void handle_click(int x,
 /// loads actions
 static void load_actions(const std::string & path,
                          const int num_actions) {
-    g_actions.tile_img = (BITMAP **) malloc(sizeof(BITMAP*)*num_actions);
+    g_actions.tile_img = std::vector<BITMAP *>(num_actions, nullptr);
     g_actions.coords = new point_t[num_actions];
     int x = 20, y = 10;
 
