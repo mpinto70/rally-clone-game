@@ -5,12 +5,12 @@
 
 namespace map {
 
-class TestCMap: public CxxTest::TestSuite {
+class testCMap: public CxxTest::TestSuite {
     public:
         void testCreation();
         void testInvalidCreation();
 };
 
 }
-using map::TestCMap;
+using map::testCMap;
 

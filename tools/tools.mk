@@ -44,7 +44,7 @@ run: run_noapp
 endif
 
 run_app:
-	@$(TLSAPP)/$(EXE) $(EXE_PARAMS)
+	$(SILENT)LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(LIBDIR):$(MCKBIN):$(TLSLIB) $(TLSAPP)/$(EXE) $(EXE_PARAMS)
 
 run_noapp:
 	$(ECHO) -n ""

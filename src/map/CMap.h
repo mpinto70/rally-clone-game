@@ -18,9 +18,6 @@ class CMap {
              size_t height,
              const std::vector<ETile> & tiles);
 
-        /** shall not be copied. */
-        CMap(const CMap &) = delete;
-
         /** returns the height. */
         size_t height() const { return height_; }
 

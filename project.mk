@@ -26,9 +26,10 @@ TLSAPP = $(TLSDIR)/bin/app
 INCDIR =	\
 			-I ./ \
 			-I $(SRCDIR) \
-			-I $(BOOST_ROOT) \
+			-I $(BOOST_ROOT)/include \
 
 INCLIBDIR = -L$(LIBDIR) \
+			-L$(BOOST_ROOT)/lib \
 
 # miscellaneous OS-dependent stuff
 SHELL = /bin/sh

@@ -40,9 +40,7 @@ ETile to_ETile(T t) {
     return util::to_Enum<ETile, T>(t);
 }
 
-bool operator < (ETile lhs, ETile rhs) {
-    return static_cast<tile_t>(lhs) < static_cast<tile_t>(rhs);
-}
+bool operator < (ETile lhs, ETile rhs);
 
 }
 

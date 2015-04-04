@@ -5,7 +5,7 @@
 
 namespace map {
 
-void TestCMap::testCreation() {
+void testCMap::testCreation() {
     std::vector<ETile> tiles = { ETile::ROAD, ETile::BUSH };
 
     const CMap m1(1, 2, tiles);
@@ -25,7 +25,7 @@ void TestCMap::testCreation() {
     TS_ASSERT_EQUALS(m2.tiles(), tiles);
 }
 
-void TestCMap::testInvalidCreation() {
+void testCMap::testInvalidCreation() {
     TS_ASSERT_THROWS_EQUALS(CMap(0, 2, { ETile::ROAD, ETile::BUSH }),
                             std::invalid_argument & e,
                             std::string(e.what()),

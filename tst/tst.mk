@@ -40,7 +40,7 @@ run: directory_message run_local $(SUBDIRS)
 
 run_local:
 ifneq ($(EXE),)
-	$(SILENT)LD_LIBRARY_PATH=$(LIBDIR):$(MCKBIN) ./$(EXE)
+	$(SILENT)LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(LIBDIR):$(MCKBIN) ./$(EXE)
 endif
 
 valgrind: directory_message valgrind_local $(SUBDIRS)
