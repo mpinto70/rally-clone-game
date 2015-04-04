@@ -314,7 +314,7 @@ static void handle_click(int x,
 
     switch (button) {
         case 1: {
-            // CTRL não está precionado.
+            // CTRL não está pressionado.
             if (!key[KEY_LCONTROL]) {
                 g_map[y][x].tile_number = g_cur_tile;
             } else {
