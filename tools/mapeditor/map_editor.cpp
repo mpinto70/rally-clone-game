@@ -20,10 +20,13 @@
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/bmp/CTileMapper.h"
+#include "map/CMap.h"
+#include "map/CMapIO.h"
 #include "util/EUtil.h"
 
 #include <allegro.h>
 
+#include <boost/filesystem.hpp>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -109,17 +112,23 @@ static void map_save(const std::string & filename) {
     fclose(fp);
 }
 
-static int map_load(FILE * fp) {
-    if (fread(&g_max_x, sizeof(int), 1, fp) != 1) return 1;
-    if (fread(&g_max_y, sizeof(int), 1, fp) != 1) return 2;
-    if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1) return 3;
+static void map_load(const std::string & filename) {
+    FILE * fp = fopen(filename.c_str(), "rb");
+    if (fp == nullptr)
+        tools::throw_allegro_error("opening " + filename);
+
+    if (fread(&g_max_x, sizeof(int), 1, fp) != 1)
+        tools::throw_allegro_error("reading width " + filename);
+    if (fread(&g_max_y, sizeof(int), 1, fp) != 1)
+        tools::throw_allegro_error("reading height " + filename);
+    if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1)
+        tools::throw_allegro_error("reading default tile " + filename);
 
     g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
     for (unsigned i = 0; i < g_max_y; ++i) {
-        if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x) return 4;
+        if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x)
+            tools::throw_allegro_error("reading line " + std::to_string(i) + " from " + filename);
     }
-
-    return 0;
 }
 
 static int create_clean_map(const int max_x,
@@ -462,10 +471,9 @@ int main(int argc, char *argv[]) {
             exit(-1);
         }
 
-        FILE *fp = fopen(tmp, "rb");
-        if (fp != nullptr) {
-            map_load(fp);
-            fclose(fp);
+        boost::filesystem::path pathToFile(tmp);
+        if (boost::filesystem::exists(pathToFile)) {
+            map_load(tmp);
         } else {
             if (argc < 5) {
                 exit(-1);

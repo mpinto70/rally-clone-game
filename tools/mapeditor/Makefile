@@ -14,6 +14,8 @@ LIBS =	\
 		-lgamelib \
 		-lmap \
 		-lutil \
+		-lboost_filesystem \
+		-lboost_system \
 		$(GRAPHLIBS) \
 
 SUBDIRS =
