@@ -57,7 +57,7 @@ struct MAP_INFO {
 };
 
 // Y linhas com X colunas.
-static MAP_INFO **g_map;
+static std::vector<std::vector<MAP_INFO>> g_map;
 
 static unsigned g_cur_tile = 0;
 static unsigned g_cur_act  = 0;
@@ -114,9 +114,8 @@ static int map_load(FILE * fp) {
     if (fread(&g_max_y, sizeof(int), 1, fp) != 1) return 2;
     if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1) return 3;
 
-    g_map = (MAP_INFO**) malloc(sizeof(MAP_INFO*) * g_max_y);
+    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0,0,0,0}));
     for (unsigned i = 0; i < g_max_y; ++i) {
-        g_map[i] = (MAP_INFO*) malloc(sizeof(MAP_INFO) * g_max_x);
         if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x) return 4;
     }
 
@@ -133,17 +132,16 @@ static int create_clean_map(const int max_x,
     }
     g_default_tile = default_tile;
 
-    g_map = (MAP_INFO**) malloc(sizeof(MAP_INFO*) * g_max_y);
-    for (unsigned i = 0; i < g_max_y; ++i)
-        g_map[i] = (MAP_INFO*) malloc(sizeof(MAP_INFO) * g_max_x);
+    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0,0,0,0}));
 
-    for (unsigned i = 0; i < g_max_y; ++i)
+    for (unsigned i = 0; i < g_max_y; ++i) {
         for (unsigned j = 0; j < g_max_x; ++j) {
             g_map[i][j].tile_number = g_default_tile;
             g_map[i][j].action = 0;
             g_map[i][j].xOffset = 0;
             g_map[i][j].is_solid = 0;
         }
+    }
     return 0;
 }
 
