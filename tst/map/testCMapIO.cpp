@@ -35,7 +35,7 @@ static void verifyWrite(const size_t width,
                         const size_t height) {
     std::default_random_engine re;
     std::uniform_int_distribution<size_t> dist{0, maxTile};
-    auto dice = std::bind (dist, re);
+    auto dice = std::bind(dist, re);
     const size_t fullsize = width * height;
     std::vector<ETile> tiles(fullsize, ETile::GRASS);
     for (size_t i = 0; i < fullsize; ++i) {
@@ -51,6 +51,7 @@ static void verifyWrite(const size_t width,
     TS_ASSERT_EQUALS(map1.height(), map2.height());
     TS_ASSERT_EQUALS(map1.tiles(), map2.tiles());
 }
+
 void testCMapIO::testWrite() {
     verifyWrite(10, 20);
     verifyWrite(200, 100);

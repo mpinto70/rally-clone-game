@@ -114,7 +114,7 @@ static int map_load(FILE * fp) {
     if (fread(&g_max_y, sizeof(int), 1, fp) != 1) return 2;
     if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1) return 3;
 
-    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0,0,0,0}));
+    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
     for (unsigned i = 0; i < g_max_y; ++i) {
         if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x) return 4;
     }
@@ -132,7 +132,7 @@ static int create_clean_map(const int max_x,
     }
     g_default_tile = default_tile;
 
-    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0,0,0,0}));
+    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
 
     for (unsigned i = 0; i < g_max_y; ++i) {
         for (unsigned j = 0; j < g_max_x; ++j) {

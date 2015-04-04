@@ -8,9 +8,9 @@ namespace allegro {
 namespace bmp {
 
 CBitmapReader::tiles_t CBitmapReader::readBmps(const std::string& fileName,
-                                                const unsigned tileWidth,
-                                                const unsigned tileHeight,
-                                                const unsigned gap) {
+                                               const unsigned tileWidth,
+                                               const unsigned tileHeight,
+                                               const unsigned gap) {
     BITMAP_PTR fullBitmap(load_bitmap(fileName.c_str(), nullptr), destroy_bitmap);
 
     if (fullBitmap == nullptr)
