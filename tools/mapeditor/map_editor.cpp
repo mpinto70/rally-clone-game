@@ -123,15 +123,15 @@ static int map_load(FILE * fp) {
     return 0;
 }
 
-static int create_clean_map(const std::string & max_x,
-                            const std::string & max_y,
-                            const std::string & default_tile) {
-    g_max_x = std::stoi(max_x) * TILES_X;
-    g_max_y = std::stoi(max_y) * TILES_Y;
+static int create_clean_map(const int max_x,
+                            const int max_y,
+                            const int default_tile) {
+    g_max_x = max_x * TILES_X;
+    g_max_y = max_y * TILES_Y;
     if (g_max_x == 0 || g_max_y == 0) {
         exit(-1);
     }
-    g_default_tile = std::stoi(default_tile);
+    g_default_tile = default_tile;
 
     g_map = (MAP_INFO**) malloc(sizeof(MAP_INFO*) * g_max_y);
     for (unsigned i = 0; i < g_max_y; ++i)
@@ -472,11 +472,14 @@ int main(int argc, char *argv[]) {
             if (argc < 5) {
                 exit(-1);
             }
-            create_clean_map(argv[2], argv[3], argv[4]);
+            const auto max_x = std::stoi(argv[2]);
+            const auto max_y = std::stoi(argv[3]);
+            const auto default_tile = std::stoi(argv[4]);
+            create_clean_map(max_x, max_y, default_tile);
         }
 
         load_actions("./actions", act_num);
-        load_tiles(argv[1], tiles_num);
+        load_tiles(RALLY_ROOT "/Stuff", tiles_num);
 
         bool draw_actions = false;
         bool ignoreVoid   = false;
@@ -617,7 +620,7 @@ int main(int argc, char *argv[]) {
         return 0;
     } catch (std::exception & e) {
         g_tileMapper.reset();
-        fprintf(stderr, "ERROR: %s", e.what());
+        fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;
     }
 }
