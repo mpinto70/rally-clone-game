@@ -6,24 +6,6 @@
 #include <fstream>
 
 namespace map {
-class SafeFILE {
-    public:
-        SafeFILE(const std::string & fileName,
-                 const std::string & mode) {
-            fp_ = fopen(fileName.c_str(), mode.c_str());
-            if (fp_ == nullptr) {
-                throw util::CException("CMapReader::read - could not open file " + fileName, 0);
-            }
-        }
-
-        ~SafeFILE() {
-            fclose(fp_);
-        }
-
-        FILE * get() const { return fp_; }
-    private:
-        FILE * fp_;
-};
 
 typedef std::uint32_t map_dimension_t;
 
