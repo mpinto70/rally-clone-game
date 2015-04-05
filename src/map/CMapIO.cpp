@@ -2,6 +2,9 @@
 #include "CMapIO.h"
 #include "util/CException.h"
 
+#include <cstring>
+#include <fstream>
+
 namespace map {
 class SafeFILE {
     public:
@@ -9,7 +12,7 @@ class SafeFILE {
                  const std::string & mode) {
             fp_ = fopen(fileName.c_str(), mode.c_str());
             if (fp_ == nullptr) {
-                throw util::CException("CMapReader::readMap - could not open file " + fileName, 0);
+                throw util::CException("CMapReader::read - could not open file " + fileName, 0);
             }
         }
 
@@ -25,19 +28,47 @@ class SafeFILE {
 typedef std::uint32_t map_dimension_t;
 
 CMap CMapIO::read(const std::string & fileName) {
-    SafeFILE fp(fileName, "rb");
+    std::ifstream is(fileName, std::ios_base::in|std::ios_base::binary);
+    return read(is);
+}
+
+void CMapIO::write(const std::string & fileName,
+                   const CMap& map) {
+    std::ofstream os(fileName, std::ios_base::out|std::ios_base::binary);
+    write(os, map);
+}
+
+CMap CMapIO::read(std::istream & is) {
     map_dimension_t width, height;
-    if (fread(&width, sizeof(map_dimension_t), 1, fp.get()) != 1) {
-        throw util::CException("CMapReader::readMap - there was no space in " + fileName + " to read width", width);
+
+    std::vector<char> buffer(sizeof(map_dimension_t), '\0');
+
+    is.read(buffer.data(), buffer.size());
+
+    if (not is || is.gcount() != sizeof(map_dimension_t)) {
+        throw util::CException("CMapReader::read(is) - could not read width", 1);
     }
-    if (fread(&height, sizeof(map_dimension_t), 1, fp.get()) != 1) {
-        throw util::CException("CMapReader::readMap - there was no space in " + fileName + " to read height", height);
+
+    memcpy(&width, buffer.data(), sizeof(map_dimension_t));
+
+    is.read(buffer.data(), buffer.size());
+
+    if (not is || is.gcount() != sizeof(map_dimension_t)) {
+        throw util::CException("CMapReader::read(is) - could not read height",2);
+    }
+
+    memcpy(&height, buffer.data(), sizeof(map_dimension_t));
+
+    buffer = std::vector<char>(width * height * sizeof(tile_t), 0);
+
+    is.read(buffer.data(), buffer.size());
+
+    if (not is || is.gcount() != (std::streamsize) (width * height * sizeof(tile_t))) {
+        throw util::CException("CMapReader::read(is) - could not read map", 3);
     }
 
     std::vector<tile_t> tiles_t(width * height, 0);
-    if (fread(tiles_t.data(), sizeof(tile_t), tiles_t.size(), fp.get()) != tiles_t.size()) {
-        throw util::CException("CMapReader::readMap - there was no space in " + fileName + " to read map data", tiles_t.size());
-    }
+    memcpy(tiles_t.data(), buffer.data(), buffer.size());
 
     std::vector<ETile> tiles;
     tiles.reserve(tiles_t.size());
@@ -48,24 +79,35 @@ CMap CMapIO::read(const std::string & fileName) {
     return CMap(width, height, tiles);
 }
 
-void CMapIO::write(const std::string & fileName,
-                   const CMap& map) {
-    SafeFILE fp(fileName, "wb");
-    const map_dimension_t width = map.width();
-    const map_dimension_t height = map.height();
-    if (fwrite(&width, sizeof(map_dimension_t), 1, fp.get()) != 1) {
-        throw util::CException("CMapReader::writeMap - could not write width to " + fileName, width);
+void CMapIO::write(std::ostream & os,
+                   const CMap & map) {
+    std::vector<char> buffer(sizeof(map_dimension_t), 0);
+
+    const auto width = map.width();
+    memcpy(buffer.data(), &width, sizeof(map_dimension_t));
+    os.write(buffer.data(), buffer.size());
+    if (not os) {
+        throw util::CException("CMapReader::write(is) - could not write width", width);
     }
-    if (fwrite(&height, sizeof(map_dimension_t), 1, fp.get()) != 1) {
-        throw util::CException("CMapReader::writeMap - could not write height to " + fileName, height);
+
+    const auto height = map.height();
+    memcpy(buffer.data(), &height, sizeof(map_dimension_t));
+    os.write(buffer.data(), buffer.size());
+    if (not os) {
+        throw util::CException("CMapReader::write(is) - could not write height", height);
     }
-    std::vector<tile_t> tiles;
-    tiles.reserve(map.tiles().size());
-    for (const auto tile : map.tiles()) {
-        tiles.push_back(static_cast<tile_t>(tile));
+
+    buffer = std::vector<char>(width * height * sizeof(tile_t), 0);
+    const auto & tiles = map.tiles();
+    std::vector<tile_t> tiles_t;
+    tiles_t.reserve(width * height);
+    for (const auto tile : tiles) {
+        tiles_t.push_back(static_cast<tile_t>(tile));
     }
-    if (fwrite(tiles.data(), tiles.size(), sizeof(tile_t), fp.get()) != 1) {
-        throw util::CException("CMapReader::writeMap - could not write map to " + fileName, tiles.size());
+    memcpy(buffer.data(), tiles_t.data(), buffer.size());
+    os.write(buffer.data(), buffer.size());
+    if (not os) {
+        throw util::CException("CMapReader::write(is) - could not write data", height);
     }
 }
 
