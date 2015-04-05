@@ -8,6 +8,7 @@ namespace util {
 class TestEUtil: public CxxTest::TestSuite {
     public:
         void testIteration();
+        void testConversion();
 };
 
 }

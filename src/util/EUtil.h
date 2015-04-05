@@ -58,4 +58,9 @@ E to_Enum(T t) {
     return static_cast<E>(t);
 }
 
+template <typename T, typename E>
+T from_Enum(E e) {
+    return static_cast<T>(e);
+}
+
 }

@@ -3,6 +3,7 @@
 #include "util/EUtil.h"
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 
 /** namespaces of elements related to maps. */
 namespace map {
@@ -40,7 +41,6 @@ ETile to_ETile(T t) {
     return util::to_Enum<ETile, T>(t);
 }
 
-bool operator < (ETile lhs, ETile rhs);
-
+std::string to_string(ETile tile);
 }
 
