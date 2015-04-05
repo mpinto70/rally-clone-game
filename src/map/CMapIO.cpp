@@ -10,13 +10,13 @@ namespace map {
 typedef std::uint32_t map_dimension_t;
 
 CMap CMapIO::read(const std::string & fileName) {
-    std::ifstream is(fileName, std::ios_base::in|std::ios_base::binary);
+    std::ifstream is(fileName, std::ios_base::in | std::ios_base::binary);
     return read(is);
 }
 
 void CMapIO::write(const std::string & fileName,
                    const CMap& map) {
-    std::ofstream os(fileName, std::ios_base::out|std::ios_base::binary);
+    std::ofstream os(fileName, std::ios_base::out | std::ios_base::binary);
     write(os, map);
 }
 
@@ -36,7 +36,7 @@ CMap CMapIO::read(std::istream & is) {
     is.read(buffer.data(), buffer.size());
 
     if (not is || is.gcount() != sizeof(map_dimension_t)) {
-        throw util::CException("CMapReader::read(is) - could not read height",2);
+        throw util::CException("CMapReader::read(is) - could not read height", 2);
     }
 
     memcpy(&height, buffer.data(), sizeof(map_dimension_t));
@@ -45,7 +45,7 @@ CMap CMapIO::read(std::istream & is) {
 
     is.read(buffer.data(), buffer.size());
 
-    if (not is || is.gcount() != (std::streamsize) (width * height * sizeof(tile_t))) {
+    if (not is || is.gcount() != (std::streamsize)(width * height * sizeof(tile_t))) {
         throw util::CException("CMapReader::read(is) - could not read map", 3);
     }
 

@@ -12,6 +12,7 @@ SUBDIRS =
 OBJS =	\
 		testCMap.o \
 		testCMapIO.o \
+		testCTile.o \
 		testETile.o \
 		testEAction.o \
 

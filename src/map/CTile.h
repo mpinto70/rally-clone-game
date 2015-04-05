@@ -7,11 +7,11 @@ namespace map {
 
 class CTile {
     public:
-        CTile(ETile type,
-              EAction action);
+        explicit CTile(ETile type,
+                       EAction action = EAction::NONE);
         ~CTile();
 
-        ETile tile() const { return type_; }
+        ETile type() const { return type_; }
         EAction action() const { return action_; }
     private:
         ETile type_;

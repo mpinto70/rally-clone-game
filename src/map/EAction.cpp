@@ -8,7 +8,7 @@ namespace map {
 
 std::string to_string(EAction tile) {
     switch (tile) {
-            CASE_ENUM_TO_STRING(EAction::NO_ACTION);
+            CASE_ENUM_TO_STRING(EAction::NONE);
             CASE_ENUM_TO_STRING(EAction::CREATE_ENEMY);
             CASE_ENUM_TO_STRING(EAction::CREATE_STONE);
         case EAction::LAST:

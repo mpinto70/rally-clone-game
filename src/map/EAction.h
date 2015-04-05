@@ -12,11 +12,11 @@ namespace map {
 typedef std::uint8_t action_t;
 /** Types of tiles. */
 enum class EAction : action_t {
-    NO_ACTION,
+    NONE,
     CREATE_ENEMY,
     CREATE_STONE,
     LAST,
-    FIRST = NO_ACTION
+    FIRST = NONE
 };
 
 template <typename T>

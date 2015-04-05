@@ -9,7 +9,7 @@ CTile::CTile(ETile type,
              EAction action)
     : type_(type),
       action_(action) {
-    if (action_ != EAction::NO_ACTION
+    if (action_ != EAction::NONE
             && type_ != ETile::ROAD) {
         throw util::CException("CTile - incompatible type "
                                + to_string(type_)

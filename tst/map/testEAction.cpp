@@ -7,7 +7,7 @@
 namespace map {
 
 void testEAction::testToString() {
-    TS_ASSERT_EQUALS(to_string(EAction::NO_ACTION),     "EAction::NO_ACTION");
+    TS_ASSERT_EQUALS(to_string(EAction::NONE),          "EAction::NONE");
     TS_ASSERT_EQUALS(to_string(EAction::CREATE_ENEMY),  "EAction::CREATE_ENEMY");
     TS_ASSERT_EQUALS(to_string(EAction::CREATE_STONE),  "EAction::CREATE_STONE");
 
