@@ -12,6 +12,8 @@ SUBDIRS =
 OBJS =	\
 		testCMap.o \
 		testCMapIO.o \
+		testETile.o \
+		testEAction.o \
 
 include $(RALLY_ROOT)/tst/tst.mk
 
