@@ -59,9 +59,6 @@ struct MAP_INFO {
     int xOffset;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
 };
 
-// Y linhas com X colunas.
-static std::vector<std::vector<MAP_INFO>> g_map;
-
 static unsigned g_cur_tile = 0;
 static unsigned g_cur_act  = 0;
 static unsigned g_map_drawx, g_map_drawy;
@@ -89,10 +86,10 @@ static point_t g_pt_ini_point;
 static point_t g_pt_end_point;
 static bool g_draw_selection = false;
 static bool g_take_shot = false;
-static MAP_INFO * g_selection_data = nullptr;
 static BITMAP * g_selection_preview;
 
-static void map_save(const std::string & filename) {
+static void map_save(const std::string & filename,
+                     const std::vector<std::vector<MAP_INFO>> & g_map) {
     FILE * fp = fopen(filename.c_str(), "wb");
     if (fp == nullptr) {
         tools::throw_file_error(filename);
@@ -111,7 +108,7 @@ static void map_save(const std::string & filename) {
     fclose(fp);
 }
 
-static void map_load(const std::string & filename) {
+static std::vector<std::vector<MAP_INFO>> map_load(const std::string & filename) {
     FILE * fp = fopen(filename.c_str(), "rb");
     if (fp == nullptr)
         tools::throw_allegro_error("opening " + filename);
@@ -123,16 +120,17 @@ static void map_load(const std::string & filename) {
     if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1)
         tools::throw_allegro_error("reading default tile " + filename);
 
-    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
+    auto g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
     for (unsigned i = 0; i < g_max_y; ++i) {
         if (fread(&g_map[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x)
             tools::throw_allegro_error("reading line " + std::to_string(i) + " from " + filename);
     }
+    return g_map;
 }
 
-static int create_clean_map(const int max_x,
-                            const int max_y,
-                            const int default_tile) {
+static std::vector<std::vector<MAP_INFO>> create_clean_map(const int max_x,
+                                                           const int max_y,
+const int default_tile) {
     g_max_x = max_x * TILES_X;
     g_max_y = max_y * TILES_Y;
     if (g_max_x == 0 || g_max_y == 0) {
@@ -140,7 +138,7 @@ static int create_clean_map(const int max_x,
     }
     g_default_tile = default_tile;
 
-    g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
+    auto g_map = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
 
     for (unsigned i = 0; i < g_max_y; ++i) {
         for (unsigned j = 0; j < g_max_x; ++j) {
@@ -150,7 +148,7 @@ static int create_clean_map(const int max_x,
             g_map[i][j].is_solid = 0;
         }
     }
-    return 0;
+    return g_map;
 }
 
 static void tile_draw(BITMAP * bmp,
@@ -166,6 +164,7 @@ static void tile_draw(BITMAP * bmp,
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP * bmp,
+                     const std::vector<std::vector<MAP_INFO>> & g_map,
                      const gamelib::allegro::bmp::CTileMapper & tileMapper,
                      const int map_drawx,
                      const int map_drawy,
@@ -311,7 +310,8 @@ static void handle_actbar(int act_num) {
 }
 
 /// treats clicks inside map area
-static void handle_click(int x,
+static void handle_click(std::vector<std::vector<MAP_INFO>> & g_map,
+                         int x,
                          int y,
                          const int button) {
     // normaliza o x,y do mouse para unidades de TILE_SIZE
@@ -325,15 +325,15 @@ static void handle_click(int x,
 
     switch (button) {
         case 1: {
+            static std::vector<MAP_INFO> g_selection_data;
             // CTRL não está pressionado.
             if (!key[KEY_LCONTROL]) {
                 g_map[y][x].tile_number = g_cur_tile;
             } else {
                 if (key[KEY_C]) {
                     if (g_cur_copy_point == 0) {
-                        free(g_selection_data);
+                        g_selection_data.clear();
                         clear_bitmap(g_selection_preview);
-                        g_selection_data = nullptr;
 
                         g_pt_ini_point.x = x;
                         g_pt_ini_point.y = y;
@@ -355,19 +355,19 @@ static void handle_click(int x,
                     pt_data_len.x = (g_pt_end_point.x - g_pt_ini_point.x) + 1;
                     pt_data_len.y = (g_pt_end_point.y - g_pt_ini_point.y) + 1;
 
-                    if (g_selection_data == nullptr) {
-                        g_selection_data = (MAP_INFO*) malloc(sizeof(MAP_INFO) * (pt_data_len.x * pt_data_len.y));
+                    if (g_selection_data.empty()) {
+                        g_selection_data.resize(pt_data_len.x * pt_data_len.y, {0, 0, 0, 0});
 
                         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                                g_selection_data[ys * (pt_data_len.x) + xs] = g_map[g_pt_ini_point.y + ys][g_pt_ini_point.x + xs];
+                                g_selection_data.at(ys * (pt_data_len.x) + xs) = g_map[g_pt_ini_point.y + ys][g_pt_ini_point.x + xs];
                             }
                         }
                     }
 
                     for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                         for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                            g_map[y + ys][x + xs] = g_selection_data[ys * (pt_data_len.x) + xs];
+                            g_map[y + ys][x + xs] = g_selection_data.at(ys * (pt_data_len.x) + xs);
                         }
                     }
 
@@ -475,8 +475,9 @@ int main(int argc, char *argv[]) {
         }
 
         boost::filesystem::path pathToFile(tmp);
+        std::vector<std::vector<MAP_INFO>> g_map;
         if (boost::filesystem::exists(pathToFile)) {
-            map_load(tmp);
+            g_map = map_load(tmp);
         } else {
             if (argc < 5) {
                 exit(-1);
@@ -484,7 +485,7 @@ int main(int argc, char *argv[]) {
             const auto max_x = std::stoi(argv[2]);
             const auto max_y = std::stoi(argv[3]);
             const auto default_tile = std::stoi(argv[4]);
-            create_clean_map(max_x, max_y, default_tile);
+            g_map = create_clean_map(max_x, max_y, default_tile);
         }
 
         load_actions("./actions", act_num);
@@ -497,8 +498,8 @@ int main(int argc, char *argv[]) {
             handle_actbar(act_num);
 
             if ((unsigned) mouse_x < UTIL_W && (unsigned) mouse_y < UTIL_H) {
-                if (mouse_b & 1) handle_click(mouse_x, mouse_y, 1);
-                if (mouse_b & 2) handle_click(mouse_x, mouse_y, 2);
+                if (mouse_b & 1) handle_click(g_map, mouse_x, mouse_y, 1);
+                if (mouse_b & 2) handle_click(g_map, mouse_x, mouse_y, 2);
             }
 
             if (key[KEY_RIGHT] && g_draw_selection == false) {
@@ -553,7 +554,7 @@ int main(int argc, char *argv[]) {
             }
 
             if (key[KEY_LSHIFT]) {
-                map_save(tmp);
+                map_save(tmp, g_map);
                 // Evita que fique salvando loucamente o mapa, segura até o sujeito soltar a tecla.
                 tools::hold_while_pressed(KEY_LSHIFT);
             }
@@ -574,7 +575,7 @@ int main(int argc, char *argv[]) {
                 g_draw_selection = false;
             }
 
-            map_draw(buffer, tileMapper, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
+            map_draw(buffer, g_map, tileMapper, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
 
             if (!key[KEY_G]) {
                 if (g_take_shot == false)
