@@ -13,7 +13,7 @@ OBJS =	\
 		testCMap.o \
 		testCMapIO.o \
 		testCTile.o \
-		testETile.o \
+		testETileType.o \
 		testEAction.o \
 
 include $(RALLY_ROOT)/tst/tst.mk

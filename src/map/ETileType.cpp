@@ -1,5 +1,5 @@
 
-#include "ETile.h"
+#include "ETileType.h"
 #include "map/EMapUtil.h"
 
 #include "util/CException.h"

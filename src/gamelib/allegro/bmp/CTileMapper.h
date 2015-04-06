@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gamelib/allegro/bmp/CBmpMapper.h"
-#include "map/ETile.h"
+#include "map/ETileType.h"
 
 namespace gamelib {
 namespace allegro {

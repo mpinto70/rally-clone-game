@@ -1,7 +1,7 @@
 
-#include "testETile.h"
+#include "testETileType.h"
 
-#include "map/ETile.h"
+#include "map/ETileType.h"
 #include "util/CException.h"
 
 namespace map {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "map/ETile.h"
+#include "map/ETileType.h"
 #include "map/EAction.h"
 
 namespace map {

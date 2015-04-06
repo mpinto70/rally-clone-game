@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gamelib/allegro/bmp/CBitmapReader.h"
-#include "map/ETile.h"
 #include "util/CException.h"
+#include "util/EUtil.h"
 
 #include <allegro.h>
 #include <map>

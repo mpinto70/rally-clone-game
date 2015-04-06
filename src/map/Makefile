@@ -7,7 +7,7 @@ OBJS =	\
 		CMap.o \
 		CMapIO.o \
 		CTile.o \
-		ETile.o \
+		ETileType.o \
 		EAction.o \
 		ECarDirection.o \
 
