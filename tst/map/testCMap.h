@@ -9,6 +9,7 @@ class testCMap: public CxxTest::TestSuite {
     public:
         void testCreation();
         void testInvalidCreation();
+        void testIndexing();
 };
 
 }

@@ -27,6 +27,8 @@ class CMap {
         /** returns the tiles. */
         const std::vector<CTile>& tiles() const { return tiles_; }
 
+        const CTile & operator()(size_t i, size_t j) const;
+
     private:
         size_t width_;              ///< width
         size_t height_;             ///< height

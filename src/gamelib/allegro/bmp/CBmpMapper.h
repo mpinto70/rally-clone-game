@@ -52,6 +52,19 @@ class CBmpMapper {
         CBmpMapper(const CBmpMapper &) = delete;
         CBmpMapper& operator = (const CBmpMapper &) = delete;
 
+        CBmpMapper(CBmpMapper && rhs)
+        :   bmpMap_(std::move(rhs.bmpMap_)),
+            fullBitmap_(std::move(rhs.fullBitmap_)) {
+        }
+
+        CBmpMapper& operator = (CBmpMapper && rhs) {
+            bmpMap_.clear();
+            fullBitmap_.reset();
+            fullBitmap_ = std::move(rhs.fullBitmap_);
+            bmpMap_ = std::move(rhs.bmpMap_);
+            return *this;
+        }
+
         BITMAP * fullBmp() const {
             return fullBitmap_.get();
         }

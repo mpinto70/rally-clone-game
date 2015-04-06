@@ -76,7 +76,6 @@ struct tiles_t {
     std::vector<point_t> xy_pos;
 };
 static tiles_t g_tiles;
-std::unique_ptr<gamelib::allegro::bmp::CTileMapper> g_tileMapper;
 
 struct actions_t {
     std::vector<BITMAP *> tile_img;
@@ -155,10 +154,11 @@ static int create_clean_map(const int max_x,
 }
 
 static void tile_draw(BITMAP * bmp,
+                      const gamelib::allegro::bmp::CTileMapper & mapper,
                       const int tile_number,
                       const int x,
                       const int y) {
-    const auto tile_bmp = g_tileMapper->subBmp(tile_number);
+    const auto tile_bmp = mapper[tile_number];
     draw_sprite(bmp, tile_bmp, x, y);
 }
 
@@ -166,6 +166,7 @@ static void tile_draw(BITMAP * bmp,
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP * bmp,
+                     const gamelib::allegro::bmp::CTileMapper & tileMapper,
                      const int map_drawx,
                      const int map_drawy,
                      const bool draw_actions,
@@ -185,7 +186,7 @@ static void map_draw(BITMAP * bmp,
             unsigned x = j * TILE_SIZE - map_xoff;
             const unsigned y = i * TILE_SIZE - map_yoff;
 
-            tile_draw(bmp, g_map[mapy + i][mapx + j].tile_number, x, y);
+            tile_draw(bmp, tileMapper, g_map[mapy + i][mapx + j].tile_number, x, y);
             if (ignoreVoid == true) {
                 if (g_map[mapy + i][mapx + j].action != 0) {
                     x += g_map[mapy + i][mapx + j].xOffset;
@@ -207,6 +208,7 @@ static void map_draw(BITMAP * bmp,
 }
 
 static void draw_tilesbar(BITMAP * bmp,
+                          const gamelib::allegro::bmp::CTileMapper & tileMapper,
                           const int tiles_num,
                           int y) {
     rectfill(bmp, 0, y, UTIL_W, y + UTIL_H_EX, makecol(30, 40, 100));
@@ -219,7 +221,7 @@ static void draw_tilesbar(BITMAP * bmp,
         }
         g_tiles.xy_pos[i].x = x + TILE_GAP;
         g_tiles.xy_pos[i].y = y + MARGIN;
-        tile_draw(bmp, i, g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
+        tile_draw(bmp, tileMapper, i, g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
         x += TILE_SPACE;
     }
 
@@ -422,17 +424,18 @@ static void load_actions(const std::string & path,
 }
 
 /// loads all tiles from file.
-static void load_tiles(const std::string & dir,
-                       unsigned & tiles_num) {
+static gamelib::allegro::bmp::CTileMapper load_tiles(const std::string & dir,
+                                                     unsigned & tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
-    g_tileMapper.reset(new gamelib::allegro::bmp::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP));
     constexpr point_t xy = {0, 0};
     constexpr size_t qttyTiles = static_cast<map::tile_type_t>(map::ETileType::LAST);
     g_tiles.xy_pos = std::vector<point_t>(qttyTiles, xy);
     tiles_num = qttyTiles;
 
     printf("TILESET loaded!\n");
+
+    return gamelib::allegro::bmp::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP);
 }
 
 static void draw_grid(BITMAP * bmp) {
@@ -485,7 +488,7 @@ int main(int argc, char *argv[]) {
         }
 
         load_actions("./actions", act_num);
-        load_tiles(RALLY_ROOT "/Stuff", tiles_num);
+        const gamelib::allegro::bmp::CTileMapper tileMapper(load_tiles(RALLY_ROOT "/Stuff", tiles_num));
 
         bool draw_actions = false;
         bool ignoreVoid   = false;
@@ -571,13 +574,13 @@ int main(int argc, char *argv[]) {
                 g_draw_selection = false;
             }
 
-            map_draw(buffer, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
+            map_draw(buffer, tileMapper, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
 
             if (!key[KEY_G]) {
                 if (g_take_shot == false)
                     draw_grid(buffer);
             }
-            draw_tilesbar(buffer, tiles_num, UTIL_H);
+            draw_tilesbar(buffer, tileMapper, tiles_num, UTIL_H);
             draw_actionsbar(buffer, act_num, UTIL_W);
 
             if (key[KEY_I]) {
@@ -622,10 +625,8 @@ int main(int argc, char *argv[]) {
             blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
             clear_bitmap(buffer);
         }
-        g_tileMapper.reset();
         return 0;
     } catch (std::exception & e) {
-        g_tileMapper.reset();
         fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;
     }
