@@ -35,6 +35,14 @@ ECarDirection to_ECarDirection(T t) {
     return util::to_Enum<T, ECarDirection>(t);
 }
 
+/** convert a value of type ECarDirection to a value of type \b T.
+ * @param enum_value the value to be converted
+ */
+template <typename T>
+T from_ECarDirection(ECarDirection enum_value) {
+    return util::from_Enum<T, ECarDirection>(enum_value);
+}
+
 /** converts enum value to string
  * @param enum_value the value to be converted
  */
