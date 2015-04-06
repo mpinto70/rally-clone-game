@@ -5,11 +5,11 @@
 #include <cstdint>
 #include <stdexcept>
 
-/** namespaces of elements related to maps. */
 namespace map {
 
+/** the underlying enum type. */
 typedef std::uint8_t car_direction_t;
-/** Directions of cars. */
+/** car directions. */
 enum class ECarDirection : car_direction_t {
     NORTH,
     NORTH_EAST,
@@ -27,13 +27,17 @@ enum class ECarDirection : car_direction_t {
     FIRST = NORTH
 };
 
+/** convert a value of type \b T to a ECarDirection value.
+ * @param t the value to be converted
+ */
 template <typename T>
 ECarDirection to_ECarDirection(T t) {
     return util::to_Enum<T, ECarDirection>(t);
 }
 
-bool operator < (ECarDirection lhs, ECarDirection rhs) {
-    return static_cast<car_direction_t>(lhs) < static_cast<car_direction_t>(rhs);
-}
+/** converts enum value to string
+ * @param enum_value the value to be converted
+ */
+std::string to_string(ECarDirection enum_value);
 
 }

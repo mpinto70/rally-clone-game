@@ -5,9 +5,9 @@
 #include <stdexcept>
 #include <string>
 
-/** namespaces of elements related to maps. */
 namespace map {
 
+/** the underlying enum type. */
 typedef std::uint8_t tile_t;
 /** Types of tiles. */
 enum class ETile : tile_t {
@@ -36,11 +36,18 @@ enum class ETile : tile_t {
     FIRST = TOP_LEFT
 };
 
+/** convert a value of type \b T to a ETile value.
+ * @param t the value to be converted
+ */
 template <typename T>
 ETile to_ETile(T t) {
     return util::to_Enum<ETile, T>(t);
 }
 
-std::string to_string(ETile tile);
+/** converts enum value to string
+ * @param enum_value the value to be converted
+ */
+std::string to_string(ETile enum_value);
+
 }
 

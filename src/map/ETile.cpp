@@ -6,8 +6,8 @@
 
 namespace map {
 
-std::string to_string(ETile tile) {
-    switch (tile) {
+std::string to_string(ETile enum_value) {
+    switch (enum_value) {
             CASE_ENUM_TO_STRING(ETile::TOP_LEFT);
             CASE_ENUM_TO_STRING(ETile::RIGHT_TOP);
             CASE_ENUM_TO_STRING(ETile::LEFT_BOTTOM);
@@ -32,7 +32,7 @@ std::string to_string(ETile tile) {
         case ETile::LAST:
             break;
     }
-    throw util::CException("to_string(ETile) - invalid argument", util::from_Enum<int>(tile));
+    throw util::CException("to_string(ETile) - invalid argument", util::from_Enum<int>(enum_value));
 }
 
 }

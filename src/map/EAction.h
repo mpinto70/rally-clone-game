@@ -6,11 +6,11 @@
 #include <stdexcept>
 #include <string>
 
-/** namespaces of elements related to maps. */
 namespace map {
 
+/** the underlying enum type. */
 typedef std::uint8_t action_t;
-/** Types of tiles. */
+/** Types of actions. */
 enum class EAction : action_t {
     NONE,
     CREATE_ENEMY,
@@ -19,12 +19,18 @@ enum class EAction : action_t {
     FIRST = NONE
 };
 
+/** convert a value of type \b T to a EAction value.
+ * @param t the value to be converted
+ */
 template <typename T>
 EAction to_EAction(T t) {
     return util::to_Enum<EAction, T>(t);
 }
 
-std::string to_string(EAction tile);
+/** converts enum value to string
+ * @param enum_value the value to be converted
+ */
+std::string to_string(EAction enum_value);
 
 }
 
