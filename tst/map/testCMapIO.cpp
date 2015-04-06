@@ -23,13 +23,13 @@ void testCMapIO::testRead() {
     TS_ASSERT_EQUALS(map.width(), 12u);
     TS_ASSERT_EQUALS(map.height(), 10u);
     // the first tiles are in sequence
-    auto max = static_cast<size_t>(ETile::LAST);
+    auto max = static_cast<size_t>(ETileType::LAST);
     const auto & tiles = map.tiles();
     EAction action = EAction::FIRST;
     for (size_t i = 0; i < tiles.size(); ++i) {
-        ETile t = to_ETile(i % max);
+        ETileType t = to_ETile(i % max);
         TSM_ASSERT_EQUALS(i, tiles[i].type(), t);
-        if (tiles[i].type() == ETile::ROAD) {
+        if (tiles[i].type() == ETileType::ROAD) {
             TSM_ASSERT_EQUALS(i, tiles[i].action(), action);
             const int next_act = from_EAction<int>(action) + 1;
             if (next_act == from_EAction<int>(EAction::LAST))
@@ -42,7 +42,7 @@ void testCMapIO::testRead() {
     }
 }
 
-constexpr auto maxType = static_cast<size_t>(ETile::LAST) - 1;
+constexpr auto maxType = static_cast<size_t>(ETileType::LAST) - 1;
 constexpr auto maxAction = static_cast<size_t>(EAction::LAST) - 1;
 static void verifyWrite(const size_t width,
                         const size_t height) {
@@ -55,8 +55,8 @@ static void verifyWrite(const size_t width,
     std::vector<CTile> tiles;
     tiles.reserve(fullsize);
     for (size_t i = 0; i < fullsize; ++i) {
-        const ETile type = to_ETile(diceType());
-        const EAction action = (type == ETile::ROAD) ? to_EAction(diceAction()) : EAction::NONE;
+        const ETileType type = to_ETile(diceType());
+        const EAction action = (type == ETileType::ROAD) ? to_EAction(diceAction()) : EAction::NONE;
         tiles.emplace_back(type, action);
     }
 

@@ -7,7 +7,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-typedef CBmpMapper<map::ETile> CTileMapper;
+typedef CBmpMapper<map::ETileType> CTileMapper;
 
 }
 }

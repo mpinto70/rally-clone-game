@@ -5,12 +5,12 @@
 
 namespace map {
 
-CTile::CTile(ETile type,
+CTile::CTile(ETileType type,
              EAction action)
     : type_(type),
       action_(action) {
     if (action_ != EAction::NONE
-            && type_ != ETile::ROAD) {
+            && type_ != ETileType::ROAD) {
         throw util::CException("CTile - incompatible type "
                                + to_string(type_)
                                + " and action "

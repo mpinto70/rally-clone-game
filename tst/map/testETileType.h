@@ -5,11 +5,11 @@
 
 namespace map {
 
-class testETile: public CxxTest::TestSuite {
+class testETileType: public CxxTest::TestSuite {
     public:
         void testToString();
 };
 
 }
-using map::testETile;
+using map::testETileType;
 

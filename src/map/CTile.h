@@ -12,17 +12,17 @@ class CTile {
          * @param type the type of the tile
          * @param action the action in the tile
          */
-        explicit CTile(ETile type,
+        explicit CTile(ETileType type,
                        EAction action = EAction::NONE);
         /** destroys the object. */
         ~CTile();
 
         /** returns the type of the tile. */
-        ETile type() const { return type_; }
+        ETileType type() const { return type_; }
         /** returns the action in the tile. */
         EAction action() const { return action_; }
     private:
-        ETile type_;        ///< tile type
+        ETileType type_;        ///< tile type
         EAction action_;    ///< tile action
 };
 
