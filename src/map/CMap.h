@@ -1,6 +1,6 @@
 #pragma once
 
-#include "map/ETile.h"
+#include "map/CTile.h"
 #include <cstddef>
 #include <vector>
 
@@ -16,7 +16,7 @@ class CMap {
          */
         CMap(size_t width,
              size_t height,
-             const std::vector<ETile> & tiles);
+             const std::vector<CTile> & tiles);
 
         /** returns the height. */
         size_t height() const { return height_; }
@@ -25,12 +25,12 @@ class CMap {
         size_t width() const { return width_; }
 
         /** returns the tiles. */
-        const std::vector<ETile>& tiles() const { return tiles_; }
+        const std::vector<CTile>& tiles() const { return tiles_; }
 
     private:
         size_t width_;              ///< width
         size_t height_;             ///< height
-        std::vector<ETile> tiles_;  ///< tiles
+        std::vector<CTile> tiles_;  ///< tiles
 };
 
 }

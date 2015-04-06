@@ -26,4 +26,5 @@ class CTile {
         EAction action_;    ///< tile action
 };
 
+bool operator == (const CTile & lhs, const CTile & rhs);
 }

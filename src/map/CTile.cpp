@@ -22,4 +22,9 @@ CTile::CTile(ETile type,
 CTile::~CTile() {
 }
 
+bool operator == (const CTile & lhs, const CTile & rhs) {
+    return lhs.type() == rhs.type()
+           && lhs.action() == rhs.action();
+}
+
 }

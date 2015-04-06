@@ -7,7 +7,7 @@ namespace map {
 
 CMap::CMap(const size_t width,
            const size_t height,
-           const std::vector<ETile>& tiles)
+           const std::vector<CTile>& tiles)
     : width_(width),
       height_(height),
       tiles_(tiles) {
