@@ -34,8 +34,8 @@ void testETileType::testToString() {
                             std::string(e.what()),
                             "to_string(ETileType) - invalid argument");
 
-    for (const auto tile : util::CEnumIterator<ETileType>()) {
-        TS_ASSERT_THROWS_NOTHING(to_string(tile));
+    for (const auto type : util::CEnumIterator<ETileType>()) {
+        TS_ASSERT_THROWS_NOTHING(to_string(type));
     }
 }
 

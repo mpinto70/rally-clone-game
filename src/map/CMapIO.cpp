@@ -45,17 +45,17 @@ CMap CMapIO::read(std::istream & is) {
     const auto qttyTiles = width * height;
     std::vector<CTile> tiles;
     tiles.reserve(qttyTiles);
-    tile_t t;
+    tile_type_t t;
     action_t a;
     char * pt = (char *) &t;
     char * pa = (char *) &a;
     for (size_t i = 0; i < qttyTiles; ++i) {
-        is.read(pt, sizeof(tile_t));
-        if (not is || is.gcount() != sizeof(tile_t)) {
+        is.read(pt, sizeof(tile_type_t));
+        if (not is || is.gcount() != sizeof(tile_type_t)) {
             throw util::CException("CMapReader::read(is) - could not read tile " + std::to_string(i), i);
         }
         is.read(pa, sizeof(action_t));
-        if (not is || is.gcount() != sizeof(tile_t)) {
+        if (not is || is.gcount() != sizeof(tile_type_t)) {
             throw util::CException("CMapReader::read(is) - could not skip action " + std::to_string(i), i);
         }
         tiles.push_back(CTile(to_ETile(t), to_EAction(a)));
@@ -82,13 +82,13 @@ void CMapIO::write(std::ostream & os,
     }
 
     const auto qttyTiles = width * height;
-    tile_t t;
+    tile_type_t t;
     action_t a;
     char * pt = (char *) &t;
     char * pa = (char *) &a;
     for (size_t i = 0; i < qttyTiles; ++i) {
-        t = from_ETile<tile_t>(map.tiles()[i].type());
-        os.write(pt, sizeof(tile_t));
+        t = from_ETile<tile_type_t>(map.tiles()[i].type());
+        os.write(pt, sizeof(tile_type_t));
         if (not os) {
             throw util::CException("CMapReader::write(os) - could not write tile " + std::to_string(i), i);
         }
