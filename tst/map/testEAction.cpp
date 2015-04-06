@@ -8,8 +8,12 @@ namespace map {
 
 void testEAction::testToString() {
     TS_ASSERT_EQUALS(to_string(EAction::NONE),          "EAction::NONE");
-    TS_ASSERT_EQUALS(to_string(EAction::CREATE_ENEMY),  "EAction::CREATE_ENEMY");
-    TS_ASSERT_EQUALS(to_string(EAction::CREATE_STONE),  "EAction::CREATE_STONE");
+    TS_ASSERT_EQUALS(to_string(EAction::FUEL),          "EAction::FUEL");
+    TS_ASSERT_EQUALS(to_string(EAction::ENEMY_UP),      "EAction::ENEMY_UP");
+    TS_ASSERT_EQUALS(to_string(EAction::ENEMY_RIGHT),   "EAction::ENEMY_RIGHT");
+    TS_ASSERT_EQUALS(to_string(EAction::ENEMY_DOWN),    "EAction::ENEMY_DOWN");
+    TS_ASSERT_EQUALS(to_string(EAction::ENEMY_LEFT),    "EAction::ENEMY_LEFT");
+    TS_ASSERT_EQUALS(to_string(EAction::STONE),         "EAction::STONE");
 
     TS_ASSERT_THROWS_EQUALS(to_string(EAction::LAST),
                             util::CException & e,

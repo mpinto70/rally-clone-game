@@ -15,13 +15,13 @@ void testCTile::testCreation() {
     TS_ASSERT_EQUALS(tile2.type(), ETileType::BOTTOM);
     TS_ASSERT_EQUALS(tile2.action(), EAction::NONE);
 
-    const CTile tile3(ETileType::ROAD, EAction::CREATE_ENEMY);
+    const CTile tile3(ETileType::ROAD, EAction::ENEMY_UP);
     TS_ASSERT_EQUALS(tile3.type(), ETileType::ROAD);
-    TS_ASSERT_EQUALS(tile3.action(), EAction::CREATE_ENEMY);
+    TS_ASSERT_EQUALS(tile3.action(), EAction::ENEMY_UP);
 
-    const CTile tile4(ETileType::ROAD, EAction::CREATE_STONE);
+    const CTile tile4(ETileType::ROAD, EAction::STONE);
     TS_ASSERT_EQUALS(tile4.type(), ETileType::ROAD);
-    TS_ASSERT_EQUALS(tile4.action(), EAction::CREATE_STONE);
+    TS_ASSERT_EQUALS(tile4.action(), EAction::STONE);
 
     for (const auto type : util::CEnumIterator<ETileType>()) {
         CTile tileA(type);

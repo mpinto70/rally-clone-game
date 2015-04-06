@@ -9,8 +9,12 @@ namespace map {
 std::string to_string(EAction enum_value) {
     switch (enum_value) {
             CASE_ENUM_TO_STRING(EAction::NONE);
-            CASE_ENUM_TO_STRING(EAction::CREATE_ENEMY);
-            CASE_ENUM_TO_STRING(EAction::CREATE_STONE);
+            CASE_ENUM_TO_STRING(EAction::FUEL);
+            CASE_ENUM_TO_STRING(EAction::ENEMY_UP);
+            CASE_ENUM_TO_STRING(EAction::ENEMY_LEFT);
+            CASE_ENUM_TO_STRING(EAction::ENEMY_DOWN);
+            CASE_ENUM_TO_STRING(EAction::ENEMY_RIGHT);
+            CASE_ENUM_TO_STRING(EAction::STONE);
         case EAction::LAST:
             break;
     }
