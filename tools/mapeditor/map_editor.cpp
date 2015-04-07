@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -52,16 +53,8 @@ static constexpr unsigned TILES_Y       = UTIL_H / TILE_SIZE;               ///<
 static constexpr unsigned STEP_X        = TILE_SIZE * TILES_X;              ///< ?
 static constexpr unsigned STEP_Y        = TILE_SIZE * TILES_Y;              ///< ?
 
-struct TILE_INFO {
-    unsigned char tile_number; // index to the drawing table
-    unsigned char is_solid_;    // is it solid?
-    unsigned char action;      // is there an associated action? Create enemy, create rock?
-    int xOffset_;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
-};
-
-typedef std::vector<std::vector<TILE_INFO>> MAP_INFO;
-static unsigned g_cur_tile = 0;
-static unsigned g_cur_act  = 0;
+static map::ETileType g_cur_tile_type = map::ETileType::GRASS;
+static map::EAction g_cur_act = map::EAction::NONE;
 static unsigned g_map_drawx, g_map_drawy;
 static unsigned g_max_x, g_max_y;
 static unsigned char g_default_tile;
@@ -92,64 +85,40 @@ static bool g_take_shot = false;
 static BITMAP * g_selection_preview;
 
 static void map_save(const std::string & filename,
-                     const MAP_INFO & stageMap) {
-    FILE * fp = fopen(filename.c_str(), "wb");
-    if (fp == nullptr) {
-        tools::throw_file_error(filename);
-    }
-    // Tamanho em x e y
-    fwrite(&g_max_x, sizeof(g_max_x), 1, fp);
-    fwrite(&g_max_y, sizeof(g_max_y), 1, fp);
-
-    // Qual o tile default (valor usado para inicializar o mapa)
-    fwrite(&g_default_tile, sizeof(g_default_tile), 1, fp);
-
-    for (unsigned i = 0; i < g_max_y; ++i) {
-        fwrite(&stageMap[i][0], sizeof(TILE_INFO), g_max_x, fp);
-    }
-
-    fclose(fp);
+                     const map::CMap & stageMap) {
+    map::CMapIO::write(filename, stageMap);
 }
 
-static MAP_INFO map_load(const std::string & filename) {
-    FILE * fp = fopen(filename.c_str(), "rb");
-    if (fp == nullptr)
-        tools::throw_allegro_error("opening " + filename);
+static map::CMap map_load(const std::string & filename) {
+    const map::CMap stageMap = map::CMapIO::read(filename);
 
-    if (fread(&g_max_x, sizeof(int), 1, fp) != 1)
-        tools::throw_allegro_error("reading width " + filename);
-    if (fread(&g_max_y, sizeof(int), 1, fp) != 1)
-        tools::throw_allegro_error("reading height " + filename);
-    if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1)
-        tools::throw_allegro_error("reading default tile " + filename);
+    g_max_x = stageMap.width();
+    g_max_y = stageMap.height();
+    g_default_tile = 6;
 
-    auto stageMap = MAP_INFO(g_max_y, std::vector<TILE_INFO>(g_max_x, {0, 0, 0, 0}));
-    for (unsigned i = 0; i < g_max_y; ++i) {
-        if (fread(&stageMap[i][0], sizeof(TILE_INFO), g_max_x, fp) != g_max_x)
-            tools::throw_allegro_error("reading line " + std::to_string(i) + " from " + filename);
-    }
     return stageMap;
 }
 
-static MAP_INFO create_clean_map(const int max_x,
-                                 const int max_y,
-                                 const int default_tile) {
+static map::CMap create_clean_map(const int max_x,
+                                  const int max_y,
+                                  const int default_tile) {
     g_max_x = max_x * TILES_X;
     g_max_y = max_y * TILES_Y;
     if (g_max_x == 0 || g_max_y == 0) {
         exit(-1);
     }
     g_default_tile = default_tile;
+    const std::vector<map::CTile> tiles(g_max_x * g_max_y, map::CTile(map::ETileType::GRASS, map::EAction::NONE));
 
-    return MAP_INFO(g_max_y, std::vector<TILE_INFO>(g_max_x, {g_default_tile, 0, 0, 0}));
+    return map::CMap(g_max_x, g_max_y, tiles);
 }
 
 static void tile_draw(BITMAP * bmp,
                       const gamelib::allegro::bmp::CTileMapper & mapper,
-                      const int tile_number,
+                      const map::ETileType type,
                       const int x,
                       const int y) {
-    const auto tile_bmp = mapper[tile_number];
+    const auto tile_bmp = mapper[type];
     draw_sprite(bmp, tile_bmp, x, y);
 }
 
@@ -157,7 +126,7 @@ static void tile_draw(BITMAP * bmp,
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP * bmp,
-                     const MAP_INFO & stageMap,
+                     const map::CMap & stageMap,
                      const gamelib::allegro::bmp::CTileMapper & tileMapper,
                      const int map_drawx,
                      const int map_drawy,
@@ -173,22 +142,26 @@ static void map_draw(BITMAP * bmp,
 
     const unsigned xdisp = mapx + TILES_X == g_max_x ? 0 : 1;
     const unsigned ydisp = mapy + TILES_Y == g_max_y ? 0 : 1;
-    for (unsigned i = 0; i < TILES_Y + ydisp; ++i) {
-        for (unsigned j = 0; j < TILES_X + xdisp; ++j) {
-            unsigned x = j * TILE_SIZE - map_xoff;
-            const unsigned y = i * TILE_SIZE - map_yoff;
+    for (unsigned v = 0; v < TILES_Y + ydisp; ++v) {
+        for (unsigned h = 0; h < TILES_X + xdisp; ++h) {
+            const unsigned x = h * TILE_SIZE - map_xoff;
+            const unsigned y = v * TILE_SIZE - map_yoff;
 
-            tile_draw(bmp, tileMapper, stageMap[mapy + i][mapx + j].tile_number, x, y);
+            const auto X = mapx + h;
+            const auto Y = mapy + v;
+
+            const auto & tile = stageMap(X, Y);
+            tile_draw(bmp, tileMapper, tile.type(), x, y);
             if (ignoreVoid == true) {
-                if (stageMap[mapy + i][mapx + j].action != 0) {
-                    draw_sprite(bmp, g_actions.tile_img[stageMap[mapy + i][mapx + j].action], x, y);
+                if (tile.action() != map::EAction::NONE) {
+                    draw_sprite(bmp, g_actions.tile_img[map::from_EAction<size_t>(tile.action())], x, y);
                 }
             } else if (draw_actions == true) {
-                draw_sprite(bmp, g_actions.tile_img[stageMap[mapy + i][mapx + j].action], x, y);
+                draw_sprite(bmp, g_actions.tile_img[map::from_EAction<size_t>(tile.action())], x, y);
             }
 
             if (key[KEY_F] == 0 && g_take_shot == false) {
-                textprintf_ex(bmp, font, x, y, 0, color[2], "%02d", stageMap[mapy + i][mapx + j].action);
+                textprintf_ex(bmp, font, x, y, 0, color[2], "%02d", map::from_EAction<int>(stageMap(X, Y).action()));
             }
         }
     }
@@ -208,12 +181,12 @@ static void draw_tilesbar(BITMAP * bmp,
         }
         g_tiles.xy_pos[i].x = x + TILE_GAP;
         g_tiles.xy_pos[i].y = y + MARGIN;
-        tile_draw(bmp, tileMapper, i, g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
+        tile_draw(bmp, tileMapper, map::to_ETile(i), g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
         x += TILE_SPACE;
     }
 
-    x = g_tiles.xy_pos[g_cur_tile].x;
-    y = g_tiles.xy_pos[g_cur_tile].y;
+    x = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].x;
+    y = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].y;
 
     rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SPACE - TILE_GAP, y + TILE_SPACE - TILE_GAP, makecol(255, 255, 255));
 }
@@ -227,7 +200,7 @@ static void draw_actionsbar(BITMAP *bmp,
 
     for (unsigned i = 0; i < act_num; ++i) {
         draw_sprite(bmp, g_actions.tile_img[i], x + g_actions.coords[i].x, g_actions.coords[i].y);
-        if (g_cur_act == i) {
+        if (g_cur_act == map::to_EAction(i)) {
             rect(bmp, (x + g_actions.coords[i].x) - 2,
                  g_actions.coords[i].y - 2,
                  (x + g_actions.coords[i].x) + 33,
@@ -270,8 +243,10 @@ static void handle_tilebar(int tiles_num) {
                 if ((x >= g_tiles.xy_pos[i].x)    &&
                         (x <= g_tiles.xy_pos[i].x + TILE_SIZE) &&
                         (y >= g_tiles.xy_pos[i].y)    &&
-                        (y <= g_tiles.xy_pos[i].y + TILE_SIZE))
-                { g_cur_tile = i; break; }
+                        (y <= g_tiles.xy_pos[i].y + TILE_SIZE)) {
+                    g_cur_tile_type = map::to_ETile(i);
+                    break;
+                }
             }
         }
     }
@@ -289,7 +264,7 @@ static void handle_actbar(int act_num) {
                         x <= g_actions.coords[i].x + 512 + 40 &&
                         y >= g_actions.coords[i].y &&
                         y <= g_actions.coords[i].y + 40) {
-                    g_cur_act = i;
+                    g_cur_act = map::to_EAction(i);
                     break;
                 }
             }
@@ -298,7 +273,7 @@ static void handle_actbar(int act_num) {
 }
 
 /// treats clicks inside map area
-static void handle_click(MAP_INFO & stageMap,
+static void handle_click(map::CMap & stageMap,
                          int x,
                          int y,
                          const int button) {
@@ -313,10 +288,10 @@ static void handle_click(MAP_INFO & stageMap,
 
     switch (button) {
         case 1: {
-            static std::vector<TILE_INFO> g_selection_data;
+            static std::vector<map::CTile> g_selection_data;
             // CTRL não está pressionado.
             if (!key[KEY_LCONTROL]) {
-                stageMap[y][x].tile_number = g_cur_tile;
+                stageMap(x, y).type(g_cur_tile_type);
             } else {
                 if (key[KEY_C]) {
                     if (g_cur_copy_point == 0) {
@@ -344,18 +319,18 @@ static void handle_click(MAP_INFO & stageMap,
                     pt_data_len.y = (g_pt_end_point.y - g_pt_ini_point.y) + 1;
 
                     if (g_selection_data.empty()) {
-                        g_selection_data.resize(pt_data_len.x * pt_data_len.y, {0, 0, 0, 0});
+                        g_selection_data.resize(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
 
                         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                                g_selection_data.at(ys * (pt_data_len.x) + xs) = stageMap[g_pt_ini_point.y + ys][g_pt_ini_point.x + xs];
+                                g_selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(g_pt_ini_point.x + xs, g_pt_ini_point.y + ys);
                             }
                         }
                     }
 
                     for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                         for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                            stageMap[y + ys][x + xs] = g_selection_data.at(ys * (pt_data_len.x) + xs);
+                            stageMap(x + xs, y + ys) = g_selection_data.at(ys * (pt_data_len.x) + xs);
                         }
                     }
 
@@ -367,8 +342,8 @@ static void handle_click(MAP_INFO & stageMap,
         break;
         case 2: {
             // only ROADS may receive actions
-            if (stageMap[y][x].tile_number == ROAD_CONSTANT)
-                stageMap[y][x].action = g_cur_act;
+            if (stageMap(x, y).type() == map::ETileType::ROAD)
+                stageMap(x, y).action(g_cur_act);
         }
         break;
     }
@@ -423,6 +398,22 @@ static void draw_grid(BITMAP * bmp) {
         hline(bmp, 0, i, SCREEN_W, color);
 }
 
+map::CMap createOrLoadMap(int argc, char *argv[]) {
+    const std::string tmp = std::string(argv[1] + std::string("/stage.dat"));
+    boost::filesystem::path pathToFile(tmp);
+    if (boost::filesystem::exists(pathToFile)) {
+        return map_load(tmp);
+    } else {
+        if (argc < 5) {
+            exit(-1);
+        }
+        const auto max_x = std::stoi(argv[2]);
+        const auto max_y = std::stoi(argv[3]);
+        const auto default_tile = std::stoi(argv[4]);
+        return create_clean_map(max_x, max_y, default_tile);
+    }
+}
+
 int main(int argc, char *argv[]) {
     try {
         unsigned tiles_num = 0;
@@ -443,26 +434,12 @@ int main(int argc, char *argv[]) {
 
         clear_bitmap(g_selection_preview);
 
-        char tmp[80] = {};
-        if (argc > 1) {
-            sprintf(tmp, "%s/stage.dat", argv[1]);
-        } else {
+        if (argc <= 1) {
             exit(-1);
         }
+        const std::string tmp = argv[1] + std::string("/stage.dat");
 
-        boost::filesystem::path pathToFile(tmp);
-        MAP_INFO stageMap;
-        if (boost::filesystem::exists(pathToFile)) {
-            stageMap = map_load(tmp);
-        } else {
-            if (argc < 5) {
-                exit(-1);
-            }
-            const auto max_x = std::stoi(argv[2]);
-            const auto max_y = std::stoi(argv[3]);
-            const auto default_tile = std::stoi(argv[4]);
-            stageMap = create_clean_map(max_x, max_y, default_tile);
-        }
+        map::CMap stageMap = createOrLoadMap(argc, argv);
 
         load_actions("./actions", act_num);
         const gamelib::allegro::bmp::CTileMapper tileMapper(load_tiles(RALLY_ROOT "/Stuff", tiles_num));
@@ -565,7 +542,7 @@ int main(int argc, char *argv[]) {
                 xpos = mouse_x / TILE_SIZE * TILE_SIZE;
                 if (key[KEY_O]) xpos += mouse_x % TILE_SIZE;
                 ypos = mouse_y / TILE_SIZE * TILE_SIZE;
-                draw_sprite(buffer, g_actions.tile_img[g_cur_act], xpos, ypos);
+                draw_sprite(buffer, g_actions.tile_img[map::from_EAction<int>(g_cur_act)], xpos, ypos);
             } else if (g_take_shot == false) {
                 circlefill(buffer, mouse_x, mouse_y, 5, 0);
                 circlefill(buffer, mouse_x, mouse_y, 3,  makecol(255, 255, 255));

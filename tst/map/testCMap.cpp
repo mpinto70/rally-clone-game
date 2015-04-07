@@ -61,11 +61,11 @@ void testCMap::testIndexing() {
     TS_ASSERT_THROWS_EQUALS(m1(1, 0),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - horizontal coordinate out of range");
+                            "CMap() - horizontal coordinate out of range (1/1)");
     TS_ASSERT_THROWS_EQUALS(m1(0, 2),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - vertical coordinate out of range");
+                            "CMap() - vertical coordinate out of range (2/2)");
 
     const CMap m2(2, 1, tiles);
     TS_ASSERT_EQUALS(m2(0, 0), CTile(ETileType::ROAD, EAction::STONE));
@@ -73,11 +73,11 @@ void testCMap::testIndexing() {
     TS_ASSERT_THROWS_EQUALS(m2(2, 0),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - horizontal coordinate out of range");
+                            "CMap() - horizontal coordinate out of range (2/2)");
     TS_ASSERT_THROWS_EQUALS(m2(0, 1),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - vertical coordinate out of range");
+                            "CMap() - vertical coordinate out of range (1/1)");
 
 
     tiles = {
@@ -100,11 +100,11 @@ void testCMap::testIndexing() {
     TS_ASSERT_THROWS_EQUALS(m3(2, 0),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - horizontal coordinate out of range");
+                            "CMap() - horizontal coordinate out of range (2/2)");
     TS_ASSERT_THROWS_EQUALS(m3(0, 3),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - vertical coordinate out of range");
+                            "CMap() - vertical coordinate out of range (3/3)");
 
     const CMap m4(3, 2, tiles);
     TS_ASSERT_EQUALS(m4(0, 0), CTile(ETileType::ROAD,      EAction::ENEMY_UP));
@@ -117,11 +117,11 @@ void testCMap::testIndexing() {
     TS_ASSERT_THROWS_EQUALS(m4(3, 0),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - horizontal coordinate out of range");
+                            "CMap() - horizontal coordinate out of range (3/3)");
     TS_ASSERT_THROWS_EQUALS(m4(0, 2),
                             util::CException & e,
                             std::string(e.what()),
-                            "CMap() - vertical coordinate out of range");
+                            "CMap() - vertical coordinate out of range (2/2)");
 }
 
 }
