@@ -8,6 +8,7 @@ namespace map {
 class testCTile: public CxxTest::TestSuite {
     public:
         void testCreation();
+        void testModification();
 };
 
 }

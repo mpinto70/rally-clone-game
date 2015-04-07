@@ -21,7 +21,11 @@ class CTile {
         ETileType type() const { return type_; }
         /** returns the action in the tile. */
         EAction action() const { return action_; }
-    private:
+        /** set the type and adjust action if necessary. */
+        void type(ETileType type);
+        /** returns the action in the tile. */
+        void action(EAction action);
+private:
         ETileType type_;        ///< tile type
         EAction action_;    ///< tile action
 };

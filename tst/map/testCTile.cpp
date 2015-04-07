@@ -40,5 +40,63 @@ void testCTile::testCreation() {
     }
 }
 
+void testCTile::testModification() {
+    CTile tile(ETileType::RIGHT);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::RIGHT);
+    TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+
+    tile.type(ETileType::GRASS);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::GRASS);
+    TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+
+    tile.type(ETileType::ROAD);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
+    TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+
+    tile.action(EAction::ENEMY_DOWN);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
+    TS_ASSERT_EQUALS(tile.action(), EAction::ENEMY_DOWN);
+
+    tile.type(ETileType::BUSH);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::BUSH);
+    TS_ASSERT_EQUALS(tile.action(), EAction::NONE); // changed this also
+
+    TS_ASSERT_THROWS(tile.action(EAction::FUEL), util::CException);
+    TS_ASSERT_EQUALS(tile.type(), ETileType::BUSH);
+    TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+
+    tile.action(EAction::NONE);
+    for (const auto type : util::CEnumIterator<ETileType>()) {
+        tile.type(type);
+        TS_ASSERT_EQUALS(tile.type(), type);
+    }
+    tile.type(ETileType::ROAD);
+    for (const auto action : util::CEnumIterator<EAction>()) {
+        tile.action(action);
+        TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
+        TS_ASSERT_EQUALS(tile.action(), action);
+    }
+
+    tile.action(EAction::FUEL);
+    tile.type(ETileType::ROAD);
+
+    TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
+    TS_ASSERT_EQUALS(tile.action(), EAction::FUEL);
+
+    tile.type(ETileType::GRASS);
+
+    for (const auto action : util::CEnumIterator<EAction>()) {
+        if (action == EAction::NONE) {
+            tile.action(action);
+            TS_ASSERT_EQUALS(tile.type(), ETileType::GRASS);
+            TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+        } else {
+            TS_ASSERT_THROWS(tile.action(action), util::CException);
+            TS_ASSERT_EQUALS(tile.type(), ETileType::GRASS);
+            TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
+        }
+    }
+}
+
 }
 

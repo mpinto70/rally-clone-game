@@ -27,4 +27,21 @@ bool operator == (const CTile & lhs, const CTile & rhs) {
            && lhs.action() == rhs.action();
 }
 
+void CTile::type(ETileType type) {
+    type_ = type;
+    if (type_ != ETileType::ROAD)
+        action_ = EAction::NONE;
+}
+
+void CTile::action(EAction action) {
+    if (action != EAction::NONE
+            && type_ != ETileType::ROAD)
+        throw util::CException("CTile::action(action) - incompatible type "
+                               + to_string(type_)
+                               + " and new action "
+                               + to_string(action)
+                               , 1);
+    action_ = action;
+}
+
 }

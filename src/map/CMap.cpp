@@ -29,13 +29,24 @@ CMap::CMap(const size_t width,
     }
 }
 
-const CTile & CMap::operator()(size_t i, size_t j) const {
+CTile& CMap::operator()(size_t i,
+                        size_t j) {
+    verifyRange(i, j);
+    return tiles_.at(j * width_ + i);
+}
+
+const CTile & CMap::operator()(size_t i,
+                               size_t j) const {
+    verifyRange(i, j);
+    return tiles_.at(j * width_ + i);
+}
+
+void CMap::verifyRange(size_t i,
+                       size_t j) const {
     if (i >= width_)
         throw util::CException("CMap() - horizontal coordinate out of range", i);
     if (j >= height_)
         throw util::CException("CMap() - vertical coordinate out of range", j);
-
-    return tiles_.at(j * width_ + i);
 }
 
 }

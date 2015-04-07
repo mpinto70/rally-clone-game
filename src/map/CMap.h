@@ -27,12 +27,18 @@ class CMap {
         /** returns the tiles. */
         const std::vector<CTile>& tiles() const { return tiles_; }
 
-        const CTile & operator()(size_t i, size_t j) const;
+        CTile & operator()(size_t i,
+                           size_t j);
+        const CTile & operator()(size_t i,
+                                 size_t j) const;
 
     private:
         size_t width_;              ///< width
         size_t height_;             ///< height
         std::vector<CTile> tiles_;  ///< tiles
+
+        void verifyRange(size_t i,
+                         size_t j) const;
 };
 
 }
