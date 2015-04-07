@@ -54,9 +54,9 @@ static constexpr unsigned STEP_Y        = TILE_SIZE * TILES_Y;              ///<
 
 struct TILE_INFO {
     unsigned char tile_number; // index to the drawing table
-    unsigned char is_solid;    // is it solid?
+    unsigned char is_solid_;    // is it solid?
     unsigned char action;      // is there an associated action? Create enemy, create rock?
-    int xOffset;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
+    int xOffset_;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
 };
 
 typedef std::vector<std::vector<TILE_INFO>> MAP_INFO;
@@ -65,6 +65,8 @@ static unsigned g_cur_act  = 0;
 static unsigned g_map_drawx, g_map_drawy;
 static unsigned g_max_x, g_max_y;
 static unsigned char g_default_tile;
+
+constexpr unsigned char ROAD_CONSTANT = 6;
 
 struct point_t {
     unsigned x, y;
@@ -179,7 +181,6 @@ static void map_draw(BITMAP * bmp,
             tile_draw(bmp, tileMapper, stageMap[mapy + i][mapx + j].tile_number, x, y);
             if (ignoreVoid == true) {
                 if (stageMap[mapy + i][mapx + j].action != 0) {
-                    x += stageMap[mapy + i][mapx + j].xOffset;
                     draw_sprite(bmp, g_actions.tile_img[stageMap[mapy + i][mapx + j].action], x, y);
                 }
             } else if (draw_actions == true) {
@@ -187,11 +188,7 @@ static void map_draw(BITMAP * bmp,
             }
 
             if (key[KEY_F] == 0 && g_take_shot == false) {
-                if (stageMap[mapy + i][mapx + j].is_solid == 0) {
-                    textprintf_ex(bmp, font, x, y, 0, color[2], "%02d", stageMap[mapy + i][mapx + j].action);
-                } else {
-                    textprintf_ex(bmp, font, x, y, color[2], color[1], "%02d", stageMap[mapy + i][mapx + j].action);
-                }
+                textprintf_ex(bmp, font, x, y, 0, color[2], "%02d", stageMap[mapy + i][mapx + j].action);
             }
         }
     }
@@ -369,21 +366,9 @@ static void handle_click(MAP_INFO & stageMap,
         }
         break;
         case 2: {
-            stageMap[y][x].action = g_cur_act;
-            // Se tecla O precionada durante esse evento, seta o deslocamento da action em relacao ao tile.
-            if (key[KEY_O]) {
-                int offset = mouse_x % TILE_SIZE;
-                stageMap[y][x].xOffset = offset;
-            } else {
-                stageMap[y][x].xOffset = 0;
-            }
-
-            // Se T precionado seta tile como sólido.
-            if (key[KEY_T]) {
-                stageMap[y][x].is_solid = 1;
-            } else {
-                stageMap[y][x].is_solid = 0;
-            }
+            // only ROADS may receive actions
+            if (stageMap[y][x].tile_number == ROAD_CONSTANT)
+                stageMap[y][x].action = g_cur_act;
         }
         break;
     }
