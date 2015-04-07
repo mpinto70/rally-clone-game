@@ -274,18 +274,15 @@ static void handle_actbar(int act_num) {
 
 /// treats clicks inside map area
 static void handle_click(map::CMap & stageMap,
-                         int x,
-                         int y,
+                         const int X,
+                         const int Y,
                          const int button) {
-    // normaliza o x,y do mouse para unidades de TILE_SIZE
-    x /= TILE_SIZE;
-    y /= TILE_SIZE;
+    // aplica o deslocamento da tela e normaliza o x,y do mouse para unidades de TILE_SIZE
+    const size_t x = (X + g_map_drawx) / TILE_SIZE;
+    const size_t y = (Y + g_map_drawy) / TILE_SIZE;
 
-    // Adiciona o deslocamento (scroll) do mapa.
-    // De forma que os indices corretos do mapa sejam acessados.
-    x += (g_map_drawx / TILE_SIZE);
-    y += (g_map_drawy / TILE_SIZE);
-
+    if (x >= stageMap.width() || y >= stageMap.height())
+        return; // out of map
     switch (button) {
         case 1: {
             static std::vector<map::CTile> g_selection_data;
