@@ -25,7 +25,7 @@ class CTile {
         void type(ETileType type);
         /** returns the action in the tile. */
         void action(EAction action);
-private:
+    private:
         ETileType type_;        ///< tile type
         EAction action_;    ///< tile action
 };

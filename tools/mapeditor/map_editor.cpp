@@ -52,13 +52,14 @@ static constexpr unsigned TILES_Y       = UTIL_H / TILE_SIZE;               ///<
 static constexpr unsigned STEP_X        = TILE_SIZE * TILES_X;              ///< ?
 static constexpr unsigned STEP_Y        = TILE_SIZE * TILES_Y;              ///< ?
 
-struct MAP_INFO {
+struct TILE_INFO {
     unsigned char tile_number; // index to the drawing table
     unsigned char is_solid;    // is it solid?
     unsigned char action;      // is there an associated action? Create enemy, create rock?
     int xOffset;               // Deslocamento dentro do tile da posicao x,y real do action (evitar restringir ao tilesize os alinhamentos)
 };
 
+typedef std::vector<std::vector<TILE_INFO>> MAP_INFO;
 static unsigned g_cur_tile = 0;
 static unsigned g_cur_act  = 0;
 static unsigned g_map_drawx, g_map_drawy;
@@ -89,7 +90,7 @@ static bool g_take_shot = false;
 static BITMAP * g_selection_preview;
 
 static void map_save(const std::string & filename,
-                     const std::vector<std::vector<MAP_INFO>> & stageMap) {
+                     const MAP_INFO & stageMap) {
     FILE * fp = fopen(filename.c_str(), "wb");
     if (fp == nullptr) {
         tools::throw_file_error(filename);
@@ -102,13 +103,13 @@ static void map_save(const std::string & filename,
     fwrite(&g_default_tile, sizeof(g_default_tile), 1, fp);
 
     for (unsigned i = 0; i < g_max_y; ++i) {
-        fwrite(&stageMap[i][0], sizeof(MAP_INFO), g_max_x, fp);
+        fwrite(&stageMap[i][0], sizeof(TILE_INFO), g_max_x, fp);
     }
 
     fclose(fp);
 }
 
-static std::vector<std::vector<MAP_INFO>> map_load(const std::string & filename) {
+static MAP_INFO map_load(const std::string & filename) {
     FILE * fp = fopen(filename.c_str(), "rb");
     if (fp == nullptr)
         tools::throw_allegro_error("opening " + filename);
@@ -120,17 +121,17 @@ static std::vector<std::vector<MAP_INFO>> map_load(const std::string & filename)
     if (fread(&g_default_tile, sizeof(unsigned char), 1, fp) != 1)
         tools::throw_allegro_error("reading default tile " + filename);
 
-    auto stageMap = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
+    auto stageMap = MAP_INFO(g_max_y, std::vector<TILE_INFO>(g_max_x, {0, 0, 0, 0}));
     for (unsigned i = 0; i < g_max_y; ++i) {
-        if (fread(&stageMap[i][0], sizeof(MAP_INFO), g_max_x, fp) != g_max_x)
+        if (fread(&stageMap[i][0], sizeof(TILE_INFO), g_max_x, fp) != g_max_x)
             tools::throw_allegro_error("reading line " + std::to_string(i) + " from " + filename);
     }
     return stageMap;
 }
 
-static std::vector<std::vector<MAP_INFO>> create_clean_map(const int max_x,
-                                                           const int max_y,
-const int default_tile) {
+static MAP_INFO create_clean_map(const int max_x,
+                                 const int max_y,
+                                 const int default_tile) {
     g_max_x = max_x * TILES_X;
     g_max_y = max_y * TILES_Y;
     if (g_max_x == 0 || g_max_y == 0) {
@@ -138,17 +139,7 @@ const int default_tile) {
     }
     g_default_tile = default_tile;
 
-    auto stageMap = std::vector<std::vector<MAP_INFO>>(g_max_y, std::vector<MAP_INFO>(g_max_x, {0, 0, 0, 0}));
-
-    for (unsigned i = 0; i < g_max_y; ++i) {
-        for (unsigned j = 0; j < g_max_x; ++j) {
-            stageMap[i][j].tile_number = g_default_tile;
-            stageMap[i][j].action = 0;
-            stageMap[i][j].xOffset = 0;
-            stageMap[i][j].is_solid = 0;
-        }
-    }
-    return stageMap;
+    return MAP_INFO(g_max_y, std::vector<TILE_INFO>(g_max_x, {g_default_tile, 0, 0, 0}));
 }
 
 static void tile_draw(BITMAP * bmp,
@@ -164,7 +155,7 @@ static void tile_draw(BITMAP * bmp,
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP * bmp,
-                     const std::vector<std::vector<MAP_INFO>> & stageMap,
+                     const MAP_INFO & stageMap,
                      const gamelib::allegro::bmp::CTileMapper & tileMapper,
                      const int map_drawx,
                      const int map_drawy,
@@ -310,7 +301,7 @@ static void handle_actbar(int act_num) {
 }
 
 /// treats clicks inside map area
-static void handle_click(std::vector<std::vector<MAP_INFO>> & stageMap,
+static void handle_click(MAP_INFO & stageMap,
                          int x,
                          int y,
                          const int button) {
@@ -325,7 +316,7 @@ static void handle_click(std::vector<std::vector<MAP_INFO>> & stageMap,
 
     switch (button) {
         case 1: {
-            static std::vector<MAP_INFO> g_selection_data;
+            static std::vector<TILE_INFO> g_selection_data;
             // CTRL não está pressionado.
             if (!key[KEY_LCONTROL]) {
                 stageMap[y][x].tile_number = g_cur_tile;
@@ -475,7 +466,7 @@ int main(int argc, char *argv[]) {
         }
 
         boost::filesystem::path pathToFile(tmp);
-        std::vector<std::vector<MAP_INFO>> stageMap;
+        MAP_INFO stageMap;
         if (boost::filesystem::exists(pathToFile)) {
             stageMap = map_load(tmp);
         } else {
