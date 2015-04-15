@@ -20,6 +20,7 @@
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/bmp/CTileMapper.h"
+#include "gamelib/allegro/bmp/CActionMapper.h"
 #include "map/CMap.h"
 #include "map/CMapIO.h"
 #include "util/EUtil.h"
@@ -347,8 +348,8 @@ static void handle_click(map::CMap & stageMap,
 }
 
 /// loads actions
-static void load_actions(const std::string & path,
-                         const int num_actions) {
+static void load_actions(const int num_actions,
+                         const std::string & path) {
     g_actions.tile_img = std::vector<BITMAP *>(num_actions, nullptr);
     g_actions.coords = new point_t[num_actions];
     int x = 20, y = 10;
@@ -372,14 +373,23 @@ static void load_actions(const std::string & path,
 }
 
 /// loads all tiles from file.
+static gamelib::allegro::bmp::CActionMapper load_actions(const std::string & dir,
+                                                         const unsigned actions_num) {
+    const std::string actionst_name = dir + "/actions.bmp";
+    constexpr unsigned GAP = 1;
+
+    printf("ACTIONS loaded!\n");
+
+    return gamelib::allegro::bmp::CActionMapper(actionst_name, TILE_SIZE, TILE_SIZE, GAP);
+}
+
+/// loads all tiles from file.
 static gamelib::allegro::bmp::CTileMapper load_tiles(const std::string & dir,
-                                                     unsigned & tiles_num) {
+                                                     const unsigned tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
     constexpr point_t xy = {0, 0};
-    constexpr size_t qttyTiles = static_cast<map::tile_type_t>(map::ETileType::LAST);
-    g_tiles.xy_pos = std::vector<point_t>(qttyTiles, xy);
-    tiles_num = qttyTiles;
+    g_tiles.xy_pos = std::vector<point_t>(tiles_num, xy);
 
     printf("TILESET loaded!\n");
 
@@ -413,8 +423,8 @@ map::CMap createOrLoadMap(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     try {
-        unsigned tiles_num = 0;
-        unsigned act_num = 7;
+        const auto tiles_num = map::from_ETile<unsigned int>(map::ETileType::LAST);
+        const auto act_num = map::from_EAction<unsigned int>(map::EAction::LAST);
 
         g_map_drawx = g_map_drawy = 0;
 
@@ -438,8 +448,9 @@ int main(int argc, char *argv[]) {
 
         map::CMap stageMap = createOrLoadMap(argc, argv);
 
-        load_actions("./actions", act_num);
+        load_actions(act_num, "./actions");
         const gamelib::allegro::bmp::CTileMapper tileMapper(load_tiles(RALLY_ROOT "/Stuff", tiles_num));
+        const gamelib::allegro::bmp::CActionMapper actionMapper(load_actions(RALLY_ROOT "/Stuff", act_num));
 
         bool draw_actions = false;
         bool ignoreVoid   = false;
