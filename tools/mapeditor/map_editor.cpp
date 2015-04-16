@@ -74,11 +74,7 @@ struct point_t {
 };
 
 static std::vector<point_t> g_tiles_pos;
-
-struct actions_t {
-    std::vector<point_t> coords;
-};
-static actions_t g_actions;
+static std::vector<point_t> g_actions_pos;
 
 // Variaveis usadas pelo CTRL+C CTRL+V
 static int g_cur_copy_point = 0;
@@ -204,13 +200,13 @@ static void draw_actionsbar(BITMAP *bmp,
 
     for (auto act : util::CEnumIterator<map::EAction>()) {
         const auto i = map::from_EAction<unsigned>(act);
-        action_draw(bmp, actionMapper, act, g_actions.coords[i].x, g_actions.coords[i].y);
+        action_draw(bmp, actionMapper, act, g_actions_pos[i].x, g_actions_pos[i].y);
         if (g_cur_act == act) {
             rect(bmp,
-                 g_actions.coords[i].x - 2,
-                 g_actions.coords[i].y - 2,
-                 g_actions.coords[i].x + TILE_SIZE + 2,
-                 g_actions.coords[i].y + TILE_SIZE + 2,
+                 g_actions_pos[i].x - 2,
+                 g_actions_pos[i].y - 2,
+                 g_actions_pos[i].x + TILE_SIZE + 2,
+                 g_actions_pos[i].y + TILE_SIZE + 2,
                  makecol(255, 50, 50));
         }
     }
@@ -266,10 +262,10 @@ static void handle_actbar(int act_num) {
             const unsigned x = mouse_x;
             const unsigned y = mouse_y;
             for (int i = 0; i < act_num; ++i) {
-                if (x >= g_actions.coords[i].x &&
-                        x <= g_actions.coords[i].x + ACTION_SPACE &&
-                        y >= g_actions.coords[i].y &&
-                        y <= g_actions.coords[i].y + ACTION_SPACE) {
+                if (x >= g_actions_pos[i].x &&
+                        x <= g_actions_pos[i].x + ACTION_SPACE &&
+                        y >= g_actions_pos[i].y &&
+                        y <= g_actions_pos[i].y + ACTION_SPACE) {
                     g_cur_act = map::to_EAction(i);
                     break;
                 }
@@ -355,12 +351,12 @@ static void handle_click(map::CMap & stageMap,
 /// loads all actions from file.
 static gamelib::allegro::bmp::CActionMapper load_actions(const std::string & dir,
                                                          const unsigned actions_num) {
-    g_actions.coords.resize(actions_num, {0, 0});
+    g_actions_pos.resize(actions_num, {0, 0});
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
     for (unsigned i = 0; i < actions_num; ++i) {
-        g_actions.coords[i].x = x;
-        g_actions.coords[i].y = y;
+        g_actions_pos[i].x = x;
+        g_actions_pos[i].y = y;
 
         x += ACTION_SPACE;
         if (x >= ACTION_MAX_X) {
