@@ -16,6 +16,8 @@ namespace bmp {
 template <typename ENUM>
 class CBmpMapper {
     public:
+        typedef ENUM enum_type;
+
         CBmpMapper(const std::string & fileName,
                    unsigned subBmpWidth,
                    unsigned subBmpHeight,
