@@ -51,6 +51,7 @@ static constexpr unsigned UTIL_H        = TILE_SIZE * UTIL_ROWS + 10;       ///<
 static constexpr unsigned UTIL_H_EX     = 250;                              ///< ?
 static constexpr unsigned TILES_X       = UTIL_W / TILE_SIZE;               ///< number of whole tiles in the horizontal direction
 static constexpr unsigned TILES_Y       = UTIL_H / TILE_SIZE;               ///< number of whole tiles in the vertical direction
+static constexpr unsigned TILES_MARGIN  = 8;
 static constexpr unsigned STEP_X        = TILE_SIZE * TILES_X;              ///< ?
 static constexpr unsigned STEP_Y        = TILE_SIZE * TILES_Y;              ///< ?
 static constexpr unsigned ACTION_X0     = UTIL_W + 10;                      ///< base distance of action from left border
@@ -178,22 +179,12 @@ static void draw_tilesbar(BITMAP * bmp,
                           const gamelib::allegro::bmp::CTileMapper & tileMapper,
                           const int tiles_num) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
-    constexpr unsigned MARGIN = 8;
-    unsigned x = MARGIN;
-    int y = UTIL_H;
     for (int i = 0; i < tiles_num; ++i) {
-        if (x + TILE_SPACE > UTIL_W) {
-            x = MARGIN;
-            y += TILE_SPACE;
-        }
-        g_tiles.xy_pos[i].x = x + TILE_GAP;
-        g_tiles.xy_pos[i].y = y + MARGIN;
         tile_draw(bmp, tileMapper, map::to_ETile(i), g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
-        x += TILE_SPACE;
     }
 
-    x = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].x;
-    y = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].y;
+    const auto x = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].x;
+    const auto y = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].y;
 
     rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SPACE - TILE_GAP, y + TILE_SPACE - TILE_GAP, makecol(255, 255, 255));
 }
@@ -400,6 +391,18 @@ static gamelib::allegro::bmp::CTileMapper load_tiles(const std::string & dir,
     constexpr unsigned GAP = 2;
     constexpr point_t xy = {0, 0};
     g_tiles.xy_pos = std::vector<point_t>(tiles_num, xy);
+
+    unsigned x = TILES_MARGIN;
+    int y = UTIL_H;
+    for (unsigned i = 0; i < tiles_num; ++i) {
+        if (x + TILE_SPACE > UTIL_W) {
+            x = TILES_MARGIN;
+            y += TILE_SPACE;
+        }
+        g_tiles.xy_pos[i].x = x + TILE_GAP;
+        g_tiles.xy_pos[i].y = y + TILES_MARGIN;
+        x += TILE_SPACE;
+    }
 
     printf("TILESET loaded!\n");
 
