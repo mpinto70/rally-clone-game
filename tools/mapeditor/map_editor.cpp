@@ -36,6 +36,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <typeinfo>
 
 // TODO:
 // Usando os defines no megaman, temos que rever isso aqui.
@@ -73,13 +74,26 @@ struct point_t {
 
 template<typename MAPPER>
 struct mapper_t {
+    typedef typename MAPPER::enum_type enum_type;
+    typedef std::map<enum_type, point_t> pos_map;
     mapper_t(MAPPER && m,
-             const std::vector<point_t> & p)
+             const pos_map & p)
         : mapper(std::move(m)),
           pos(p) {
     }
+    const point_t & position(enum_type type) const {
+        const auto it = pos.find(type);
+        if (it == pos.end()) {
+            throw std::invalid_argument("position of "
+                                        + std::string(typeid(MAPPER).name())
+                                        + " for type "
+                                        + map::to_string(type)
+                                        + " not found");
+        }
+        return it->second;
+    }
     MAPPER mapper;
-    std::vector<point_t> pos;
+    pos_map pos;
 };
 
 typedef mapper_t<gamelib::allegro::bmp::CTileMapper> tiles_t;
@@ -198,12 +212,14 @@ static void draw_tilesbar(BITMAP * bmp,
                           const tiles_t & tileMapper,
                           const int tiles_num) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
-    for (int i = 0; i < tiles_num; ++i) {
-        tile_draw(bmp, tileMapper.mapper, map::to_ETile(i), tileMapper.pos[i].x, tileMapper.pos[i].y);
+    for (const auto type : util::CEnumIterator<map::ETileType>()) {
+        const auto & pos = tileMapper.position(type);
+        tile_draw(bmp, tileMapper.mapper, type, pos.x, pos.y);
     }
 
-    const auto x = tileMapper.pos[map::from_ETile<int>(g_cur_tile_type)].x;
-    const auto y = tileMapper.pos[map::from_ETile<int>(g_cur_tile_type)].y;
+    const auto & pos = tileMapper.position(g_cur_tile_type);
+    const auto x = pos.x;
+    const auto y = pos.y;
 
     rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SPACE - TILE_GAP, y + TILE_SPACE - TILE_GAP, makecol(255, 255, 255));
 }
@@ -216,14 +232,15 @@ static void draw_actionsbar(BITMAP *bmp,
     rectfill(bmp, UTIL_H + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
     for (auto act : util::CEnumIterator<map::EAction>()) {
-        const auto i = map::from_EAction<unsigned>(act);
-        action_draw(bmp, actionMapper.mapper, act, actionMapper.pos[i].x, actionMapper.pos[i].y);
+        const auto & pos = actionMapper.position(act);
+        action_draw(bmp, actionMapper.mapper, act, pos.x, pos.y);
+
         if (g_cur_act == act) {
             rect(bmp,
-                 actionMapper.pos[i].x - 2,
-                 actionMapper.pos[i].y - 2,
-                 actionMapper.pos[i].x + TILE_SIZE + 2,
-                 actionMapper.pos[i].y + TILE_SIZE + 2,
+                 pos.x - 2,
+                 pos.y - 2,
+                 pos.x + TILE_SIZE + 2,
+                 pos.y + TILE_SIZE + 2,
                  makecol(255, 50, 50));
         }
     }
@@ -252,45 +269,36 @@ static void draw_actionsbar(BITMAP *bmp,
         textprintf_ex(bmp, font, UTIL_H + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
 }
 
-// Captura qual tile deve ser o corrente.
-static void handle_tilebar(int tiles_num,
-                           const tiles_t & tileMapper) {
-    if (mouse_b & 1) {
-        if ((unsigned) mouse_y >= UTIL_H) {
-            const unsigned y = mouse_y;
-            const unsigned x = mouse_x;
-            for (int i = 0; i < tiles_num; ++i) {
-                if ((x >= tileMapper.pos[i].x)    &&
-                        (x <= tileMapper.pos[i].x + TILE_SIZE) &&
-                        (y >= tileMapper.pos[i].y)    &&
-                        (y <= tileMapper.pos[i].y + TILE_SIZE)) {
-                    g_cur_tile_type = map::to_ETile(i);
-                    break;
-                }
+/// handle clicks inside bar
+template<typename MAPPER>
+static void handle_bar(typename MAPPER::enum_type & cur,
+                       const MAPPER & mapper,
+                       const int mouse_button,
+                       const std::string & function) {
+    if (mouse_b & mouse_button) {
+        const unsigned y = mouse_y;
+        const unsigned x = mouse_x;
+        for (const auto type : util::CEnumIterator<typename MAPPER::enum_type>()) {
+            const auto & pos = mapper.position(type);
+            if ((x >= pos.x)
+                    && (x <= pos.x + TILE_SIZE)
+                    && (y >= pos.y)
+                    && (y <= pos.y + TILE_SIZE)) {
+                cur = type;
+                break;
             }
         }
     }
 }
 
+/// handle clicks inside tile bar
+static void handle_tilebar(const tiles_t & tileMapper) {
+    handle_bar(g_cur_tile_type, tileMapper, 1, "handle_tilebar");
+}
+
 /// handle clicks inside action bar
-static void handle_actbar(int act_num,
-                          const actions_t & actionMapper) {
-    // right mouse button pressed
-    if (mouse_b & 2) {
-        if (mouse_x >= (int) ACTION_X0) {
-            const unsigned x = mouse_x;
-            const unsigned y = mouse_y;
-            for (int i = 0; i < act_num; ++i) {
-                if (x >= actionMapper.pos[i].x &&
-                        x <= actionMapper.pos[i].x + ACTION_SPACE &&
-                        y >= actionMapper.pos[i].y &&
-                        y <= actionMapper.pos[i].y + ACTION_SPACE) {
-                    g_cur_act = map::to_EAction(i);
-                    break;
-                }
-            }
-        }
-    }
+static void handle_actbar(const actions_t & actionMapper) {
+    handle_bar(g_cur_act, actionMapper, 2, "handle_actbar");
 }
 
 /// treats clicks inside map area
@@ -370,12 +378,11 @@ static void handle_click(map::CMap & stageMap,
 /// loads all actions from file.
 static actions_t load_actions(const std::string & dir,
                               const unsigned actions_num) {
-    std::vector<point_t> pos(actions_num, {0,0});
+    std::map<map::EAction, point_t> pos;
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
-    for (unsigned i = 0; i < actions_num; ++i) {
-        pos[i].x = x;
-        pos[i].y = y;
+    for (auto act : util::CEnumIterator<map::EAction>()) {
+        pos.insert(std::make_pair(act, point_t{x, y}));
 
         x += ACTION_SPACE;
         if (x >= ACTION_MAX_X) {
@@ -398,17 +405,16 @@ static tiles_t load_tiles(const std::string & dir,
                           const unsigned tiles_num) {
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
-    std::vector<point_t> pos(tiles_num, {0,0});
+    std::map<map::ETileType, point_t> pos;
 
     unsigned x = TILES_MARGIN;
-    int y = UTIL_H;
-    for (unsigned i = 0; i < tiles_num; ++i) {
+    unsigned y = UTIL_H;
+    for (const auto type : util::CEnumIterator<map::ETileType>()) {
         if (x + TILE_SPACE > UTIL_W) {
             x = TILES_MARGIN;
             y += TILE_SPACE;
         }
-        pos[i].x = x + TILE_GAP;
-        pos[i].y = y + TILES_MARGIN;
+        pos.insert(std::make_pair(type, point_t{x + TILE_GAP, y + TILES_MARGIN}));
         x += TILE_SPACE;
     }
 
@@ -475,8 +481,8 @@ int main(int argc, char *argv[]) {
         bool draw_actions = false;
         bool ignoreVoid   = false;
         while (!key[KEY_ESC]) {
-            handle_tilebar(tiles_num, tileMapper);
-            handle_actbar(act_num, actionMapper);
+            handle_tilebar(tileMapper);
+            handle_actbar(actionMapper);
 
             if ((unsigned) mouse_x < UTIL_W && (unsigned) mouse_y < UTIL_H) {
                 if (mouse_b & 1) handle_click(stageMap, mouse_x, mouse_y, 1);
