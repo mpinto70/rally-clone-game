@@ -53,6 +53,12 @@ static constexpr unsigned TILES_X       = UTIL_W / TILE_SIZE;               ///<
 static constexpr unsigned TILES_Y       = UTIL_H / TILE_SIZE;               ///< number of whole tiles in the vertical direction
 static constexpr unsigned STEP_X        = TILE_SIZE * TILES_X;              ///< ?
 static constexpr unsigned STEP_Y        = TILE_SIZE * TILES_Y;              ///< ?
+static constexpr unsigned ACTION_X0     = UTIL_W + 10;                      ///< base distance of action from left border
+static constexpr unsigned ACTION_MAX_X  = ACTION_X0 + 180;                  ///< maximum distance of action from left border
+static constexpr unsigned ACTION_Y0     = 10;                               ///< base distance of action from top border
+static constexpr unsigned ACTION_SPACE  = 40;                               ///< distance between the beginning of two consecutive actions
+static constexpr unsigned WINDOW_WIDTH  = ACTION_MAX_X + ACTION_SPACE + 10;
+static constexpr unsigned WINDOW_HEIGHT = UTIL_H + UTIL_H_EX;
 
 static map::ETileType g_cur_tile_type = map::ETileType::GRASS;
 static map::EAction g_cur_act = map::EAction::NONE;
@@ -170,11 +176,11 @@ static void map_draw(BITMAP * bmp,
 
 static void draw_tilesbar(BITMAP * bmp,
                           const gamelib::allegro::bmp::CTileMapper & tileMapper,
-                          const int tiles_num,
-                          int y) {
-    rectfill(bmp, 0, y, UTIL_W, y + UTIL_H_EX, makecol(30, 40, 100));
+                          const int tiles_num) {
+    rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
     constexpr unsigned MARGIN = 8;
     unsigned x = MARGIN;
+    int y = UTIL_H;
     for (int i = 0; i < tiles_num; ++i) {
         if (x + TILE_SPACE > UTIL_W) {
             x = MARGIN;
@@ -195,18 +201,18 @@ static void draw_tilesbar(BITMAP * bmp,
 // Desenha painel das actions
 static void draw_actionsbar(BITMAP *bmp,
                             const gamelib::allegro::bmp::CActionMapper & actionMapper,
-                            const unsigned act_num,
-                            const unsigned x) {
-    rectfill(bmp, x, 0, x + 200, SCREEN_H, makecol(255, 255, 255));
-    rectfill(bmp, x + 4, 4, x + 196, SCREEN_H - 4, makecol(0, 50, 50));
+                            const unsigned act_num) {
+    rectfill(bmp, UTIL_H, 0, WINDOW_WIDTH, SCREEN_H, makecol(255, 255, 255));
+    rectfill(bmp, UTIL_H + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
     for (unsigned i = 0; i < act_num; ++i) {
-        draw_sprite(bmp, g_actions.tile_img[i], x + g_actions.coords[i].x, g_actions.coords[i].y);
+        draw_sprite(bmp, g_actions.tile_img[i], g_actions.coords[i].x, g_actions.coords[i].y);
         if (g_cur_act == map::to_EAction(i)) {
-            rect(bmp, (x + g_actions.coords[i].x) - 2,
+            rect(bmp,
+                 g_actions.coords[i].x - 2,
                  g_actions.coords[i].y - 2,
-                 (x + g_actions.coords[i].x) + 33,
-                 g_actions.coords[i].y + 33,
+                 g_actions.coords[i].x + TILE_SIZE + 2,
+                 g_actions.coords[i].y + TILE_SIZE + 2,
                  makecol(255, 50, 50));
         }
     }
@@ -219,20 +225,20 @@ static void draw_actionsbar(BITMAP *bmp,
         bg = makecol(255, 255, 255);
         fg = makecol(0, 50, 200);
         sprintf(tmp, "mouse_x: [%02d]", mouse_x);
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 36, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, UTIL_H + 20, SCREEN_H - 36, fg, bg, "%-20s", tmp);
         sprintf(tmp, "mouse_y: [%02d]", mouse_y);
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 28, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, UTIL_H + 20, SCREEN_H - 28, fg, bg, "%-20s", tmp);
         sprintf(tmp, "mapx: [%02d]", mx);
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 20, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, UTIL_H + 20, SCREEN_H - 20, fg, bg, "%-20s", tmp);
         sprintf(tmp, "mapy: [%02d]", my);
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 12, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, UTIL_H + 20, SCREEN_H - 12, fg, bg, "%-20s", tmp);
     }
 
     if (key[KEY_O])
-        textprintf_ex(bmp, font, x + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02u", (unsigned) mouse_x % TILE_SIZE);
+        textprintf_ex(bmp, font, UTIL_H + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02u", (unsigned) mouse_x % TILE_SIZE);
 
     if (g_draw_selection == true)
-        textprintf_ex(bmp, font, x + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
+        textprintf_ex(bmp, font, UTIL_H + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
 }
 
 // Captura qual tile deve ser o corrente.
@@ -254,18 +260,18 @@ static void handle_tilebar(int tiles_num) {
     }
 }
 
-// Cuida do mouse sobre o painel de actions.
+/// handle clicks inside action bar
 static void handle_actbar(int act_num) {
-    // botão da direita do mouse precionado.
+    // right mouse button pressed
     if (mouse_b & 2) {
-        if (mouse_x >= 512) {
+        if (mouse_x >= (int) ACTION_X0) {
             const unsigned x = mouse_x;
             const unsigned y = mouse_y;
             for (int i = 0; i < act_num; ++i) {
-                if (x >= g_actions.coords[i].x + 512 &&
-                        x <= g_actions.coords[i].x + 512 + 40 &&
+                if (x >= g_actions.coords[i].x &&
+                        x <= g_actions.coords[i].x + ACTION_SPACE &&
                         y >= g_actions.coords[i].y &&
-                        y <= g_actions.coords[i].y + 40) {
+                        y <= g_actions.coords[i].y + ACTION_SPACE) {
                     g_cur_act = map::to_EAction(i);
                     break;
                 }
@@ -349,15 +355,15 @@ static void handle_click(map::CMap & stageMap,
 }
 
 /// loads actions
-static void load_actions(const int num_actions,
+static void load_actions(const size_t num_actions,
                          const std::string & path) {
     g_actions.tile_img = std::vector<BITMAP *>(num_actions, nullptr);
-    g_actions.coords.resize(num_actions, {0,0});
-    int x = 20, y = 10;
+    g_actions.coords.resize(num_actions, {0, 0});
+    unsigned x = ACTION_X0, y = ACTION_Y0;
 
     char img_name[16];
-    for (int i = 0; i < num_actions; ++i) {
-        sprintf(img_name, "/%02d.bmp", i);
+    for (unsigned i = 0; i < num_actions; ++i) {
+        sprintf(img_name, "/%02u.bmp", i);
         const std::string full_name = path + img_name;
         printf("carregando action [%s]\n", full_name.c_str());
 
@@ -368,8 +374,11 @@ static void load_actions(const int num_actions,
         g_actions.coords[i].x = x;
         g_actions.coords[i].y = y;
 
-        x += 40;
-        if (x >= 180) { x = 20; y += 40; }
+        x += ACTION_SPACE;
+        if (x >= ACTION_MAX_X) {
+            x = ACTION_X0;
+            y += ACTION_SPACE;
+        }
     }
 }
 
@@ -435,7 +444,7 @@ int main(int argc, char *argv[]) {
         install_timer();
 
         set_color_depth(32);
-        set_gfx_mode(GFX_AUTODETECT_WINDOWED, UTIL_W + 200, UTIL_H + UTIL_H_EX, 0, 0);
+        set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 
         BITMAP * buffer     = create_bitmap(SCREEN_W, SCREEN_H);
         g_selection_preview = create_bitmap(185, 150);
@@ -543,8 +552,8 @@ int main(int argc, char *argv[]) {
                 if (g_take_shot == false)
                     draw_grid(buffer);
             }
-            draw_tilesbar(buffer, tileMapper, tiles_num, UTIL_H);
-            draw_actionsbar(buffer, actionMapper, act_num, UTIL_W);
+            draw_tilesbar(buffer, tileMapper, tiles_num);
+            draw_actionsbar(buffer, actionMapper, act_num);
 
             if (key[KEY_I]) {
                 int xpos, ypos;
