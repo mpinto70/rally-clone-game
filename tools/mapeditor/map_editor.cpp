@@ -73,7 +73,7 @@ static tiles_t g_tiles;
 
 struct actions_t {
     std::vector<BITMAP *> tile_img;
-    point_t * coords;
+    std::vector<point_t> coords;
 };
 static actions_t g_actions;
 
@@ -194,6 +194,7 @@ static void draw_tilesbar(BITMAP * bmp,
 
 // Desenha painel das actions
 static void draw_actionsbar(BITMAP *bmp,
+                            const gamelib::allegro::bmp::CActionMapper & actionMapper,
                             const unsigned act_num,
                             const unsigned x) {
     rectfill(bmp, x, 0, x + 200, SCREEN_H, makecol(255, 255, 255));
@@ -351,7 +352,7 @@ static void handle_click(map::CMap & stageMap,
 static void load_actions(const int num_actions,
                          const std::string & path) {
     g_actions.tile_img = std::vector<BITMAP *>(num_actions, nullptr);
-    g_actions.coords = new point_t[num_actions];
+    g_actions.coords.resize(num_actions, {0,0});
     int x = 20, y = 10;
 
     char img_name[16];
@@ -543,7 +544,7 @@ int main(int argc, char *argv[]) {
                     draw_grid(buffer);
             }
             draw_tilesbar(buffer, tileMapper, tiles_num, UTIL_H);
-            draw_actionsbar(buffer, act_num, UTIL_W);
+            draw_actionsbar(buffer, actionMapper, act_num, UTIL_W);
 
             if (key[KEY_I]) {
                 int xpos, ypos;
