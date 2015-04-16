@@ -73,13 +73,9 @@ struct point_t {
     unsigned x, y;
 };
 
-struct tiles_t {
-    std::vector<point_t> xy_pos;
-};
-static tiles_t g_tiles;
+static std::vector<point_t> g_tiles_pos;
 
 struct actions_t {
-    std::vector<BITMAP *> tile_img;
     std::vector<point_t> coords;
 };
 static actions_t g_actions;
@@ -126,8 +122,17 @@ static void tile_draw(BITMAP * bmp,
                       const map::ETileType type,
                       const int x,
                       const int y) {
-    const auto tile_bmp = mapper[type];
-    draw_sprite(bmp, tile_bmp, x, y);
+    const auto sub_bmp = mapper[type];
+    draw_sprite(bmp, sub_bmp, x, y);
+}
+
+static void action_draw(BITMAP * bmp,
+                        const gamelib::allegro::bmp::CActionMapper & mapper,
+                        const map::EAction action,
+                        const int x,
+                        const int y) {
+    const auto sub_bmp = mapper[action];
+    draw_sprite(bmp, sub_bmp, x, y);
 }
 
 // Desenha o mapa partindo do map_drawx, map_drawy.
@@ -136,6 +141,7 @@ static void tile_draw(BITMAP * bmp,
 static void map_draw(BITMAP * bmp,
                      const map::CMap & stageMap,
                      const gamelib::allegro::bmp::CTileMapper & tileMapper,
+                     const gamelib::allegro::bmp::CActionMapper & actionMapper,
                      const int map_drawx,
                      const int map_drawy,
                      const bool draw_actions,
@@ -162,10 +168,10 @@ static void map_draw(BITMAP * bmp,
             tile_draw(bmp, tileMapper, tile.type(), x, y);
             if (ignoreVoid == true) {
                 if (tile.action() != map::EAction::NONE) {
-                    draw_sprite(bmp, g_actions.tile_img[map::from_EAction<size_t>(tile.action())], x, y);
+                    action_draw(bmp, actionMapper, tile.action(), x, y);
                 }
             } else if (draw_actions == true) {
-                draw_sprite(bmp, g_actions.tile_img[map::from_EAction<size_t>(tile.action())], x, y);
+                action_draw(bmp, actionMapper, tile.action(), x, y);
             }
 
             if (key[KEY_F] == 0 && g_take_shot == false) {
@@ -180,11 +186,11 @@ static void draw_tilesbar(BITMAP * bmp,
                           const int tiles_num) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
     for (int i = 0; i < tiles_num; ++i) {
-        tile_draw(bmp, tileMapper, map::to_ETile(i), g_tiles.xy_pos[i].x, g_tiles.xy_pos[i].y);
+        tile_draw(bmp, tileMapper, map::to_ETile(i), g_tiles_pos[i].x, g_tiles_pos[i].y);
     }
 
-    const auto x = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].x;
-    const auto y = g_tiles.xy_pos[map::from_ETile<int>(g_cur_tile_type)].y;
+    const auto x = g_tiles_pos[map::from_ETile<int>(g_cur_tile_type)].x;
+    const auto y = g_tiles_pos[map::from_ETile<int>(g_cur_tile_type)].y;
 
     rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SPACE - TILE_GAP, y + TILE_SPACE - TILE_GAP, makecol(255, 255, 255));
 }
@@ -196,9 +202,10 @@ static void draw_actionsbar(BITMAP *bmp,
     rectfill(bmp, UTIL_H, 0, WINDOW_WIDTH, SCREEN_H, makecol(255, 255, 255));
     rectfill(bmp, UTIL_H + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
-    for (unsigned i = 0; i < act_num; ++i) {
-        draw_sprite(bmp, g_actions.tile_img[i], g_actions.coords[i].x, g_actions.coords[i].y);
-        if (g_cur_act == map::to_EAction(i)) {
+    for (auto act : util::CEnumIterator<map::EAction>()) {
+        const auto i = map::from_EAction<unsigned>(act);
+        action_draw(bmp, actionMapper, act, g_actions.coords[i].x, g_actions.coords[i].y);
+        if (g_cur_act == act) {
             rect(bmp,
                  g_actions.coords[i].x - 2,
                  g_actions.coords[i].y - 2,
@@ -239,10 +246,10 @@ static void handle_tilebar(int tiles_num) {
             const unsigned y = mouse_y;
             const unsigned x = mouse_x;
             for (int i = 0; i < tiles_num; ++i) {
-                if ((x >= g_tiles.xy_pos[i].x)    &&
-                        (x <= g_tiles.xy_pos[i].x + TILE_SIZE) &&
-                        (y >= g_tiles.xy_pos[i].y)    &&
-                        (y <= g_tiles.xy_pos[i].y + TILE_SIZE)) {
+                if ((x >= g_tiles_pos[i].x)    &&
+                        (x <= g_tiles_pos[i].x + TILE_SIZE) &&
+                        (y >= g_tiles_pos[i].y)    &&
+                        (y <= g_tiles_pos[i].y + TILE_SIZE)) {
                     g_cur_tile_type = map::to_ETile(i);
                     break;
                 }
@@ -345,23 +352,13 @@ static void handle_click(map::CMap & stageMap,
     }
 }
 
-/// loads actions
-static void load_actions(const size_t num_actions,
-                         const std::string & path) {
-    g_actions.tile_img = std::vector<BITMAP *>(num_actions, nullptr);
-    g_actions.coords.resize(num_actions, {0, 0});
+/// loads all actions from file.
+static gamelib::allegro::bmp::CActionMapper load_actions(const std::string & dir,
+                                                         const unsigned actions_num) {
+    g_actions.coords.resize(actions_num, {0, 0});
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
-    char img_name[16];
-    for (unsigned i = 0; i < num_actions; ++i) {
-        sprintf(img_name, "/%02u.bmp", i);
-        const std::string full_name = path + img_name;
-        printf("carregando action [%s]\n", full_name.c_str());
-
-        BITMAP * tile = load_bitmap(full_name.c_str(), nullptr);
-        if (tile == nullptr)
-            tools::throw_allegro_error(full_name);
-        g_actions.tile_img[i] = tile;
+    for (unsigned i = 0; i < actions_num; ++i) {
         g_actions.coords[i].x = x;
         g_actions.coords[i].y = y;
 
@@ -371,11 +368,8 @@ static void load_actions(const size_t num_actions,
             y += ACTION_SPACE;
         }
     }
-}
 
-/// loads all tiles from file.
-static gamelib::allegro::bmp::CActionMapper load_actions(const std::string & dir,
-                                                         const unsigned actions_num) {
+
     const std::string actionst_name = dir + "/actions.bmp";
     constexpr unsigned GAP = 1;
 
@@ -390,7 +384,7 @@ static gamelib::allegro::bmp::CTileMapper load_tiles(const std::string & dir,
     const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
     constexpr point_t xy = {0, 0};
-    g_tiles.xy_pos = std::vector<point_t>(tiles_num, xy);
+    g_tiles_pos = std::vector<point_t>(tiles_num, xy);
 
     unsigned x = TILES_MARGIN;
     int y = UTIL_H;
@@ -399,8 +393,8 @@ static gamelib::allegro::bmp::CTileMapper load_tiles(const std::string & dir,
             x = TILES_MARGIN;
             y += TILE_SPACE;
         }
-        g_tiles.xy_pos[i].x = x + TILE_GAP;
-        g_tiles.xy_pos[i].y = y + TILES_MARGIN;
+        g_tiles_pos[i].x = x + TILE_GAP;
+        g_tiles_pos[i].y = y + TILES_MARGIN;
         x += TILE_SPACE;
     }
 
@@ -461,7 +455,6 @@ int main(int argc, char *argv[]) {
 
         map::CMap stageMap = createOrLoadMap(argc, argv);
 
-        load_actions(act_num, "./actions");
         const gamelib::allegro::bmp::CTileMapper tileMapper(load_tiles(RALLY_ROOT "/Stuff", tiles_num));
         const gamelib::allegro::bmp::CActionMapper actionMapper(load_actions(RALLY_ROOT "/Stuff", act_num));
 
@@ -549,7 +542,7 @@ int main(int argc, char *argv[]) {
                 g_draw_selection = false;
             }
 
-            map_draw(buffer, stageMap, tileMapper, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
+            map_draw(buffer, stageMap, tileMapper, actionMapper, g_map_drawx, g_map_drawy, draw_actions, ignoreVoid);
 
             if (!key[KEY_G]) {
                 if (g_take_shot == false)
@@ -563,7 +556,7 @@ int main(int argc, char *argv[]) {
                 xpos = mouse_x / TILE_SIZE * TILE_SIZE;
                 if (key[KEY_O]) xpos += mouse_x % TILE_SIZE;
                 ypos = mouse_y / TILE_SIZE * TILE_SIZE;
-                draw_sprite(buffer, g_actions.tile_img[map::from_EAction<int>(g_cur_act)], xpos, ypos);
+                action_draw(buffer, actionMapper, g_cur_act, xpos, ypos);
             } else if (g_take_shot == false) {
                 circlefill(buffer, mouse_x, mouse_y, 5, 0);
                 circlefill(buffer, mouse_x, mouse_y, 3,  makecol(255, 255, 255));
