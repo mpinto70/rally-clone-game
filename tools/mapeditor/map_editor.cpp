@@ -376,7 +376,7 @@ static void handle_click(map::CMap & stageMap,
 }
 
 /// loads all actions from file.
-static actions_t load_actions(const std::string & dir,
+static actions_t load_actions(const std::string & file_name,
                               const unsigned actions_num) {
     std::map<map::EAction, point_t> pos;
     unsigned x = ACTION_X0, y = ACTION_Y0;
@@ -392,18 +392,16 @@ static actions_t load_actions(const std::string & dir,
     }
 
 
-    const std::string actionst_name = dir + "/actions.bmp";
     constexpr unsigned GAP = 1;
 
     printf("ACTIONS loaded!\n");
 
-    return actions_t(gamelib::allegro::bmp::CActionMapper(actionst_name, TILE_SIZE, TILE_SIZE, GAP), pos);
+    return actions_t(gamelib::allegro::bmp::CActionMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
 }
 
 /// loads all tiles from file.
-static tiles_t load_tiles(const std::string & dir,
+static tiles_t load_tiles(const std::string & file_name,
                           const unsigned tiles_num) {
-    const std::string tile_name = dir + "/tileset.bmp";
     constexpr unsigned GAP = 2;
     std::map<map::ETileType, point_t> pos;
 
@@ -420,7 +418,7 @@ static tiles_t load_tiles(const std::string & dir,
 
     printf("TILESET loaded!\n");
 
-    return tiles_t(gamelib::allegro::bmp::CTileMapper(tile_name, TILE_SIZE, TILE_SIZE, GAP), pos);
+    return tiles_t(gamelib::allegro::bmp::CTileMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
 }
 
 static void draw_grid(BITMAP * bmp) {
@@ -475,8 +473,8 @@ int main(int argc, char *argv[]) {
 
         map::CMap stageMap = createOrLoadMap(argc, argv);
 
-        const auto tileMapper(load_tiles(RALLY_ROOT "/Stuff", tiles_num));
-        const auto actionMapper(load_actions(RALLY_ROOT "/Stuff", act_num));
+        const auto tileMapper(load_tiles(RALLY_ROOT "/Stuff/tileset.bmp", tiles_num));
+        const auto actionMapper(load_actions(RALLY_ROOT "/Stuff/actions.bmp", act_num));
 
         bool draw_actions = false;
         bool ignoreVoid   = false;
