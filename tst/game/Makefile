@@ -2,6 +2,7 @@
 default: exetarget
 
 LIBS =	\
+		-lmckgamelib \
 		-lgame \
 		-lgamelib \
 		-lmap \
