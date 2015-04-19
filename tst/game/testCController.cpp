@@ -2,6 +2,7 @@
 #include "testCController.h"
 
 #include "../mck/gamelib/CGameLibUtils.h"
+#include "../mck/gamelib/CKeyboardMock.h"
 
 #include "game/CController.h"
 #include "util/CException.h"
@@ -11,6 +12,10 @@ namespace game {
 void testCController::testCreation() {
     auto gameLib = gamelib::mck::CGameLibUtils::createDefault();
     TS_ASSERT(gameLib.get() != nullptr);
+
+    CController cont(gameLib);
+    gamelib::mck::CKeyboardMock::add(gamelib::KEYS::ESCAPE);
+    cont.run();
 }
 
 void testCController::testInvalidCreation() {

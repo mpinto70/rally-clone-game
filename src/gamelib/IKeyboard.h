@@ -9,7 +9,8 @@ enum class KEYS : unsigned char {
     RIGHT,
     UP,
     DOWN,
-    SPACE
+    SPACE,
+    ESCAPE
 };
 
 class IKeyboard {

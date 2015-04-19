@@ -2,6 +2,7 @@
 #include "game/CController.h"
 
 #include "util/CException.h"
+#include "util/CWait.h"
 
 namespace game {
 
@@ -12,6 +13,14 @@ CController::CController(std::unique_ptr<gamelib::IGameLib> & gameLib)
 }
 
 CController::~CController() {
+}
+
+void CController::run() {
+    while (not gameLib_->keyboard().isKeyPressed(gamelib::KEYS::ESCAPE)) {
+        util::CWait wait(10);
+
+        wait.wait();
+    }
 }
 
 }

@@ -7,8 +7,9 @@ namespace game {
 
 class CController {
     public:
-        CController(std::unique_ptr<gamelib::IGameLib> & gameLib);
+        explicit CController(std::unique_ptr<gamelib::IGameLib> & gameLib);
         ~CController();
+        void run();
     private:
         std::unique_ptr<gamelib::IGameLib> gameLib_;
 };
