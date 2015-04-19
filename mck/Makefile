@@ -2,10 +2,9 @@
 default: subdirs
 
 SUBDIRS =	\
+			gamelib \
 
 subdirs: $(SUBDIRS)
-	$(ECHO) -n ""
-#remove the above line when there are subdirs
 
 include mck.mk
 

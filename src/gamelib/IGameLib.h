@@ -15,8 +15,6 @@ class IGameLib {
         virtual ISound & sound() = 0;
         virtual ITimer & timer() = 0;
         virtual IKeyboard & keyboard() = 0;
-
-        static IGameLib & instance();
 };
 
 }
