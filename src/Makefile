@@ -5,6 +5,7 @@ LIBDIRS =	\
 			util \
 			map \
 			gamelib \
+			game \
 
 SUBDIRS =	\
 			$(LIBDIRS) \
