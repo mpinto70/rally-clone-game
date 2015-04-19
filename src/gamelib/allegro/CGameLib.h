@@ -17,7 +17,9 @@ namespace allegro {
 
 class CGameLib : public IGameLib {
     public:
-        CGameLib(unsigned int width, unsigned int height);
+        CGameLib(unsigned int width,
+                 unsigned int height,
+                 const std::string & path_to_data);
         ~CGameLib() override;
 
         CGraphic & graphic() override { return *graphic_; }

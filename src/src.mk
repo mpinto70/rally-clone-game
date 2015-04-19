@@ -36,6 +36,15 @@ endif
 
 run_local: run
 
-run:
+ifneq ($(EXE),)
+run: run_app
+else
+run: run_noapp
+endif
+
+run_app:
+	$(SILENT)LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(LIBDIR) $(APPDIR)/$(EXE) $(EXE_PARAMS)
+
+run_noapp:
 	$(ECHO) -n ""
 

@@ -17,9 +17,8 @@ int main() {
     using gamelib::allegro::CGameLib;
     using gamelib::IGameLib;
     try {
-        util::CSingleton<IGameLib>::create(std::unique_ptr<CGameLib>(new CGameLib(UTIL_W, UTIL_H)));
+        util::CSingleton<IGameLib>::create(std::unique_ptr<CGameLib>(new CGameLib(UTIL_W, UTIL_H, "~/.rallyX")));
         // put the game here
-        util::CSingleton<IGameLib>::destroy();
         return 0;
     } catch (const util::CException & e) {
         std::cout << "An ERROR occurred" << std::endl;
@@ -27,6 +26,7 @@ int main() {
         std::cout << "Code: " << e.code() << std::endl;
         return 1;
     }
+    util::CSingleton<IGameLib>::destroy();
 }
 END_OF_MAIN()
 

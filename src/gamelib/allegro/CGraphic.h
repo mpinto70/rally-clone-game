@@ -13,7 +13,9 @@ namespace allegro {
 
 class CGraphic : public IGraphic {
     public:
-        CGraphic(unsigned int width, unsigned int height);
+        CGraphic(unsigned int width,
+                 unsigned int height,
+                 const std::string & fonts_path);
         ~CGraphic() override;
         unsigned width() const override { return SCREEN_W; }
         unsigned height() const override { return SCREEN_H; }

@@ -5,6 +5,7 @@
 
 #include "CGraphic.h"
 #include "util/CException.h"
+#include <iostream>
 #include <map>
 
 namespace gamelib {
@@ -23,7 +24,9 @@ static int translate(COLOR color) {
     return COLORS[color];
 }
 
-CGraphic::CGraphic(unsigned int uiWidth, unsigned int uiHeight)
+CGraphic::CGraphic(unsigned int uiWidth,
+                unsigned int uiHeight,
+                const std::string & fonts_path)
     : buffer_(nullptr),
       fontSystem_(nullptr),
       fontMenu_(nullptr) {
@@ -40,18 +43,21 @@ CGraphic::CGraphic(unsigned int uiWidth, unsigned int uiHeight)
     if (buffer_ == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing system memory", -1);
 
-    fontMenu_ = load_font(RALLY_ROOT "/Stuff/Menu_font.pcx", nullptr, nullptr);
+    std::cout << __FILE__ << "(" << __LINE__ << ") - " << fonts_path << std::endl;
+    fontMenu_ = load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr);
     if (fontMenu_ == nullptr)
-        throw CException("CGraphic::CGraphic - Error initializing font subsystem", -2);
+        throw CException("CGraphic::CGraphic - Error initializing menu font", -2);
 
-    fontSystem_ = load_font(RALLY_ROOT "/Stuff/Menu_font.pcx", nullptr, nullptr);
+    fontSystem_ = load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr);
     if (fontSystem_ == nullptr)
-        throw CException("CGraphic::CGraphic - Error initializing font subsystem", -3);
+        throw CException("CGraphic::CGraphic - Error initializing system font", -3);
 
     initColor();
 }
 
 CGraphic::~CGraphic() {
+    destroy_font(fontMenu_);
+    destroy_font(fontSystem_);
     destroy_bitmap(buffer_);
     buffer_ = nullptr;
 }

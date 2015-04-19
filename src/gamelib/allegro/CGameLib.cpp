@@ -10,7 +10,9 @@
 namespace gamelib {
 namespace allegro {
 
-CGameLib::CGameLib(unsigned int width, unsigned int height)
+CGameLib::CGameLib(unsigned int width,
+                   unsigned int height,
+                   const std::string & path_to_data)
     : graphic_(nullptr),
       keyboard_(nullptr),
       sound_(nullptr),
@@ -23,7 +25,7 @@ CGameLib::CGameLib(unsigned int width, unsigned int height)
     keyboard_ = new CKeyboard();
     timer_ = new CTimer();
     sound_ = new CSound();
-    graphic_ = new CGraphic(width, height);
+    graphic_ = new CGraphic(width, height, path_to_data + "/stages/common");
 }
 
 CGameLib::~CGameLib() {
