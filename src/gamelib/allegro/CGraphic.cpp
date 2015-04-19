@@ -5,7 +5,6 @@
 
 #include "CGraphic.h"
 #include "util/CException.h"
-#include <iostream>
 #include <map>
 
 namespace gamelib {
@@ -43,7 +42,6 @@ CGraphic::CGraphic(unsigned int uiWidth,
     if (buffer_ == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing system memory", -1);
 
-    std::cout << __FILE__ << "(" << __LINE__ << ") - " << fonts_path << std::endl;
     fontMenu_ = load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr);
     if (fontMenu_ == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing menu font", -2);
