@@ -311,6 +311,51 @@ static std::pair<point_t, point_t> define_region(point_t p1,
     return std::make_pair(p1, p2);
 }
 
+static void handle_CtrlC_CtrlV(map::CMap & stageMap,
+                               const size_t x,
+                               const size_t y) {
+    if (key[KEY_C]) {
+        if (not g_copy_selection_on) {
+            clear_bitmap(g_selection_preview);
+
+            g_copy_ini_point.x = x;
+            g_copy_ini_point.y = y;
+            g_copy_end_point.x = x;
+            g_copy_end_point.y = y;
+            g_copy_selection_on = true;
+            g_draw_selection = false;
+        } else {
+            g_copy_end_point.x = x;
+            g_copy_end_point.y = y;
+            g_take_shot = true;
+            g_draw_selection = true;
+        }
+    } else if (key[KEY_V] && g_copy_selection_on) {
+        const auto region = define_region(g_copy_ini_point, g_copy_end_point);
+        const point_t pt_data_len = {
+            (region.second.x - region.first.x) + 1,
+            (region.second.y - region.first.y) + 1
+        };
+
+        std::vector<map::CTile> selection_data(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
+
+        for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
+            for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
+                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(region.first.x + xs, region.first.y + ys);
+            }
+        }
+
+        for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
+            for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
+                stageMap(x + xs, y + ys) = selection_data.at(ys * (pt_data_len.x) + xs);
+            }
+        }
+
+        g_draw_selection = false;
+        g_copy_selection_on = false;
+    }
+}
+
 /// treats clicks inside map area
 static void handle_click(map::CMap & stageMap,
                          const int X,
@@ -324,53 +369,11 @@ static void handle_click(map::CMap & stageMap,
         return; // out of map
     switch (button) {
         case 1: {
-            // CTRL não está pressionado.
-            if (!key[KEY_LCONTROL]) {
+            if (!key[KEY_LCONTROL]) { // CTRL is not pressed.
                 stageMap(x, y).type(g_cur_tile_type);
-            } else {
-                static std::vector<map::CTile> selection_data;
-                if (key[KEY_C]) {
-                    if (not g_copy_selection_on) {
-                        selection_data.clear();
-                        clear_bitmap(g_selection_preview);
-
-                        g_copy_ini_point.x = x;
-                        g_copy_ini_point.y = y;
-                        g_copy_end_point.x = x;
-                        g_copy_end_point.y = y;
-                        g_copy_selection_on = true;
-                        g_draw_selection = false;
-                    } else {
-                        g_copy_end_point.x = x;
-                        g_copy_end_point.y = y;
-                        g_take_shot = true;
-                        g_draw_selection = true;
-                    }
-                } else if (key[KEY_V] && g_copy_selection_on) {
-                    const auto region = define_region(g_copy_ini_point, g_copy_end_point);
-                    const point_t pt_data_len = {
-                        (region.second.x - region.first.x) + 1,
-                        (region.second.y - region.first.y) + 1
-                    };
-
-                    if (selection_data.empty()) {
-                        selection_data.resize(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
-
-                        for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
-                            for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(region.first.x + xs, region.first.y + ys);
-                            }
-                        }
-                    }
-
-                    for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
-                        for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                            stageMap(x + xs, y + ys) = selection_data.at(ys * (pt_data_len.x) + xs);
-                        }
-                    }
-
-                    g_draw_selection = false;
-                    g_copy_selection_on = false;
+            } else { // CTRL is pressed.
+                if (key[KEY_C] || key[KEY_V]) {
+                    handle_CtrlC_CtrlV(stageMap, x, y);
                 }
             }
         }
