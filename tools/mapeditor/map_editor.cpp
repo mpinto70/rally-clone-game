@@ -301,6 +301,16 @@ static void handle_actbar(const actions_t & actionMapper) {
     handle_bar(g_cur_act, actionMapper, 2, "handle_actbar");
 }
 
+static std::pair<point_t, point_t> define_region(point_t p1,
+                                                 point_t p2) {
+    if (p2.x < p1.x)
+        std::swap(p2.x, p1.x);
+    if (p2.y < p1.y)
+        std::swap(p2.y, p1.y);
+
+    return std::make_pair(p1, p2);
+}
+
 /// treats clicks inside map area
 static void handle_click(map::CMap & stageMap,
                          const int X,
@@ -326,30 +336,29 @@ static void handle_click(map::CMap & stageMap,
 
                         g_copy_ini_point.x = x;
                         g_copy_ini_point.y = y;
+                        g_copy_end_point.x = x;
+                        g_copy_end_point.y = y;
                         g_copy_selection_on = true;
                         g_draw_selection = false;
                     } else {
                         g_copy_end_point.x = x;
                         g_copy_end_point.y = y;
-                        if (g_copy_end_point.x < g_copy_ini_point.x || g_copy_end_point.y < g_copy_ini_point.y) {
-                            point_t temp = g_copy_ini_point;
-                            g_copy_ini_point = g_copy_end_point;
-                            g_copy_end_point = temp;
-                        }
                         g_take_shot = true;
                         g_draw_selection = true;
                     }
-                } else if (key[KEY_V]) {
-                    point_t pt_data_len;
-                    pt_data_len.x = (g_copy_end_point.x - g_copy_ini_point.x) + 1;
-                    pt_data_len.y = (g_copy_end_point.y - g_copy_ini_point.y) + 1;
+                } else if (key[KEY_V] && g_copy_selection_on) {
+                    const auto region = define_region(g_copy_ini_point, g_copy_end_point);
+                    const point_t pt_data_len = {
+                        (region.second.x - region.first.x) + 1,
+                        (region.second.y - region.first.y) + 1
+                    };
 
                     if (selection_data.empty()) {
                         selection_data.resize(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
 
                         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(g_copy_ini_point.x + xs, g_copy_ini_point.y + ys);
+                                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(region.first.x + xs, region.first.y + ys);
                             }
                         }
                     }
@@ -581,10 +590,11 @@ int main(int argc, char *argv[]) {
             }
 
             if (g_draw_selection == true) {
-                const auto xini = (g_copy_ini_point.x * TILE_SIZE) - g_map_drawx;
-                const auto yini = g_copy_ini_point.y * TILE_SIZE - g_map_drawy;
-                auto xend = xini + TILE_SIZE - g_map_drawx;
-                auto yend = yini + TILE_SIZE;
+                const auto region = define_region(g_copy_ini_point, g_copy_end_point);
+                const auto xini = (region.first.x * TILE_SIZE) - g_map_drawx;
+                const auto yini = (region.first.y * TILE_SIZE) - g_map_drawy;
+                const auto xend = ((region.second.x + 1) * TILE_SIZE) - g_map_drawx;
+                const auto yend = ((region.second.y + 1) * TILE_SIZE) - g_map_drawy;
 
                 if (g_take_shot == true) {
                     stretch_blit(buffer, g_selection_preview, xini, yini, xend - xini, yend - yini,
