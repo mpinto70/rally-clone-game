@@ -100,9 +100,9 @@ typedef mapper_t<gamelib::allegro::bmp::CTileMapper> tiles_t;
 typedef mapper_t<gamelib::allegro::bmp::CActionMapper> actions_t;
 
 // Variaveis usadas pelo CTRL+C CTRL+V
-static int g_cur_copy_point = 0;
-static point_t g_pt_ini_point;
-static point_t g_pt_end_point;
+static bool g_copy_selection_on = false;
+static point_t g_copy_ini_point;
+static point_t g_copy_end_point;
 static bool g_draw_selection = false;
 static bool g_take_shot = false;
 static BITMAP * g_selection_preview;
@@ -314,54 +314,54 @@ static void handle_click(map::CMap & stageMap,
         return; // out of map
     switch (button) {
         case 1: {
-            static std::vector<map::CTile> g_selection_data;
             // CTRL não está pressionado.
             if (!key[KEY_LCONTROL]) {
                 stageMap(x, y).type(g_cur_tile_type);
             } else {
+                static std::vector<map::CTile> selection_data;
                 if (key[KEY_C]) {
-                    if (g_cur_copy_point == 0) {
-                        g_selection_data.clear();
+                    if (not g_copy_selection_on) {
+                        selection_data.clear();
                         clear_bitmap(g_selection_preview);
 
-                        g_pt_ini_point.x = x;
-                        g_pt_ini_point.y = y;
-                        g_cur_copy_point = 1;
+                        g_copy_ini_point.x = x;
+                        g_copy_ini_point.y = y;
+                        g_copy_selection_on = true;
                         g_draw_selection = false;
                     } else {
-                        g_pt_end_point.x = x;
-                        g_pt_end_point.y = y;
-                        if (g_pt_end_point.x < g_pt_ini_point.x || g_pt_end_point.y < g_pt_ini_point.y) {
-                            point_t temp = g_pt_ini_point;
-                            g_pt_ini_point = g_pt_end_point;
-                            g_pt_end_point = temp;
+                        g_copy_end_point.x = x;
+                        g_copy_end_point.y = y;
+                        if (g_copy_end_point.x < g_copy_ini_point.x || g_copy_end_point.y < g_copy_ini_point.y) {
+                            point_t temp = g_copy_ini_point;
+                            g_copy_ini_point = g_copy_end_point;
+                            g_copy_end_point = temp;
                         }
                         g_take_shot = true;
                         g_draw_selection = true;
                     }
                 } else if (key[KEY_V]) {
                     point_t pt_data_len;
-                    pt_data_len.x = (g_pt_end_point.x - g_pt_ini_point.x) + 1;
-                    pt_data_len.y = (g_pt_end_point.y - g_pt_ini_point.y) + 1;
+                    pt_data_len.x = (g_copy_end_point.x - g_copy_ini_point.x) + 1;
+                    pt_data_len.y = (g_copy_end_point.y - g_copy_ini_point.y) + 1;
 
-                    if (g_selection_data.empty()) {
-                        g_selection_data.resize(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
+                    if (selection_data.empty()) {
+                        selection_data.resize(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
 
                         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                                g_selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(g_pt_ini_point.x + xs, g_pt_ini_point.y + ys);
+                                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(g_copy_ini_point.x + xs, g_copy_ini_point.y + ys);
                             }
                         }
                     }
 
                     for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
                         for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                            stageMap(x + xs, y + ys) = g_selection_data.at(ys * (pt_data_len.x) + xs);
+                            stageMap(x + xs, y + ys) = selection_data.at(ys * (pt_data_len.x) + xs);
                         }
                     }
 
                     g_draw_selection = false;
-                    g_cur_copy_point = 0;
+                    g_copy_selection_on = false;
                 }
             }
         }
@@ -556,7 +556,7 @@ int main(int argc, char *argv[]) {
                 ignoreVoid = false;
 
             if (key[KEY_X]) {
-                g_cur_copy_point = 0;
+                g_copy_selection_on = false;
                 g_draw_selection = false;
             }
 
@@ -581,12 +581,10 @@ int main(int argc, char *argv[]) {
             }
 
             if (g_draw_selection == true) {
-                int xini, yini, xend, yend;
-
-                xini = (g_pt_ini_point.x * TILE_SIZE) - g_map_drawx;
-                yini = g_pt_ini_point.y * TILE_SIZE;
-                xend = xini + TILE_SIZE - g_map_drawx;
-                yend = yini + TILE_SIZE;
+                const auto xini = (g_copy_ini_point.x * TILE_SIZE) - g_map_drawx;
+                const auto yini = g_copy_ini_point.y * TILE_SIZE - g_map_drawy;
+                auto xend = xini + TILE_SIZE - g_map_drawx;
+                auto yend = yini + TILE_SIZE;
 
                 if (g_take_shot == true) {
                     stretch_blit(buffer, g_selection_preview, xini, yini, xend - xini, yend - yini,
