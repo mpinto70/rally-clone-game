@@ -8,8 +8,10 @@ GRAPHLIBS =	\
 			-lalleg_unsharable \
 
 LIBS =	\
+		-lgame \
 		-lgameliballegro \
 		-lgamelib \
+		-lmap \
 		-lutil \
 		$(GRAPHLIBS) \
 

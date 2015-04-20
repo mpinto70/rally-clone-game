@@ -29,6 +29,7 @@ class IGraphic {
                                unsigned y,
                                COLOR foreground,
                                COLOR background) = 0;
+        virtual void flip() = 0;
 };
 
 }

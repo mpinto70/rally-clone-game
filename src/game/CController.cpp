@@ -16,7 +16,7 @@ CController::~CController() {
 }
 
 void CController::run() {
-    while (not gameLib_->keyboard().isKeyPressed(gamelib::KEYS::ESCAPE)) {
+    while (not gameLib_->keyboard().isKeyPressed(gamelib::EKey::ESCAPE)) {
         util::CWait wait(10);
 
         wait.wait();

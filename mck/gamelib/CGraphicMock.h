@@ -19,6 +19,7 @@ class CGraphicMock : public IGraphic {
                        unsigned y,
                        COLOR foreground,
                        COLOR background) override;
+        void flip() override;
 };
 
 }

@@ -4,20 +4,24 @@
 namespace gamelib {
 namespace mck {
 
-std::set<KEYS> CKeyboardMock::keys_;
+std::set<EKey> CKeyboardMock::keys_;
 
 CKeyboardMock::~CKeyboardMock() {
 }
 
-bool CKeyboardMock::isKeyPressed(KEYS keyCode) {
+bool CKeyboardMock::isKeyPressed(EKey keyCode) const {
     return keys_.find(keyCode) != keys_.end();
 }
 
-void CKeyboardMock::add(KEYS keyCode) {
+std::set<EKey> CKeyboardMock::keysPressed() const {
+    return keys_;
+}
+
+void CKeyboardMock::add(EKey keyCode) {
     keys_.insert(keyCode);
 }
 
-void CKeyboardMock::remove(KEYS keyCode) {
+void CKeyboardMock::remove(EKey keyCode) {
     keys_.erase(keyCode);
 }
 

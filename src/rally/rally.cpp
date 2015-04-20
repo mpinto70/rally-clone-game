@@ -4,14 +4,14 @@
  */
 
 #include "gamelib/allegro/CGameLib.h"
-#include "util/CSingleton.h"
 #include "util/CException.h"
+#include "game/CController.h"
 
 #include <iostream>
 #include <memory>
 
 // Essas duas constantes ficam por aqui mesmo?
-static const unsigned int UTIL_W = 480, UTIL_H = 240;
+static const unsigned int UTIL_W = 640, UTIL_H = 480;
 
 std::string getRallyDir() {
     const char * home = getenv("HOME");
@@ -26,12 +26,11 @@ int main() {
     using gamelib::allegro::CGameLib;
     using gamelib::IGameLib;
     try {
-        util::CSingleton<IGameLib>::create(std::unique_ptr<CGameLib>(new CGameLib(UTIL_W, UTIL_H, getRallyDir())));
-        // put the game here
-        util::CSingleton<IGameLib>::destroy();
+        std::unique_ptr<IGameLib> gameLib(new CGameLib(UTIL_W, UTIL_H, getRallyDir()));
+        game::CController controller(gameLib);
+        controller.run();
         return 0;
     } catch (const util::CException & e) {
-        util::CSingleton<IGameLib>::destroy();
         std::cout << "An ERROR occurred" << std::endl;
         std::cout << e.what() << std::endl;
         std::cout << "Code: " << e.code() << std::endl;

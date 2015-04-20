@@ -15,7 +15,8 @@ class CKeyboard : public IKeyboard {
         CKeyboard();
         ~CKeyboard() override;
 
-        bool isKeyPressed(KEYS keyCode) override;
+        bool isKeyPressed(EKey keyCode) const override;
+        std::set<EKey> keysPressed() const override;
 };
 
 }

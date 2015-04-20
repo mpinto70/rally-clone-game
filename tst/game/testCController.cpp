@@ -14,7 +14,7 @@ void testCController::testCreation() {
     TS_ASSERT(gameLib.get() != nullptr);
 
     CController cont(gameLib);
-    gamelib::mck::CKeyboardMock::add(gamelib::KEYS::ESCAPE);
+    gamelib::mck::CKeyboardMock::add(gamelib::EKey::ESCAPE);
     cont.run();
 }
 

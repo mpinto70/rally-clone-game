@@ -10,11 +10,13 @@ namespace mck {
 class CKeyboardMock : public IKeyboard {
     public:
         ~CKeyboardMock() override;
-        bool isKeyPressed(KEYS keyCode) override;
-        static void add(KEYS keyCode);
-        static void remove(KEYS keyCode);
+        bool isKeyPressed(EKey keyCode) const override;
+        std::set<EKey> keysPressed() const override;
+
+        static void add(EKey keyCode);
+        static void remove(EKey keyCode);
     private:
-        static std::set<KEYS> keys_;
+        static std::set<EKey> keys_;
 };
 
 }

@@ -16,5 +16,8 @@ void CGraphicMock::printText(const std::string & text,
 
 }
 
+void CGraphicMock::flip() {
+}
+
 }
 }

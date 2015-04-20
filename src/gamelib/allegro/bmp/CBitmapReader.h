@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gamelib/allegro/AllegroUtil.h"
 #include <allegro.h>
 #include <memory>
 #include <string>
@@ -9,8 +10,6 @@
 namespace gamelib {
 namespace allegro {
 namespace bmp {
-
-typedef std::unique_ptr<BITMAP, void(*)(BITMAP*)> BITMAP_PTR;
 
 class CBitmapReader {
     public:

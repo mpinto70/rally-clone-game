@@ -4,7 +4,10 @@
  */
 
 #include "CKeyboard.h"
+
 #include "util/CException.h"
+#include "util/EUtil.h"
+
 #include <allegro.h>
 
 namespace gamelib {
@@ -19,29 +22,41 @@ CKeyboard::CKeyboard() {
 CKeyboard::~CKeyboard() {
 }
 
-static unsigned int translateKey(KEYS keyCode) {
+static unsigned int translateKey(EKey keyCode) {
     switch (keyCode) {
-        case KEYS::ENTER:
+        case EKey::ENTER:
             return KEY_ENTER;
-        case KEYS::LEFT:
+        case EKey::LEFT:
             return KEY_LEFT;
-        case KEYS::RIGHT:
+        case EKey::RIGHT:
             return KEY_RIGHT;
-        case KEYS::UP:
+        case EKey::UP:
             return KEY_UP;
-        case KEYS::DOWN:
+        case EKey::DOWN:
             return KEY_DOWN;
-        case KEYS::SPACE:
+        case EKey::SPACE:
             return KEY_SPACE;
-        default:
+        case EKey::ESCAPE:
+            return KEY_ESC;
+        case EKey::LAST:
             return -1;
     }
+    return -1;
 }
 
-bool CKeyboard::isKeyPressed(KEYS keyCode) {
+bool CKeyboard::isKeyPressed(EKey keyCode) const {
     const unsigned int allegroKey = translateKey(keyCode);
 
     return (allegroKey != (unsigned int) - 1 && key[allegroKey] != 0);
+}
+
+std::set<EKey> CKeyboard::keysPressed() const {
+    std::set<EKey> res;
+    for (auto key : util::CEnumIterator<EKey>()) {
+        if (isKeyPressed(key))
+            res.insert(key);
+    }
+    return res;
 }
 
 }

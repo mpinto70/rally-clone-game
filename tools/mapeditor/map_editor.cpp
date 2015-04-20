@@ -485,7 +485,7 @@ int main(int argc, char *argv[]) {
         set_color_depth(32);
         set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
 
-        gamelib::allegro::bmp::BITMAP_PTR buffer(create_bitmap(SCREEN_W, SCREEN_H), destroy_bitmap);
+        gamelib::allegro::BITMAP_PTR buffer(create_bitmap(SCREEN_W, SCREEN_H), destroy_bitmap);
         g_selection_preview = create_bitmap(185, 150);
 
         clear_bitmap(g_selection_preview);

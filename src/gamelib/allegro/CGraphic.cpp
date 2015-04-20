@@ -23,12 +23,18 @@ static int translate(COLOR color) {
     return COLORS[color];
 }
 
+static void flipBuffer(BITMAP * buffer) {
+    vsync();
+    blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    clear_bitmap(buffer);
+}
+
 CGraphic::CGraphic(unsigned int uiWidth,
-                unsigned int uiHeight,
-                const std::string & fonts_path)
-    : buffer_(nullptr),
-      fontSystem_(nullptr),
-      fontMenu_(nullptr) {
+                   unsigned int uiHeight,
+                   const std::string & fonts_path)
+    : buffer_(nullptr, destroy_bitmap),
+      fontSystem_(nullptr, destroy_font),
+      fontMenu_(nullptr, destroy_font) {
     using util::CException;
 
     set_color_depth(32);
@@ -38,26 +44,24 @@ CGraphic::CGraphic(unsigned int uiWidth,
         throw CException("CGraphic::CGraphic - Error initializing screen", allegResult);
 
     // Cria buffer_ com a mesma resolução WxH da tela.
-    buffer_ = create_bitmap(SCREEN_W, SCREEN_H);
-    if (buffer_ == nullptr)
+    buffer_.reset(create_bitmap(SCREEN_W, SCREEN_H));
+    if (buffer_.get() == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing system memory", -1);
 
-    fontMenu_ = load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr);
-    if (fontMenu_ == nullptr)
+    fontMenu_.reset(load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
+    if (fontMenu_.get() == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing menu font", -2);
 
-    fontSystem_ = load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr);
-    if (fontSystem_ == nullptr)
+    fontSystem_.reset(load_font((fonts_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
+    if (fontSystem_.get() == nullptr)
         throw CException("CGraphic::CGraphic - Error initializing system font", -3);
 
     initColor();
+    rectfill(buffer_.get(), 0, 0, SCREEN_W, SCREEN_H, COLORS[COLOR::BLUE]);
+    flipBuffer(buffer_.get());
 }
 
 CGraphic::~CGraphic() {
-    destroy_font(fontMenu_);
-    destroy_font(fontSystem_);
-    destroy_bitmap(buffer_);
-    buffer_ = nullptr;
 }
 
 void CGraphic::printText(const std::string & text,
@@ -72,8 +76,12 @@ void CGraphic::printText(const std::string & text,
     if (text.empty())
         return;
 
-    const FONT * font = gfont == GFONT::MENU_FONT ? fontMenu_ : fontSystem_;
-    textprintf_ex(buffer_, font, x, y, translate(foreground), translate(background), "%s", text.c_str());
+    const FONT * font = gfont == GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
+    textprintf_ex(buffer_.get(), font, x, y, translate(foreground), translate(background), "%s", text.c_str());
+}
+
+void CGraphic::flip() {
+    flipBuffer(buffer_.get());
 }
 
 }

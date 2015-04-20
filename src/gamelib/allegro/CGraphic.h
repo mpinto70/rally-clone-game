@@ -6,6 +6,7 @@
 #pragma once
 
 #include "gamelib/IGraphic.h"
+#include "gamelib/allegro/AllegroUtil.h"
 #include <allegro.h>
 
 namespace gamelib {
@@ -25,10 +26,11 @@ class CGraphic : public IGraphic {
                        unsigned y,
                        COLOR foreground,
                        COLOR background) override;
+        void flip() override;
     private:
-        BITMAP * buffer_;
-        FONT * fontSystem_;
-        FONT * fontMenu_;
+        BITMAP_PTR buffer_;
+        FONT_PTR fontSystem_;
+        FONT_PTR fontMenu_;
 };
 
 }
