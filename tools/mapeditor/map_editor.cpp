@@ -158,8 +158,6 @@ static void map_draw(BITMAP * bmp,
                      const int map_drawx,
                      const int map_drawy,
                      const bool draw_actions) {
-    static int color[] = { makecol32(30, 30, 30), makecol32(255, 0, 0), makecol32(255, 255, 255) };
-
     const unsigned mapx = map_drawx / TILE_SIZE;
     const unsigned mapy = map_drawy / TILE_SIZE;
 
@@ -183,7 +181,8 @@ static void map_draw(BITMAP * bmp,
             }
 
             if (key[KEY_F] == 0 && g_take_shot == false) {
-                textprintf_ex(bmp, font, x, y, 0, color[2], "%02d", map::from_EAction<int>(stageMap(X, Y).action()));
+                static int color = makecol32(255, 255, 255);
+                textprintf_ex(bmp, font, x + 2, y + 2, 0, color, "%02d", map::from_EAction<int>(stageMap(X, Y).action()));
             }
         }
     }
