@@ -14,9 +14,6 @@ namespace gamelib {
 namespace allegro {
 
 CKeyboard::CKeyboard() {
-    const int allegResult = install_keyboard();
-    if (allegResult != 0)
-        throw util::CException("CKeyboard::CKeyboard - Error initializing keyboard", allegResult);
 }
 
 CKeyboard::~CKeyboard() {

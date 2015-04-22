@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "map/CMap.h"
+
 #include <string>
 
 namespace gamelib {
@@ -29,6 +31,9 @@ class IGraphic {
                                unsigned y,
                                COLOR foreground,
                                COLOR background) = 0;
+        virtual void draw(const map::CMap & map,
+                          size_t x,
+                          size_t y) = 0;
         virtual void flip() = 0;
 };
 

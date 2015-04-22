@@ -16,6 +16,11 @@ void CGraphicMock::printText(const std::string & text,
 
 }
 
+void CGraphicMock::draw(const map::CMap & map,
+                        const size_t x,
+                        const size_t y) {
+}
+
 void CGraphicMock::flip() {
 }
 

@@ -19,6 +19,10 @@ class CGraphicMock : public IGraphic {
                        unsigned y,
                        COLOR foreground,
                        COLOR background) override;
+        void draw(const map::CMap & map,
+                  size_t x,
+                  size_t y) override;
+
         void flip() override;
 };
 

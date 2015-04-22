@@ -54,9 +54,16 @@ CMap CMapIO::read(std::istream & is) {
         if (not is || is.gcount() != sizeof(tile_type_t)) {
             throw util::CException("CMapReader::read(is) - could not read tile " + std::to_string(i), i);
         }
+        if (t >= from_ETile<tile_type_t>(ETileType::LAST)) {
+            throw util::CException("CMapReader::read(is) - invalid tile " + std::to_string(t) + " read " + std::to_string(i), i);
+        }
+
         is.read(pa, sizeof(action_t));
         if (not is || is.gcount() != sizeof(tile_type_t)) {
             throw util::CException("CMapReader::read(is) - could not skip action " + std::to_string(i), i);
+        }
+        if (a >= from_EAction<action_t>(EAction::LAST)) {
+            throw util::CException("CMapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
         }
         tiles.push_back(CTile(to_ETile(t), to_EAction(a)));
     }

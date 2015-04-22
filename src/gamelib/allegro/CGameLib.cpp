@@ -18,14 +18,28 @@ CGameLib::CGameLib(unsigned int width,
       sound_(nullptr),
       timer_(nullptr) {
     using util::CException;
-    const int allegResult = allegro_init();
+    int allegResult = allegro_init();
     if (allegResult != 0)
-        throw CException("CGameLib::CGameLib - Error initializing graphics", allegResult);
+        throw CException("CGameLib - Error initializing graphics", allegResult);
+
+    allegResult = install_keyboard();
+    if (allegResult != 0)
+        throw util::CException("CGameLib - Error initializing keyboard", allegResult);
+
+    allegResult = install_timer();
+    if (allegResult != 0)
+        throw util::CException("CGameLib - Error initializing timer", allegResult);
+
+    set_color_depth(32);
+
+    allegResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, width, height, 0, 0);
+    if (allegResult != 0)
+        throw CException("CGameLib - Error initializing screen", allegResult);
 
     keyboard_ = new CKeyboard();
     timer_ = new CTimer();
     sound_ = new CSound();
-    graphic_ = new CGraphic(width, height, path_to_data + "/stages/common");
+    graphic_ = new CGraphic(path_to_data + "/stages/common");
 }
 
 CGameLib::~CGameLib() {

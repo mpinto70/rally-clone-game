@@ -10,9 +10,6 @@
 namespace gamelib {
 namespace allegro {
 CTimer::CTimer() {
-    const int allegResult = install_timer();
-    if (allegResult != 0)
-        throw util::CException("CTimer::CTimer - Error initializing timer", allegResult);
 }
 
 CTimer::~CTimer() {

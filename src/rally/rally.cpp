@@ -26,8 +26,9 @@ int main() {
     using gamelib::allegro::CGameLib;
     using gamelib::IGameLib;
     try {
-        std::unique_ptr<IGameLib> gameLib(new CGameLib(UTIL_W, UTIL_H, getRallyDir()));
-        game::CController controller(gameLib);
+        const auto rallyDir = getRallyDir();
+        std::unique_ptr<IGameLib> gameLib(new CGameLib(UTIL_W, UTIL_H, rallyDir));
+        game::CController controller(gameLib, rallyDir);
         controller.run();
         return 0;
     } catch (const util::CException & e) {

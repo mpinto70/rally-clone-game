@@ -10,10 +10,14 @@ GRAPHLIBS =	\
 LIBS =	\
 		-lgame \
 		-lgameliballegro \
+		-lgameliballegrobmp \
 		-lgamelib \
 		-lmap \
 		-lutil \
 		$(GRAPHLIBS) \
+		-lboost_filesystem \
+		-lboost_system \
+		
 
 SUBDIRS =
 
