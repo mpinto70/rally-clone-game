@@ -6,17 +6,22 @@
 
 namespace map {
 
-CMap::CMap(const size_t width,
-           const size_t height,
+CMap::CMap(const map_dimension_t width,
+           const map_dimension_t height,
+           const map_dimension_t parts,
            const std::vector<CTile>& tiles)
     : width_(width),
       height_(height),
+      parts_(parts),
       tiles_(tiles) {
     if (width == 0) {
         throw std::invalid_argument("CMap - zero width");
     }
     if (height == 0) {
         throw std::invalid_argument("CMap - zero height");
+    }
+    if (parts == 0) {
+        throw std::invalid_argument("CMap - zero parts");
     }
     if (tiles.size() != width * height) {
         throw std::invalid_argument("CMap - number of tiles ("
@@ -29,20 +34,20 @@ CMap::CMap(const size_t width,
     }
 }
 
-CTile& CMap::operator()(size_t x,
-                        size_t y) {
+CTile& CMap::operator()(map_dimension_t x,
+                        map_dimension_t y) {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-const CTile & CMap::operator()(size_t x,
-                               size_t y) const {
+const CTile & CMap::operator()(map_dimension_t x,
+                               map_dimension_t y) const {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-void CMap::verifyRange(size_t x,
-                       size_t y) const {
+void CMap::verifyRange(map_dimension_t x,
+                       map_dimension_t y) const {
     if (x >= width_)
         throw util::CException("CMap() - horizontal coordinate out of range ("
                                + std::to_string(x)

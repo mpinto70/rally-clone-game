@@ -8,8 +8,6 @@
 
 namespace map {
 
-typedef std::uint32_t map_dimension_t;
-
 CMap CMapIO::read(const std::string & fileName) {
     std::ifstream is(fileName, std::ios_base::in | std::ios_base::binary);
     return read(is);
@@ -21,89 +19,64 @@ void CMapIO::write(const std::string & fileName,
     write(os, map);
 }
 
+template <typename T>
+static T readField(std::istream & is,
+                   const std::string & fieldName) {
+    T t;
+    char * buffer = reinterpret_cast<char *>(&t);
+    is.read(buffer, sizeof(T));
+    if (not is || is.gcount() != sizeof(T)) {
+        throw util::CException("CMapReader::read(is) - could not read " + fieldName, 1);
+    }
+    return t;
+}
+
 CMap CMapIO::read(std::istream & is) {
-    map_dimension_t width, height;
-
-    std::vector<char> buffer(sizeof(map_dimension_t), '\0');
-
-    is.read(buffer.data(), buffer.size());
-
-    if (not is || is.gcount() != sizeof(map_dimension_t)) {
-        throw util::CException("CMapReader::read(is) - could not read width", 1);
-    }
-
-    memcpy(&width, buffer.data(), sizeof(map_dimension_t));
-
-    is.read(buffer.data(), buffer.size());
-
-    if (not is || is.gcount() != sizeof(map_dimension_t)) {
-        throw util::CException("CMapReader::read(is) - could not read height", 2);
-    }
-
-    memcpy(&height, buffer.data(), sizeof(map_dimension_t));
+    const auto width = readField<map_dimension_t>(is, "width");
+    const auto height = readField<map_dimension_t>(is, "height");
+    const auto parts = readField<map_dimension_t>(is, "parts");
 
     const auto qttyTiles = width * height;
     std::vector<CTile> tiles;
     tiles.reserve(qttyTiles);
-    tile_type_t t;
-    action_t a;
-    char * pt = (char *) &t;
-    char * pa = (char *) &a;
     for (size_t i = 0; i < qttyTiles; ++i) {
-        is.read(pt, sizeof(tile_type_t));
-        if (not is || is.gcount() != sizeof(tile_type_t)) {
-            throw util::CException("CMapReader::read(is) - could not read tile " + std::to_string(i), i);
-        }
+        const auto t = readField<tile_type_t>(is, "tile");
         if (t >= from_ETile<tile_type_t>(ETileType::LAST)) {
             throw util::CException("CMapReader::read(is) - invalid tile " + std::to_string(t) + " read " + std::to_string(i), i);
         }
 
-        is.read(pa, sizeof(action_t));
-        if (not is || is.gcount() != sizeof(tile_type_t)) {
-            throw util::CException("CMapReader::read(is) - could not skip action " + std::to_string(i), i);
-        }
+        const auto a = readField<action_t>(is, "action");
         if (a >= from_EAction<action_t>(EAction::LAST)) {
             throw util::CException("CMapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
         }
         tiles.push_back(CTile(to_ETile(t), to_EAction(a)));
     }
-    return CMap(width, height, tiles);
+    return CMap(width, height, parts, tiles);
+}
+
+template <typename T>
+static void writeField(std::ostream & os,
+                       const T t,
+                       const std::string & fieldName) {
+    const char * buffer = reinterpret_cast<const char *>(&t);
+    os.write(buffer, sizeof(T));
+    if (not os) {
+        throw util::CException("CMapReader::write(os) - could not write " + fieldName, 1);
+    }
 }
 
 void CMapIO::write(std::ostream & os,
                    const CMap & map) {
-    std::vector<char> buffer(sizeof(map_dimension_t), 0);
 
-    const auto width = map.width();
-    memcpy(buffer.data(), &width, sizeof(map_dimension_t));
-    os.write(buffer.data(), buffer.size());
-    if (not os) {
-        throw util::CException("CMapReader::write(os) - could not write width", width);
-    }
-
-    const auto height = map.height();
-    memcpy(buffer.data(), &height, sizeof(map_dimension_t));
-    os.write(buffer.data(), buffer.size());
-    if (not os) {
-        throw util::CException("CMapReader::write(os) - could not write height", height);
-    }
-
-    const auto qttyTiles = width * height;
-    tile_type_t t;
-    action_t a;
-    char * pt = (char *) &t;
-    char * pa = (char *) &a;
+    writeField(os, map.width(), "width");
+    writeField(os, map.height(), "height");
+    writeField(os, map.parts(), "parts");
+    const auto qttyTiles = map.width() * map.height();
     for (size_t i = 0; i < qttyTiles; ++i) {
-        t = from_ETile<tile_type_t>(map.tiles()[i].type());
-        os.write(pt, sizeof(tile_type_t));
-        if (not os) {
-            throw util::CException("CMapReader::write(os) - could not write tile " + std::to_string(i), i);
-        }
-        a = from_EAction<action_t>(map.tiles()[i].action());
-        os.write(pa, sizeof(action_t));
-        if (not os) {
-            throw util::CException("CMapReader::read(is) - could not write action " + std::to_string(i), i);
-        }
+        const auto t = from_ETile<tile_type_t>(map.tiles()[i].type());
+        const auto a = from_EAction<action_t>(map.tiles()[i].action());
+        writeField(os, t, "tile");
+        writeField(os, a, "action");
     }
 }
 
