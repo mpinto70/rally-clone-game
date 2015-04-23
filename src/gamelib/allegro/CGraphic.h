@@ -34,6 +34,7 @@ class CGraphic : public IGraphic {
         void flip() override;
     private:
         BITMAP_PTR buffer_;
+        BITMAP_PTR bufferMap_;
         FONT_PTR fontSystem_;
         FONT_PTR fontMenu_;
         bmp::CTileMapper tileMapper_;

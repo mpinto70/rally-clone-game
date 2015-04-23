@@ -13,11 +13,16 @@ enum class GFONT : unsigned char {
 };
 
 enum class COLOR : unsigned {
-    BLACK,
     RED,
+    WINE,
     GREEN,
+    DARKGREEN,
     BLUE,
-    WHITE
+    DARKBLUE,
+    WHITE,
+    GRAY,
+    DARKGRAY,
+    BLACK
 };
 
 class IGraphic {

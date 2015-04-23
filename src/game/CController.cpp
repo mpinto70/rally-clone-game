@@ -30,11 +30,34 @@ CController::~CController() {
 }
 
 void CController::run() {
+    using gamelib::EKey;
 
+    size_t x = 0, y = 0;
     while (not gameLib_->keyboard().isKeyPressed(gamelib::EKey::ESCAPE)) {
         util::CWait wait(10);
 
-        gameLib_->graphic().draw(*map_, 0, 0);
+        if (gameLib_->keyboard().isKeyPressed(EKey::DOWN)) {
+            ++y;
+            if (y >= map_->height() * map_->parts())
+                y = 0;
+        }
+        if (gameLib_->keyboard().isKeyPressed(EKey::UP)) {
+            if (y == 0)
+                y = map_->height() * map_->parts();
+            --y;
+        }
+        if (gameLib_->keyboard().isKeyPressed(EKey::RIGHT)) {
+            ++x;
+            if (x >= map_->width() * map_->parts())
+                x = 0;
+        }
+        if (gameLib_->keyboard().isKeyPressed(EKey::LEFT)) {
+            if (x == 0)
+                x = map_->width() * map_->parts();
+            --x;
+        }
+
+        gameLib_->graphic().draw(*map_, x, y);
 
         wait.wait();
         gameLib_->graphic().flip();
