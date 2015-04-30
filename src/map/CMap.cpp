@@ -29,20 +29,20 @@ CMap::CMap(const map_dimension_t width,
     }
 }
 
-CTile& CMap::operator()(map_dimension_t x,
-                        map_dimension_t y) {
+CTile& CMap::operator()(const map_dimension_t x,
+                        const map_dimension_t y) {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-const CTile & CMap::operator()(map_dimension_t x,
-                               map_dimension_t y) const {
+const CTile & CMap::operator()(const map_dimension_t x,
+                               const map_dimension_t y) const {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-void CMap::verifyRange(map_dimension_t x,
-                       map_dimension_t y) const {
+void CMap::verifyRange(const map_dimension_t x,
+                       const map_dimension_t y) const {
     if (x >= width_)
         throw util::CException("CMap() - horizontal coordinate out of range ("
                                + std::to_string(x)
