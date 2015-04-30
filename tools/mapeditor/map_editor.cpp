@@ -270,7 +270,7 @@ static void draw_manual(BITMAP * canvas) {
         "I+O - shows action position interactively (free positioning)",
         "F - hide action number from tile",
         "G - hide grid",
-        "Left Shift - salva",
+        "Left Shift - save",
         "Ctrl+C + left click - mark region for copy",
         "Ctrl+V + left click - paste copied region to point",
         "X - cancel region selected"
