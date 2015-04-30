@@ -34,7 +34,6 @@ static T readField(std::istream & is,
 CMap CMapIO::read(std::istream & is) {
     const auto width = readField<map_dimension_t>(is, "width");
     const auto height = readField<map_dimension_t>(is, "height");
-    const auto parts = readField<map_dimension_t>(is, "parts");
 
     const auto qttyTiles = width * height;
     std::vector<CTile> tiles;
@@ -51,7 +50,7 @@ CMap CMapIO::read(std::istream & is) {
         }
         tiles.push_back(CTile(to_ETileType(t), to_EAction(a)));
     }
-    return CMap(width, height, parts, tiles);
+    return CMap(width, height, tiles);
 }
 
 template <typename T>
@@ -70,7 +69,6 @@ void CMapIO::write(std::ostream & os,
 
     writeField(os, map.width(), "width");
     writeField(os, map.height(), "height");
-    writeField(os, map.parts(), "parts");
     const auto qttyTiles = map.width() * map.height();
     for (size_t i = 0; i < qttyTiles; ++i) {
         const auto t = from_ETileType<tile_type_t>(map.tiles()[i].type());

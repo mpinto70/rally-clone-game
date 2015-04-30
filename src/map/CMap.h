@@ -18,7 +18,6 @@ class CMap {
          */
         CMap(map_dimension_t width,
              map_dimension_t height,
-             map_dimension_t parts,
              const std::vector<CTile> & tiles);
 
         /** returns the height. */
@@ -26,9 +25,6 @@ class CMap {
 
         /** returns the width. */
         map_dimension_t width() const { return width_; }
-
-        /** returns the number of logical parts inside a tile. */
-        map_dimension_t parts() const { return parts_; }
 
         /** returns the tiles. */
         const std::vector<CTile>& tiles() const { return tiles_; }
@@ -41,7 +37,6 @@ class CMap {
     private:
         map_dimension_t width_;              ///< width
         map_dimension_t height_;             ///< height
-        map_dimension_t parts_;              ///< number of parts inside a tile
         std::vector<CTile> tiles_;  ///< tiles
 
         void verifyRange(map_dimension_t x,

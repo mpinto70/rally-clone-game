@@ -28,7 +28,7 @@ int main() {
     try {
         const auto rallyDir = getRallyDir();
         std::unique_ptr<IGameLib> gameLib(new CGameLib(UTIL_W, UTIL_H, rallyDir));
-        game::CController controller(gameLib, rallyDir);
+        game::CController controller(gameLib, rallyDir, 15);
         controller.run();
         return 0;
     } catch (const util::CException & e) {

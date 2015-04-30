@@ -119,7 +119,7 @@ static map::CMap create_clean_map(const int max_x,
     g_default_tile = default_tile;
     const std::vector<map::CTile> tiles(g_max_x * g_max_y, map::CTile(map::ETileType::GRASS, map::EAction::NONE));
 
-    return map::CMap(g_max_x, g_max_y, TILE_SIZE, tiles);
+    return map::CMap(g_max_x, g_max_y, tiles);
 }
 
 template <typename MAPPER>

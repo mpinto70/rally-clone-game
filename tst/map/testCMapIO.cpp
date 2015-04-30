@@ -45,8 +45,7 @@ void testCMapIO::testRead() {
 constexpr auto maxType = static_cast<size_t>(ETileType::LAST) - 1;
 constexpr auto maxAction = static_cast<size_t>(EAction::LAST) - 1;
 static void verifyWrite(const map_dimension_t width,
-                        const map_dimension_t height,
-                        const map_dimension_t parts) {
+                        const map_dimension_t height) {
     std::default_random_engine re;
     std::uniform_int_distribution<map_dimension_t> distType{0, maxType};
     std::uniform_int_distribution<map_dimension_t> distAction{0, maxAction};
@@ -61,20 +60,19 @@ static void verifyWrite(const map_dimension_t width,
         tiles.emplace_back(type, action);
     }
 
-    const CMap map1(width, height, parts, tiles);
+    const CMap map1(width, height, tiles);
     CMapIO::write(tmpFileName, map1);
 
     const CMap map2 = CMapIO::read(tmpFileName);
 
     TS_ASSERT_EQUALS(map1.width(), map2.width());
     TS_ASSERT_EQUALS(map1.height(), map2.height());
-    TS_ASSERT_EQUALS(map1.parts(), map2.parts());
     TS_ASSERT_EQUALS(map1.tiles(), map2.tiles());
 }
 
 void testCMapIO::testWrite() {
-    verifyWrite(10, 20, 30);
-    verifyWrite(200, 100, 27);
+    verifyWrite(10, 20);
+    verifyWrite(200, 100);
 }
 
 }

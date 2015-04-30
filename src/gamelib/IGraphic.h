@@ -38,7 +38,8 @@ class IGraphic {
                                COLOR background) = 0;
         virtual void draw(const map::CMap & map,
                           size_t x,
-                          size_t y) = 0;
+                          size_t y,
+                          size_t parts) = 0;
         virtual void flip() = 0;
 };
 

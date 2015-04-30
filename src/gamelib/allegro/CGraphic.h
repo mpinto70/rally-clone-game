@@ -29,7 +29,8 @@ class CGraphic : public IGraphic {
                        COLOR background) override;
         void draw(const map::CMap & map,
                   size_t x,
-                  size_t y) override;
+                  size_t y,
+                  size_t parts) override;
 
         void flip() override;
     private:

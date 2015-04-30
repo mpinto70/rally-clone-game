@@ -8,20 +8,15 @@ namespace map {
 
 CMap::CMap(const map_dimension_t width,
            const map_dimension_t height,
-           const map_dimension_t parts,
            const std::vector<CTile>& tiles)
     : width_(width),
       height_(height),
-      parts_(parts),
       tiles_(tiles) {
     if (width == 0) {
         throw std::invalid_argument("CMap - zero width");
     }
     if (height == 0) {
         throw std::invalid_argument("CMap - zero height");
-    }
-    if (parts == 0) {
-        throw std::invalid_argument("CMap - zero parts");
     }
     if (tiles.size() != width * height) {
         throw std::invalid_argument("CMap - number of tiles ("

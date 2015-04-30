@@ -123,13 +123,14 @@ static double calculateMin(double x,
 
 void CGraphic::draw(const map::CMap & map,
                     const size_t x_cursor,
-                    const size_t y_cursor) {
+                    const size_t y_cursor,
+                    const size_t parts) {
     rectfill(buffer_.get(), 0, 0, buffer_->w, buffer_->h, COLORS[COLOR::WINE]);
     rect(buffer_.get(), 0, 0, bufferMap_->w + 3, bufferMap_->h + 3, COLORS[COLOR::WHITE]);
     rect(buffer_.get(), 1, 1, bufferMap_->w + 2, bufferMap_->h + 2, COLORS[COLOR::WHITE]);
 
     // ratio between the tile size on screen and the number of logical divisions inside tile
-    const double ratio_S_T = (double) TILE_SIZE / map.parts();
+    const double ratio_S_T = (double) TILE_SIZE / parts;
 
     // converting cursor logical coordinate to screen coordinate (if screen was full size)
     const double x = x_cursor * ratio_S_T;
