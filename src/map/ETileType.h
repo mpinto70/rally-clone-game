@@ -40,7 +40,7 @@ enum class ETileType : tile_type_t {
  * @param t the value to be converted
  */
 template <typename T>
-ETileType to_ETile(T t) {
+ETileType to_ETileType(T t) {
     return util::to_Enum<ETileType, T>(t);
 }
 
@@ -48,7 +48,7 @@ ETileType to_ETile(T t) {
  * @param enum_value the value to be converted
  */
 template <typename T>
-T from_ETile(ETileType enum_value) {
+T from_ETileType(ETileType enum_value) {
     return util::from_Enum<T, ETileType>(enum_value);
 }
 

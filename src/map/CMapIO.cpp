@@ -41,7 +41,7 @@ CMap CMapIO::read(std::istream & is) {
     tiles.reserve(qttyTiles);
     for (size_t i = 0; i < qttyTiles; ++i) {
         const auto t = readField<tile_type_t>(is, "tile");
-        if (t >= from_ETile<tile_type_t>(ETileType::LAST)) {
+        if (t >= from_ETileType<tile_type_t>(ETileType::LAST)) {
             throw util::CException("CMapReader::read(is) - invalid tile " + std::to_string(t) + " read " + std::to_string(i), i);
         }
 
@@ -49,7 +49,7 @@ CMap CMapIO::read(std::istream & is) {
         if (a >= from_EAction<action_t>(EAction::LAST)) {
             throw util::CException("CMapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
         }
-        tiles.push_back(CTile(to_ETile(t), to_EAction(a)));
+        tiles.push_back(CTile(to_ETileType(t), to_EAction(a)));
     }
     return CMap(width, height, parts, tiles);
 }
@@ -73,7 +73,7 @@ void CMapIO::write(std::ostream & os,
     writeField(os, map.parts(), "parts");
     const auto qttyTiles = map.width() * map.height();
     for (size_t i = 0; i < qttyTiles; ++i) {
-        const auto t = from_ETile<tile_type_t>(map.tiles()[i].type());
+        const auto t = from_ETileType<tile_type_t>(map.tiles()[i].type());
         const auto a = from_EAction<action_t>(map.tiles()[i].action());
         writeField(os, t, "tile");
         writeField(os, a, "action");

@@ -471,7 +471,7 @@ map::CMap createOrLoadMap(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     try {
-        const auto tiles_num = map::from_ETile<unsigned int>(map::ETileType::LAST);
+        const auto tiles_num = map::from_ETileType<unsigned int>(map::ETileType::LAST);
         const auto act_num = map::from_EAction<unsigned int>(map::EAction::LAST);
 
         g_map_drawx = g_map_drawy = 0;

@@ -27,7 +27,7 @@ void testCMapIO::testRead() {
     const auto & tiles = map.tiles();
     EAction action = EAction::FIRST;
     for (size_t i = 0; i < tiles.size(); ++i) {
-        ETileType t = to_ETile(i % max);
+        ETileType t = to_ETileType(i % max);
         TSM_ASSERT_EQUALS(i, tiles[i].type(), t);
         if (tiles[i].type() == ETileType::ROAD) {
             TSM_ASSERT_EQUALS(i, tiles[i].action(), action);
@@ -56,7 +56,7 @@ static void verifyWrite(const map_dimension_t width,
     std::vector<CTile> tiles;
     tiles.reserve(fullsize);
     for (size_t i = 0; i < fullsize; ++i) {
-        const ETileType type = to_ETile(diceType());
+        const ETileType type = to_ETileType(diceType());
         const EAction action = (type == ETileType::ROAD) ? to_EAction(diceAction()) : EAction::NONE;
         tiles.emplace_back(type, action);
     }
