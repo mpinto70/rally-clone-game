@@ -4,7 +4,7 @@ default: libbothtarget
 SUBDIRS =
 
 OBJS =	\
-		ECarDirection.o \
+		EDirection.o \
 
 include $(RALLY_ROOT)/src/src.mk
 
