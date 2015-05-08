@@ -4,6 +4,9 @@
 #include <string>
 #include <typeinfo>
 
+/** define to be used on enum's to_string functions. */
+#define CASE_ENUM_TO_STRING(VALUE) case VALUE: return #VALUE
+
 namespace util {
 
 template< typename T >
