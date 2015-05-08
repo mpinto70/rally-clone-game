@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 
-namespace map {
+namespace car {
 
 /** the underlying enum type. */
 typedef std::uint8_t car_direction_t;

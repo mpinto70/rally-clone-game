@@ -13,10 +13,10 @@ typedef std::uint8_t action_t;
 /** Types of actions. */
 enum class EAction : action_t {
     NONE,
-    ENEMY_UP,
-    ENEMY_RIGHT,
-    ENEMY_DOWN,
-    ENEMY_LEFT,
+    ENEMY_NORTH,
+    ENEMY_WEST,
+    ENEMY_SOUTH,
+    ENEMY_EAST,
     STONE,
     FUEL,
     LAST,

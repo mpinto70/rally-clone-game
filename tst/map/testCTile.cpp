@@ -15,9 +15,9 @@ void testCTile::testCreation() {
     TS_ASSERT_EQUALS(tile2.type(), ETileType::BOTTOM);
     TS_ASSERT_EQUALS(tile2.action(), EAction::NONE);
 
-    const CTile tile3(ETileType::ROAD, EAction::ENEMY_UP);
+    const CTile tile3(ETileType::ROAD, EAction::ENEMY_NORTH);
     TS_ASSERT_EQUALS(tile3.type(), ETileType::ROAD);
-    TS_ASSERT_EQUALS(tile3.action(), EAction::ENEMY_UP);
+    TS_ASSERT_EQUALS(tile3.action(), EAction::ENEMY_NORTH);
 
     const CTile tile4(ETileType::ROAD, EAction::STONE);
     TS_ASSERT_EQUALS(tile4.type(), ETileType::ROAD);
@@ -53,9 +53,9 @@ void testCTile::testModification() {
     TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
     TS_ASSERT_EQUALS(tile.action(), EAction::NONE);
 
-    tile.action(EAction::ENEMY_DOWN);
+    tile.action(EAction::ENEMY_SOUTH);
     TS_ASSERT_EQUALS(tile.type(), ETileType::ROAD);
-    TS_ASSERT_EQUALS(tile.action(), EAction::ENEMY_DOWN);
+    TS_ASSERT_EQUALS(tile.action(), EAction::ENEMY_SOUTH);
 
     tile.type(ETileType::BUSH);
     TS_ASSERT_EQUALS(tile.type(), ETileType::BUSH);

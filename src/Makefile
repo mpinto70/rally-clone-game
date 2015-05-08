@@ -3,6 +3,7 @@ default: subdirs
 
 LIBDIRS =	\
 			util \
+			car \
 			map \
 			gamelib \
 			game \

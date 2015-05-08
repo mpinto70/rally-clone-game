@@ -18,7 +18,7 @@ void testCMap::testCreation() {
     TS_ASSERT_EQUALS(m1.tiles(), tiles);
 
     tiles = {
-        CTile{ ETileType::ROAD,      EAction::ENEMY_UP },
+        CTile{ ETileType::ROAD,      EAction::ENEMY_NORTH },
         CTile{ ETileType::BUSH,      EAction::NONE },
         CTile{ ETileType::BOTTOM,    EAction::NONE },
         CTile{ ETileType::GRASS,     EAction::NONE },
@@ -81,7 +81,7 @@ void testCMap::testIndexing() {
 
 
     tiles = {
-        CTile{ ETileType::ROAD,      EAction::ENEMY_UP },
+        CTile{ ETileType::ROAD,      EAction::ENEMY_NORTH },
         CTile{ ETileType::BUSH,      EAction::NONE },
         CTile{ ETileType::BOTTOM,    EAction::NONE },
         CTile{ ETileType::GRASS,     EAction::NONE },
@@ -90,7 +90,7 @@ void testCMap::testIndexing() {
     };
 
     const CMap m3(2, 3, tiles);
-    TS_ASSERT_EQUALS(m3(0, 0), CTile(ETileType::ROAD,      EAction::ENEMY_UP));
+    TS_ASSERT_EQUALS(m3(0, 0), CTile(ETileType::ROAD,      EAction::ENEMY_NORTH));
     TS_ASSERT_EQUALS(m3(1, 0), CTile(ETileType::BUSH,      EAction::NONE));
     TS_ASSERT_EQUALS(m3(0, 1), CTile(ETileType::BOTTOM,    EAction::NONE));
     TS_ASSERT_EQUALS(m3(1, 1), CTile(ETileType::GRASS,     EAction::NONE));
@@ -107,7 +107,7 @@ void testCMap::testIndexing() {
                             "CMap() - vertical coordinate out of range (3/3)");
 
     const CMap m4(3, 2, tiles);
-    TS_ASSERT_EQUALS(m4(0, 0), CTile(ETileType::ROAD,      EAction::ENEMY_UP));
+    TS_ASSERT_EQUALS(m4(0, 0), CTile(ETileType::ROAD,      EAction::ENEMY_NORTH));
     TS_ASSERT_EQUALS(m4(1, 0), CTile(ETileType::BUSH,      EAction::NONE));
     TS_ASSERT_EQUALS(m4(2, 0), CTile(ETileType::BOTTOM,    EAction::NONE));
     TS_ASSERT_EQUALS(m4(0, 1), CTile(ETileType::GRASS,     EAction::NONE));

@@ -4,7 +4,7 @@
 
 #include "util/CException.h"
 
-namespace map {
+namespace car {
 
 std::string to_string(ECarDirection enum_value) {
     switch (enum_value) {
