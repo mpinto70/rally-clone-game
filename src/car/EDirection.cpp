@@ -16,7 +16,7 @@ std::string to_string(EDirection enum_value) {
         case EDirection::LAST:
             break;
     }
-    throw util::CException("to_string(ECarDirection) - invalid argument", util::from_Enum<int>(enum_value));
+    throw util::CException("to_string(EDirection) - invalid argument", util::from_Enum<int>(enum_value));
 }
 
 }

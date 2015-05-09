@@ -20,24 +20,25 @@ enum class EDirection : direction_t {
     FIRST = NONE
 };
 
-/** convert a value of type \b T to a ECarDirection value.
+/** convert a value of type \b T to a EDirection value.
  * @param t the value to be converted
  */
 template <typename T>
-EDirection to_ECarDirection(T t) {
+EDirection to_EDirection(T t) {
     return util::to_Enum<T, EDirection>(t);
 }
 
-/** convert a value of type ECarDirection to a value of type \b T.
+/** convert a value of type EDirection to a value of type \b T.
  * @param enum_value the value to be converted
  */
 template <typename T>
-T from_ECarDirection(EDirection enum_value) {
+T from_EDirection(EDirection enum_value) {
     return util::from_Enum<T, EDirection>(enum_value);
 }
 
 /** converts enum value to string
  * @param enum_value the value to be converted
  */
+std::string to_string(EDirection enum_value);
 
 }

@@ -27,19 +27,19 @@ enum class EOrientation : direction_t {
     FIRST = NORTH
 };
 
-/** convert a value of type \b T to a ECarDirection value.
+/** convert a value of type \b T to a EOrientation value.
  * @param t the value to be converted
  */
 template <typename T>
-EOrientation to_ECarDirection(T t) {
+EOrientation to_EOrientation(T t) {
     return util::to_Enum<T, EOrientation>(t);
 }
 
-/** convert a value of type ECarDirection to a value of type \b T.
+/** convert a value of type EOrientation to a value of type \b T.
  * @param enum_value the value to be converted
  */
 template <typename T>
-T from_ECarDirection(EOrientation enum_value) {
+T from_EOrientation(EOrientation enum_value) {
     return util::from_Enum<T, EOrientation>(enum_value);
 }
 

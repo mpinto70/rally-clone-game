@@ -3,6 +3,7 @@ default: subdirs
 
 SUBDIRS =	\
 			util \
+			car \
 			map \
 			game \
 

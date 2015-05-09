@@ -23,7 +23,7 @@ std::string to_string(EOrientation enum_value) {
         case EOrientation::LAST:
             break;
     }
-    throw util::CException("to_string(ECarDirection) - invalid argument", util::from_Enum<int>(enum_value));
+    throw util::CException("to_string(EOrientation) - invalid argument", util::from_Enum<int>(enum_value));
 }
 
 }

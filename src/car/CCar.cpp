@@ -3,13 +3,14 @@
 
 namespace car {
 
-CCar::CCar() {
-    // TODO Auto-generated constructor stub
-
+CCar::CCar(EOrientation orientation,
+           EDirection direction)
+    : orientation_(orientation),
+      direction_(direction),
+      nextDirection_(EDirection::NONE) {
 }
 
 CCar::~CCar() {
-    // TODO Auto-generated destructor stub
 }
 
 }
