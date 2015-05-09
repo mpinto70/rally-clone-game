@@ -18,4 +18,16 @@ void testCCar::testCreation() {
     TS_ASSERT_EQUALS(c2.nextDirection(), EDirection::NONE);
 }
 
+void testCCar::testInvalidCreation() {
+    TS_ASSERT_THROWS_EQUALS(CCar c(EOrientation::SOUTH, EDirection::LAST),
+                            util::CException & e,
+                            std::string(e.what()),
+                            "CCar - invalid direction");
+
+    TS_ASSERT_THROWS_EQUALS(CCar c(EOrientation::LAST, EDirection::NONE),
+                            util::CException & e,
+                            std::string(e.what()),
+                            "CCar - invalid orientation");
+}
+
 }

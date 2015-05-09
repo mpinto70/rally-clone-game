@@ -66,4 +66,18 @@ T from_Enum(E e) {
     return static_cast<T>(e);
 }
 
+template <typename T>
+bool isValid(T t) {
+    return t >= T::FIRST && t < T::LAST;
+}
+
+template <typename T>
+void validate(T t) {
+    if (not isValid(t)) {
+        const auto val = from_Enum<int>(t);
+        const std::string msg = std::string(typeid(T).name()) + " - invalid value " + to_string(val);
+        throw CException(msg, val);
+    }
+}
+
 }
