@@ -23,9 +23,10 @@ SUBDIRS =
 OBJS =	\
 		visualizer.o \
 
-PLAYER_PARAMS=$(RALLY_ROOT)/Stuff/car_player_32.bmp 32 car
-BOT_PARAMS=$(RALLY_ROOT)/Stuff/car_bot_32.bmp 32 car
-ACTION_PARAMS=$(RALLY_ROOT)/Stuff/actions.bmp 32 action
+PLAYER_PARAMS=$(RALLY_ROOT)/Stuff/car_player_32.bmp car
+BOT_PARAMS=$(RALLY_ROOT)/Stuff/car_bot_32.bmp car
+ACTION_PARAMS=$(RALLY_ROOT)/Stuff/actions.bmp action
+TILE_PARAMS=$(RALLY_ROOT)/Stuff/tileset.bmp tile
 
 EXE_PARAMS=$(PLAYER_PARAMS)
 
@@ -35,6 +36,8 @@ player: EXE_PARAMS=$(PLAYER_PARAMS)
 
 action: EXE_PARAMS=$(ACTION_PARAMS)
 
-bot player action : $(EXE) run 
+tile: EXE_PARAMS=$(TILE_PARAMS)
+
+bot player action tile : $(EXE) run 
 
 include $(RALLY_ROOT)/tools/tools.mk

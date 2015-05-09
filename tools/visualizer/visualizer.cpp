@@ -2,6 +2,7 @@
 #include "../tools/util/helpers.h"
 #include "gamelib/allegro/bmp/CCarMapper.h"
 #include "gamelib/allegro/bmp/CActionMapper.h"
+#include "gamelib/allegro/bmp/CTileMapper.h"
 #include "util/CWait.h"
 
 #include <allegro.h>
@@ -16,9 +17,12 @@
 #include <iostream>
 #include <fstream>
 
-static constexpr unsigned WINDOW_W  = 500;  ///< map window width
+static constexpr unsigned WINDOW_W  = 800;  ///< map window width
 static constexpr unsigned WINDOW_H  = 400;  ///< map window height
+static constexpr unsigned SUB_SIZE  = 32;   ///< size of images
 static constexpr unsigned X_IMAGES  = 30;
+static constexpr unsigned Y_FULL    = 60;
+static constexpr unsigned Y_SUB     = 150;
 
 struct tile_set_t {
     BITMAP * full_image;
@@ -26,15 +30,16 @@ struct tile_set_t {
     tile_set_t(BITMAP * img, const std::vector<BITMAP*> & tls) : full_image(img), tiles(tls) {}
 };
 
-static void draw_full_image(BITMAP * canvas, BITMAP * img, unsigned x, unsigned y) {
-    draw_sprite(canvas, img, x, y);
-}
+static void draw_arrow(BITMAP * canvas,
+                      const unsigned cur_tile,
+                      const unsigned gap) {
+    const unsigned y = Y_FULL + SUB_SIZE + 2 * gap + 4 ;
+    const unsigned x = X_IMAGES + cur_tile * (SUB_SIZE + gap) + SUB_SIZE / 2;
+    const int color = makecol(0x00, 0x00, 0x00);
 
-static void draw_tile(BITMAP * canvas,
-                      BITMAP * tile,
-                      const int x,
-                      const int y) {
-    draw_sprite(canvas, tile, x, y);
+    rectfill(canvas, x - 1, y, x, y + 10, color);
+    line(canvas, x - 1, y, x - 4, y + 3, color);
+    line(canvas, x, y, x + 3, y + 3, color);
 }
 
 
@@ -56,8 +61,10 @@ static void move_left(unsigned & cur_tile, const unsigned max) {
 }
 
 template <typename MAPPER>
-void show(MAPPER & mapper,
-                BITMAP * canvas) {
+void show(BITMAP * canvas,
+          const std::string & file_name,
+          unsigned gap_size) {
+    const MAPPER mapper(file_name, 32, 32, gap_size);
     util::CWait wait(50);
     util::CWait miniWait(10);
     unsigned cur_tile = 0;
@@ -93,8 +100,9 @@ void show(MAPPER & mapper,
                       mapper.numBmps(),
                       mapper[cur_tile]->w,
                       mapper[cur_tile]->h);
-        draw_full_image(canvas, mapper.fullBmp(), X_IMAGES, 60);
-        draw_tile(canvas, mapper[cur_tile], X_IMAGES, 150);
+        draw_sprite(canvas, mapper.fullBmp(), X_IMAGES, Y_FULL);
+        draw_sprite(canvas, mapper[cur_tile], X_IMAGES, Y_SUB);
+        draw_arrow(canvas, cur_tile, gap_size);
 
         vsync();
         blit(canvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
@@ -111,13 +119,12 @@ void show(MAPPER & mapper,
 
 int main(int argc, char *argv[]) {
     try {
-        if (argc != 4) {
-            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file.png> <width of image> <car|action>");
+        if (argc != 3) {
+            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file.png> <car|action|tile>");
         }
 
         const std::string file_name = argv[1];
-        const unsigned width_of_image = std::stoul(argv[2]);
-        const std::string type = argv[3];
+        const std::string type = argv[2];
 
         allegro_init();
         install_mouse();
@@ -131,11 +138,11 @@ int main(int argc, char *argv[]) {
         BITMAP * canvas    = create_bitmap(SCREEN_W, SCREEN_H);
 
         if (type == "car") {
-            gamelib::allegro::bmp::CCarMapper carMapper(argv[1], width_of_image, width_of_image, 1);
-            show(carMapper, canvas);
+            show<gamelib::allegro::bmp::CCarMapper>(canvas, file_name, 1);
         } else if (type == "action") {
-            gamelib::allegro::bmp::CActionMapper actionMapper(argv[1], width_of_image, width_of_image, 1);
-            show(actionMapper, canvas);
+            show<gamelib::allegro::bmp::CActionMapper>(canvas, file_name, 1);
+        } else if (type == "tile") {
+            show<gamelib::allegro::bmp::CTileMapper>(canvas, file_name, 2);
         }
 
         return 0;
