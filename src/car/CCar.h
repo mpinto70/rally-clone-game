@@ -7,12 +7,12 @@ namespace car {
 
 class CCar {
     public:
-        CCar(EOrientation orientation,
-             EDirection direction);
+        CCar(EDirection direction);
         ~CCar();
         EOrientation orientation() const { return orientation_; }
         EDirection direction() const { return direction_; }
         EDirection nextDirection() const { return nextDirection_; }
+        void turn(EDirection direction);
     private:
         EOrientation orientation_;
         EDirection direction_;

@@ -9,6 +9,7 @@ class testCCar: public CxxTest::TestSuite {
     public:
         void testCreation();
         void testInvalidCreation();
+        void testTurn();
 };
 
 }
