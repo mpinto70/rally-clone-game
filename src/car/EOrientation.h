@@ -8,9 +8,9 @@
 namespace car {
 
 /** the underlying enum type. */
-typedef std::uint8_t direction_t;
+typedef std::uint8_t orientation_t;
 /** car directions. */
-enum class EOrientation : direction_t {
+enum class EOrientation : orientation_t {
     NORTH,
     NORTH_EAST,
     EAST_NORTH,
@@ -32,7 +32,7 @@ enum class EOrientation : direction_t {
  */
 template <typename T>
 EOrientation to_EOrientation(T t) {
-    return util::to_Enum<T, EOrientation>(t);
+    return util::to_Enum<EOrientation, T>(t);
 }
 
 /** convert a value of type EOrientation to a value of type \b T.

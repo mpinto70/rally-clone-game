@@ -10,6 +10,7 @@ class testCCar: public CxxTest::TestSuite {
         void testCreation();
         void testInvalidCreation();
         void testTurn();
+        void testStepTurn();
 };
 
 }

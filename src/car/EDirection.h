@@ -25,7 +25,7 @@ enum class EDirection : direction_t {
  */
 template <typename T>
 EDirection to_EDirection(T t) {
-    return util::to_Enum<T, EDirection>(t);
+    return util::to_Enum<EDirection, T>(t);
 }
 
 /** convert a value of type EDirection to a value of type \b T.

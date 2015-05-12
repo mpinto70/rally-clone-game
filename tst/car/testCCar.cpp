@@ -43,21 +43,60 @@ void testCCar::testInvalidCreation() {
 void testCCar::testTurn() {
     CCar c(EDirection::NORTH);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::NONE);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
 
     c.turn(EDirection::EAST);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::EAST);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
 
     c.turn(EDirection::WEST);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::WEST);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
 
     c.turn(EDirection::SOUTH);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::SOUTH);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
 
     c.turn(EDirection::NORTH);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::NORTH);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
 
     c.turn(EDirection::NONE);
     TS_ASSERT_EQUALS(c.nextDirection(), EDirection::NONE);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
+}
+
+void testCCar::testStepTurn() {
+    CCar c(EDirection::NORTH);
+    TS_ASSERT_EQUALS(c.nextDirection(), EDirection::NONE);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
+
+    c.turn(EDirection::EAST);
+    TS_ASSERT_EQUALS(c.nextDirection(), EDirection::EAST);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
+
+    c.stepTurn();
+    TS_ASSERT_EQUALS(c.nextDirection(), EDirection::EAST);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::NORTH_EAST);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
+
+    c.stepTurn();
+    TS_ASSERT_EQUALS(c.nextDirection(), EDirection::EAST);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::EAST_NORTH);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::NORTH);
+
+    c.stepTurn();
+    TS_ASSERT_EQUALS(c.nextDirection(), EDirection::NONE);
+    TS_ASSERT_EQUALS(c.orientation(), EOrientation::EAST);
+    TS_ASSERT_EQUALS(c.direction(), EDirection::EAST);
 }
 
 }
