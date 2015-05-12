@@ -31,8 +31,8 @@ struct tile_set_t {
 };
 
 static void draw_arrow(BITMAP * canvas,
-                      const unsigned cur_tile,
-                      const unsigned gap) {
+                       const unsigned cur_tile,
+                       const unsigned gap) {
     const unsigned y = Y_FULL + SUB_SIZE + 2 * gap + 4 ;
     const unsigned x = X_IMAGES + cur_tile * (SUB_SIZE + gap) + SUB_SIZE / 2;
     const int color = makecol(0x00, 0x00, 0x00);

@@ -31,7 +31,7 @@ void CCar::turn(EDirection direction) {
 }
 
 static int signalStep(const int final,
-                const int current) {
+                      const int current) {
     const auto distance = final - current;
     const auto absDistance = abs(distance);
     if (absDistance <= 6) {
