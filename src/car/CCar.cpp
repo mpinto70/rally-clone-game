@@ -5,7 +5,7 @@
 
 namespace car {
 
-static EOrientation convert(EDirection direction) {
+EOrientation CCar::convert(EDirection direction) {
     switch (direction) {
         case EDirection::NORTH: return EOrientation::NORTH;
         case EDirection::WEST:  return EOrientation::WEST;

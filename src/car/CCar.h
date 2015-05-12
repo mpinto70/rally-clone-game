@@ -7,6 +7,7 @@ namespace car {
 
 class CCar {
     public:
+        static EOrientation convert(EDirection direction);
         explicit CCar(EDirection direction);
         ~CCar();
         EOrientation orientation() const { return orientation_; }
