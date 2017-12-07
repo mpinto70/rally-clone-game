@@ -4,8 +4,7 @@ default: exetarget
 EXE=map_editor.exe
 
 GRAPHLIBS =	\
-			-lalleg-4.2.3 \
-			-lalleg_unsharable \
+			-lalleg \
 
 LIBS =	\
 		-ltoolsutil \
