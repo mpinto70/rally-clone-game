@@ -490,6 +490,7 @@ int main(int argc, char *argv[]) {
         clear_bitmap(g_selection_preview);
 
         if (argc <= 1) {
+            fprintf(stderr, "ERROR - usage: %s <path to stages>", argv[0]);
             exit(-1);
         }
         const std::string tmp = argv[1] + std::string("/stage.dat");
@@ -572,15 +573,15 @@ int main(int argc, char *argv[]) {
 
             const bool draw_actions = key[KEY_SPACE];
 
-            map_draw(buffer.get(), stageMap, tileMapper, actionMapper, g_map_drawx, g_map_drawy, draw_actions);
+            map_draw(&(*buffer), stageMap, tileMapper, actionMapper, g_map_drawx, g_map_drawy, draw_actions);
 
             if (!key[KEY_G]) {
                 if (g_take_shot == false)
-                    draw_grid(buffer.get());
+                    draw_grid(&(*buffer));
             }
-            draw_tilesbar(buffer.get(), tileMapper, tiles_num);
-            draw_actionsbar(buffer.get(), actionMapper, act_num);
-            draw_manual(buffer.get());
+            draw_tilesbar(&(*buffer), tileMapper, tiles_num);
+            draw_actionsbar(&(*buffer), actionMapper, act_num);
+            draw_manual(&(*buffer));
 
             if (key[KEY_I]) {
                 int xpos, ypos;
@@ -588,10 +589,10 @@ int main(int argc, char *argv[]) {
                 if (key[KEY_O]) xpos += mouse_x % TILE_SIZE - TILE_SIZE / 2;
                 ypos = mouse_y / TILE_SIZE * TILE_SIZE;
                 if (key[KEY_O]) ypos += mouse_y % TILE_SIZE - TILE_SIZE / 2;
-                action_draw(buffer.get(), actionMapper.mapper, g_cur_act, xpos, ypos);
+                action_draw(&(*buffer), actionMapper.mapper, g_cur_act, xpos, ypos);
             } else if (g_take_shot == false) {
-                circlefill(buffer.get(), mouse_x, mouse_y, 5, 0);
-                circlefill(buffer.get(), mouse_x, mouse_y, 3,  makecol(255, 255, 255));
+                circlefill(&(*buffer), mouse_x, mouse_y, 5, 0);
+                circlefill(&(*buffer), mouse_x, mouse_y, 3,  makecol(255, 255, 255));
             }
 
             if (g_draw_selection == true) {
@@ -602,28 +603,28 @@ int main(int argc, char *argv[]) {
                 const auto yend = ((region.second.y + 1) * TILE_SIZE) - g_map_drawy;
 
                 if (g_take_shot == true) {
-                    stretch_blit(buffer.get(), g_selection_preview, xini, yini, xend - xini, yend - yini,
+                    stretch_blit(&(*buffer), g_selection_preview, xini, yini, xend - xini, yend - yini,
                                  0, 0, g_selection_preview->w, g_selection_preview->h);
                     g_take_shot = false;
                 }
-                rect(buffer.get(),
+                rect(&(*buffer),
                      SCREEN_W - 194, SCREEN_H - 392,
                      SCREEN_W - 194 + g_selection_preview->w + 3, SCREEN_H - 392 + g_selection_preview->h + 3,
                      makecol(255, 255, 255));
 
-                blit(g_selection_preview, buffer.get(), 0, 0, SCREEN_W - 192, SCREEN_H - 390, g_selection_preview->w, g_selection_preview->h);
+                blit(g_selection_preview, &(*buffer), 0, 0, SCREEN_W - 192, SCREEN_H - 390, g_selection_preview->w, g_selection_preview->h);
 
                 set_trans_blender(128, 128, 128, 128);
                 drawing_mode(DRAW_MODE_TRANS, nullptr, 0, 0);
-                rectfill(buffer.get(), xini, yini, xend, yend, makecol(30, 30, 255));
+                rectfill(&(*buffer), xini, yini, xend, yend, makecol(30, 30, 255));
                 drawing_mode(DRAW_MODE_SOLID, nullptr, 0, 0);
-                rect(buffer.get(), xini, yini, xend, yend, 0);
-                rect(buffer.get(), xini + 1, yini + 1, xend - 1, yend - 1, 0);
+                rect(&(*buffer), xini, yini, xend, yend, 0);
+                rect(&(*buffer), xini + 1, yini + 1, xend - 1, yend - 1, 0);
             }
 
             vsync();
-            blit(buffer.get(), screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-            clear_bitmap(buffer.get());
+            blit(&(*buffer), screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+            clear_bitmap(&(*buffer));
         }
         return 0;
     } catch (std::exception & e) {
