@@ -10,12 +10,7 @@
 namespace game {
 
 std::string getRallyDir() {
-    const char * home = getenv("HOME");
-    if (home == nullptr) {
-        throw util::CException("Environment variable HOME not set", 1);
-    }
-
-    return std::string(home) + "/.rallyX";
+    return RALLY_ROOT  "/tst/game/files";
 }
 
 void testCController::testCreation() {
