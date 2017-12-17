@@ -11,9 +11,9 @@ namespace gamelib {
 namespace allegro {
 
 class CSound : public ISound {
-    public:
-        CSound();
-        ~CSound() override;
+public:
+    CSound();
+    ~CSound() override;
 };
 
 }

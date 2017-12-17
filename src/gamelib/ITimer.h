@@ -4,8 +4,8 @@
 namespace gamelib {
 
 class ITimer {
-    public:
-        virtual ~ITimer() = 0;
+public:
+    virtual ~ITimer() = 0;
 };
 
 }

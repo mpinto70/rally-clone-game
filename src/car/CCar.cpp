@@ -7,11 +7,11 @@ namespace car {
 
 EOrientation CCar::convert(EDirection direction) {
     switch (direction) {
-        case EDirection::NORTH: return EOrientation::NORTH;
-        case EDirection::WEST:  return EOrientation::WEST;
-        case EDirection::SOUTH: return EOrientation::SOUTH;
-        case EDirection::EAST:  return EOrientation::EAST;
-        default:                return EOrientation::NORTH;
+    case EDirection::NORTH: return EOrientation::NORTH;
+    case EDirection::WEST:  return EOrientation::WEST;
+    case EDirection::SOUTH: return EOrientation::SOUTH;
+    case EDirection::EAST:  return EOrientation::EAST;
+    default:                return EOrientation::NORTH;
     }
 }
 
@@ -19,8 +19,9 @@ CCar::CCar(EDirection direction)
     : orientation_(convert(direction)),
       direction_(direction),
       nextDirection_(EDirection::NONE) {
-    if (not util::isValid(direction))
+    if (not util::isValid(direction)) {
         throw util::CException("CCar - invalid direction", from_EDirection<int>(direction));
+    }
 }
 
 CCar::~CCar() {
@@ -35,22 +36,25 @@ static int signalStep(const int final,
     const auto distance = final - current;
     const auto absDistance = abs(distance);
     if (absDistance <= 6) {
-        if (distance < 0)
+        if (distance < 0) {
             return -1;
-        else
+        } else {
             return 1;
+        }
     } else {
-        if (distance < 0)
+        if (distance < 0) {
             return 1;
-        else
+        } else {
             return -1;
+        }
     }
 }
 
 void CCar::stepTurn() {
     const auto finalOrientation = convert(nextDirection_);
-    if (finalOrientation == orientation_)
+    if (finalOrientation == orientation_) {
         return;
+    }
     const auto final = from_EOrientation<int>(finalOrientation);
     const auto current = from_EOrientation<int>(orientation_);
 

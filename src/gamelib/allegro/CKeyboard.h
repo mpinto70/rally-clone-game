@@ -11,12 +11,12 @@ namespace gamelib {
 namespace allegro {
 
 class CKeyboard : public IKeyboard {
-    public:
-        CKeyboard();
-        ~CKeyboard() override;
+public:
+    CKeyboard();
+    ~CKeyboard() override;
 
-        bool isKeyPressed(EKey keyCode) const override;
-        std::set<EKey> keysPressed() const override;
+    bool isKeyPressed(EKey keyCode) const override;
+    std::set<EKey> keysPressed() const override;
 };
 
 }

@@ -10,7 +10,7 @@
 namespace game {
 
 std::string getRallyDir() {
-    return RALLY_ROOT  "/tst/game/files";
+    return RALLY_ROOT "/tst/game/files";
 }
 
 void testCController::testCreation() {

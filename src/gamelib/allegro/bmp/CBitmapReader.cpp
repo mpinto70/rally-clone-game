@@ -13,8 +13,9 @@ CBitmapReader::tiles_t CBitmapReader::readBmps(const std::string& fileName,
                                                const unsigned gap) {
     BITMAP_PTR fullBitmap(load_bitmap(fileName.c_str(), nullptr), destroy_bitmap);
 
-    if (fullBitmap == nullptr)
+    if (fullBitmap == nullptr) {
         throw util::CException("CTileReader - it was not possible to read the tiles from " + fileName, 1);
+    }
 
     const unsigned w = fullBitmap->w;
     const unsigned h = fullBitmap->h;
@@ -46,7 +47,7 @@ CBitmapReader::tiles_t CBitmapReader::readBmps(const std::string& fileName,
     for (unsigned i = 0; i < qttyTiles; ++i) {
         const unsigned x = (tileWidth + gap) * i + gap;
         // a subbitmap that shares parent bitmap's memory.
-        BITMAP * sub = create_sub_bitmap(fullBitmap.get(), x, gap, tileWidth, tileHeight);
+        BITMAP* sub = create_sub_bitmap(fullBitmap.get(), x, gap, tileWidth, tileHeight);
         if (sub == nullptr) {
             throw util::CException("CTileReader - it was not possible to reference the sub tile at ["
                                    + std::to_string(x)

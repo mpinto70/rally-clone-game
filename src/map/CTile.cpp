@@ -10,7 +10,7 @@ CTile::CTile(ETileType type,
     : type_(type),
       action_(action) {
     if (action_ != EAction::NONE
-            && type_ != ETileType::ROAD) {
+        && type_ != ETileType::ROAD) {
         throw util::CException("CTile - incompatible type "
                                + to_string(type_)
                                + " and action "
@@ -22,20 +22,21 @@ CTile::CTile(ETileType type,
 CTile::~CTile() {
 }
 
-bool operator == (const CTile & lhs, const CTile & rhs) {
+bool operator == (const CTile& lhs, const CTile& rhs) {
     return lhs.type() == rhs.type()
            && lhs.action() == rhs.action();
 }
 
 void CTile::type(ETileType type) {
     type_ = type;
-    if (type_ != ETileType::ROAD)
+    if (type_ != ETileType::ROAD) {
         action_ = EAction::NONE;
+    }
 }
 
 void CTile::action(EAction action) {
     if (action != EAction::NONE
-            && type_ != ETileType::ROAD)
+        && type_ != ETileType::ROAD)
         throw util::CException("CTile::action(action) - incompatible type "
                                + to_string(type_)
                                + " and new action "

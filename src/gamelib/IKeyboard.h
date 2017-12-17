@@ -18,10 +18,10 @@ enum class EKey : unsigned char {
 };
 
 class IKeyboard {
-    public:
-        virtual ~IKeyboard() = 0;
-        virtual bool isKeyPressed(EKey keyCode) const = 0;
-        virtual std::set<EKey> keysPressed() const = 0;
+public:
+    virtual ~IKeyboard() = 0;
+    virtual bool isKeyPressed(EKey keyCode) const = 0;
+    virtual std::set<EKey> keysPressed() const = 0;
 };
 
 }

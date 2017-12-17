@@ -11,9 +11,9 @@ namespace gamelib {
 namespace allegro {
 
 class CTimer : public ITimer {
-    public:
-        CTimer();
-        ~CTimer() override;
+public:
+    CTimer();
+    ~CTimer() override;
 };
 
 }

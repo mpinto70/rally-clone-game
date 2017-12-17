@@ -9,12 +9,12 @@
 namespace gamelib {
 
 class IGameLib {
-    public:
-        virtual ~IGameLib() = 0;
-        virtual IGraphic & graphic() = 0;
-        virtual ISound & sound() = 0;
-        virtual ITimer & timer() = 0;
-        virtual IKeyboard & keyboard() = 0;
+public:
+    virtual ~IGameLib() = 0;
+    virtual IGraphic& graphic() = 0;
+    virtual ISound& sound() = 0;
+    virtual ITimer& timer() = 0;
+    virtual IKeyboard& keyboard() = 0;
 };
 
 }

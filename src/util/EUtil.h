@@ -11,29 +11,29 @@ namespace util {
 
 template< typename T >
 class CEnumIterator {
+public:
+    typedef typename std::underlying_type<T>::type enumType;
+    class Iterator {
     public:
-        typedef typename std::underlying_type<T>::type enumType;
-        class Iterator {
-            public:
-                Iterator(enumType value)
-                    : value_(value) {
-                }
+        Iterator(enumType value)
+            : value_(value) {
+        }
 
-                T operator*() const {
-                    return (T)value_;
-                }
+        T operator*() const {
+            return (T)value_;
+        }
 
-                void operator++(void) {
-                    ++value_;
-                }
+        void operator++(void) {
+            ++value_;
+        }
 
-                bool operator!=(Iterator rhs) {
-                    return value_ != rhs.value_;
-                }
+        bool operator!=(Iterator rhs) {
+            return value_ != rhs.value_;
+        }
 
-            private:
-                enumType value_;
-        };
+    private:
+        enumType value_;
+    };
 
 };
 

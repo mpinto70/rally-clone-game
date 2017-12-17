@@ -12,29 +12,33 @@ namespace allegro {
 
 CGameLib::CGameLib(unsigned int width,
                    unsigned int height,
-                   const std::string & path_to_data)
+                   const std::string& path_to_data)
     : graphic_(nullptr),
       keyboard_(nullptr),
       sound_(nullptr),
       timer_(nullptr) {
     using util::CException;
     int allegResult = allegro_init();
-    if (allegResult != 0)
+    if (allegResult != 0) {
         throw CException("CGameLib - Error initializing graphics", allegResult);
+    }
 
     allegResult = install_keyboard();
-    if (allegResult != 0)
+    if (allegResult != 0) {
         throw util::CException("CGameLib - Error initializing keyboard", allegResult);
+    }
 
     allegResult = install_timer();
-    if (allegResult != 0)
+    if (allegResult != 0) {
         throw util::CException("CGameLib - Error initializing timer", allegResult);
+    }
 
     set_color_depth(32);
 
     allegResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, width, height, 0, 0);
-    if (allegResult != 0)
+    if (allegResult != 0) {
         throw CException("CGameLib - Error initializing screen", allegResult);
+    }
 
     keyboard_ = new CKeyboard();
     timer_ = new CTimer();

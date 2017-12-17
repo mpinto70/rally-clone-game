@@ -10,15 +10,16 @@
 
 namespace game {
 
-CController::CController(std::unique_ptr<gamelib::IGameLib> & gameLib,
-                         const std::string & pathToRallyDir,
+CController::CController(std::unique_ptr<gamelib::IGameLib>& gameLib,
+                         const std::string& pathToRallyDir,
                          const size_t parts)
     : gameLib_(std::move(gameLib)),
       pathToRoot_(pathToRallyDir),
       map_(nullptr),
       parts_(parts) {
-    if (gameLib_.get() == nullptr)
+    if (gameLib_.get() == nullptr) {
         throw util::CException("CController - game lib was null", 1);
+    }
     if (parts == 0) {
         throw std::invalid_argument("CController - zero parts");
     }
@@ -43,22 +44,26 @@ void CController::run() {
 
         if (gameLib_->keyboard().isKeyPressed(EKey::DOWN)) {
             ++y;
-            if (y >= map_->height() * parts_)
+            if (y >= map_->height() * parts_) {
                 y = 0;
+            }
         }
         if (gameLib_->keyboard().isKeyPressed(EKey::UP)) {
-            if (y == 0)
+            if (y == 0) {
                 y = map_->height() * parts_;
+            }
             --y;
         }
         if (gameLib_->keyboard().isKeyPressed(EKey::RIGHT)) {
             ++x;
-            if (x >= map_->width() * parts_)
+            if (x >= map_->width() * parts_) {
                 x = 0;
+            }
         }
         if (gameLib_->keyboard().isKeyPressed(EKey::LEFT)) {
-            if (x == 0)
+            if (x == 0) {
                 x = map_->width() * parts_;
+            }
             --x;
         }
 

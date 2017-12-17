@@ -35,8 +35,8 @@ CTile& CMap::operator()(const map_dimension_t x,
     return tiles_.at(y * width_ + x);
 }
 
-const CTile & CMap::operator()(const map_dimension_t x,
-                               const map_dimension_t y) const {
+const CTile& CMap::operator()(const map_dimension_t x,
+                              const map_dimension_t y) const {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }

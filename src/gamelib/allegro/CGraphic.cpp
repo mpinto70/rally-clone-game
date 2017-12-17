@@ -36,7 +36,7 @@ static int translate(COLOR color) {
     return COLORS[color];
 }
 
-CGraphic::CGraphic(const std::string & common_path)
+CGraphic::CGraphic(const std::string& common_path)
     : buffer_(nullptr, destroy_bitmap),
       bufferMap_(nullptr, destroy_bitmap),
       fontSystem_(nullptr, destroy_font),
@@ -46,21 +46,25 @@ CGraphic::CGraphic(const std::string & common_path)
     using util::CException;
     // creates the buffer of the entire screen
     buffer_.reset(create_bitmap(SCREEN_W, SCREEN_H));
-    if (buffer_.get() == nullptr)
+    if (buffer_.get() == nullptr) {
         throw CException("CGraphic::CGraphic - Error initializing main screen buffer", -1);
+    }
 
     // creates the buffer for the map.
     bufferMap_.reset(create_bitmap(SCREEN_W - SIDE_BAR_W, SCREEN_H - BOTTOM_BAR_H));
-    if (bufferMap_.get() == nullptr)
+    if (bufferMap_.get() == nullptr) {
         throw CException("CGraphic::CGraphic - Error initializing map buffer", -1);
+    }
 
     fontMenu_.reset(load_font((common_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
-    if (fontMenu_.get() == nullptr)
+    if (fontMenu_.get() == nullptr) {
         throw CException("CGraphic::CGraphic - Error initializing menu font", -2);
+    }
 
     fontSystem_.reset(load_font((common_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
-    if (fontSystem_.get() == nullptr)
+    if (fontSystem_.get() == nullptr) {
         throw CException("CGraphic::CGraphic - Error initializing system font", -3);
+    }
 
     initColor();
 }
@@ -68,25 +72,27 @@ CGraphic::CGraphic(const std::string & common_path)
 CGraphic::~CGraphic() {
 }
 
-void CGraphic::printText(const std::string & text,
+void CGraphic::printText(const std::string& text,
                          const GFONT gfont,
                          const unsigned x,
                          const unsigned y,
                          COLOR foreground,
                          COLOR background) {
-    if (x > width() || y > height())
+    if (x > width() || y > height()) {
         return;
+    }
 
-    if (text.empty())
+    if (text.empty()) {
         return;
+    }
 
-    const FONT * font = gfont == GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
+    const FONT* font = gfont == GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
     textprintf_ex(buffer_.get(), font, x, y, translate(foreground), translate(background), "%s", text.c_str());
 }
 
 template <typename MAPPER>
-static void mapper_draw(BITMAP * bmp,
-                        const MAPPER & mapper,
+static void mapper_draw(BITMAP* bmp,
+                        const MAPPER& mapper,
                         const typename MAPPER::enum_type type,
                         const int x,
                         const int y) {
@@ -94,16 +100,16 @@ static void mapper_draw(BITMAP * bmp,
     draw_sprite(bmp, sub_bmp, x, y);
 }
 
-static void tile_draw(BITMAP * bmp,
-                      const gamelib::allegro::bmp::CTileMapper & mapper,
+static void tile_draw(BITMAP* bmp,
+                      const gamelib::allegro::bmp::CTileMapper& mapper,
                       const map::ETileType type,
                       const int x,
                       const int y) {
     mapper_draw(bmp, mapper, type, x, y);
 }
 
-static void action_draw(BITMAP * bmp,
-                        const gamelib::allegro::bmp::CActionMapper & mapper,
+static void action_draw(BITMAP* bmp,
+                        const gamelib::allegro::bmp::CActionMapper& mapper,
                         const map::EAction action,
                         const int x,
                         const int y) {
@@ -114,14 +120,16 @@ static double calculateMin(double x,
                            double windowW,
                            double maxX) {
     const double res = x - windowW / 2.0;
-    if (res < 0)
+    if (res < 0) {
         return 0;
-    if (res + windowW > maxX)
+    }
+    if (res + windowW > maxX) {
         return maxX - windowW;
+    }
     return res;
 }
 
-void CGraphic::draw(const map::CMap & map,
+void CGraphic::draw(const map::CMap& map,
                     const size_t x_cursor,
                     const size_t y_cursor,
                     const size_t parts) {

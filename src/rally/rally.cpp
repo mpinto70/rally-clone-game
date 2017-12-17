@@ -14,7 +14,7 @@
 static const unsigned int UTIL_W = 640, UTIL_H = 480;
 
 std::string getRallyDir() {
-    const char * home = getenv("HOME");
+    const char* home = getenv("HOME");
     if (home == nullptr) {
         throw util::CException("Environment variable HOME not set", 1);
     }
@@ -31,7 +31,7 @@ int main() {
         game::CController controller(gameLib, rallyDir, 15);
         controller.run();
         return 0;
-    } catch (const util::CException & e) {
+    } catch (const util::CException& e) {
         std::cout << "An ERROR occurred" << std::endl;
         std::cout << e.what() << std::endl;
         std::cout << "Code: " << e.code() << std::endl;

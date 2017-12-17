@@ -8,22 +8,22 @@
 
 namespace map {
 
-CMap CMapIO::read(const std::string & fileName) {
+CMap CMapIO::read(const std::string& fileName) {
     std::ifstream is(fileName, std::ios_base::in | std::ios_base::binary);
     return read(is);
 }
 
-void CMapIO::write(const std::string & fileName,
+void CMapIO::write(const std::string& fileName,
                    const CMap& map) {
     std::ofstream os(fileName, std::ios_base::out | std::ios_base::binary);
     write(os, map);
 }
 
 template <typename T>
-static T readField(std::istream & is,
-                   const std::string & fieldName) {
+static T readField(std::istream& is,
+                   const std::string& fieldName) {
     T t;
-    char * buffer = reinterpret_cast<char *>(&t);
+    char* buffer = reinterpret_cast<char*>(&t);
     is.read(buffer, sizeof(T));
     if (not is || is.gcount() != sizeof(T)) {
         throw util::CException("CMapReader::read(is) - could not read " + fieldName, 1);
@@ -31,7 +31,7 @@ static T readField(std::istream & is,
     return t;
 }
 
-CMap CMapIO::read(std::istream & is) {
+CMap CMapIO::read(std::istream& is) {
     const auto width = readField<map_dimension_t>(is, "width");
     const auto height = readField<map_dimension_t>(is, "height");
 
@@ -54,18 +54,18 @@ CMap CMapIO::read(std::istream & is) {
 }
 
 template <typename T>
-static void writeField(std::ostream & os,
+static void writeField(std::ostream& os,
                        const T t,
-                       const std::string & fieldName) {
-    const char * buffer = reinterpret_cast<const char *>(&t);
+                       const std::string& fieldName) {
+    const char* buffer = reinterpret_cast<const char*>(&t);
     os.write(buffer, sizeof(T));
     if (not os) {
         throw util::CException("CMapReader::write(os) - could not write " + fieldName, 1);
     }
 }
 
-void CMapIO::write(std::ostream & os,
-                   const CMap & map) {
+void CMapIO::write(std::ostream& os,
+                   const CMap& map) {
 
     writeField(os, map.width(), "width");
     writeField(os, map.height(), "height");
