@@ -6,7 +6,6 @@
 
 #include <gtest/gtest.h>
 
-
 namespace game {
 
 std::string getRallyDir() {

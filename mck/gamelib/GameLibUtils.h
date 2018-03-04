@@ -6,9 +6,8 @@ namespace gamelib {
 namespace mck {
 
 class GameLibUtils {
-    public:
-        static std::unique_ptr<GameLib> createDefault();
+public:
+    static std::unique_ptr<GameLib> createDefault();
 };
-
 }
 }

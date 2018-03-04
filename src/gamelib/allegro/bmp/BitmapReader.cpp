@@ -22,24 +22,24 @@ BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
 
     if ((w - gap) % (tileWidth + gap) != 0) {
         throw util::Exception("CTileReader - the image width ("
-                                     + std::to_string(w)
-                                     + ") is incompatible with tile size ("
-                                     + std::to_string(tileWidth)
-                                     + ") and gap size ("
-                                     + std::to_string(gap)
-                                     + ") for "
-                                     + fileName,
+                                    + std::to_string(w)
+                                    + ") is incompatible with tile size ("
+                                    + std::to_string(tileWidth)
+                                    + ") and gap size ("
+                                    + std::to_string(gap)
+                                    + ") for "
+                                    + fileName,
               2);
     }
     if (h != gap + tileHeight + gap) {
         throw util::Exception("CTileReader - the image height ("
-                                     + std::to_string(h)
-                                     + ") is incompatible with tile size ("
-                                     + std::to_string(tileWidth)
-                                     + ") and gap size ("
-                                     + std::to_string(gap)
-                                     + ") for "
-                                     + fileName,
+                                    + std::to_string(h)
+                                    + ") is incompatible with tile size ("
+                                    + std::to_string(tileWidth)
+                                    + ") and gap size ("
+                                    + std::to_string(gap)
+                                    + ") for "
+                                    + fileName,
               3);
     }
 
@@ -52,11 +52,11 @@ BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
         BITMAP* sub = create_sub_bitmap(fullBitmap.get(), x, gap, tileWidth, tileHeight);
         if (sub == nullptr) {
             throw util::Exception("CTileReader - it was not possible to reference the sub tile at ["
-                                         + std::to_string(x)
-                                         + ","
-                                         + std::to_string(gap)
-                                         + "] for "
-                                         + fileName,
+                                        + std::to_string(x)
+                                        + ","
+                                        + std::to_string(gap)
+                                        + "] for "
+                                        + fileName,
                   4);
         }
         tiles.emplace_back(sub, destroy_bitmap);

@@ -23,7 +23,5 @@ void KeyboardMock::add(EKey keyCode) {
 void KeyboardMock::remove(EKey keyCode) {
     keys_.erase(keyCode);
 }
-
 }
 }
-

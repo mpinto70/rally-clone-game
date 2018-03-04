@@ -6,9 +6,8 @@ namespace gamelib {
 namespace mck {
 
 class TimerMock : public Timer {
-    public:
-        ~TimerMock() override;
+public:
+    ~TimerMock() override;
 };
-
 }
 }

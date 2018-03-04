@@ -1,40 +1,41 @@
 
 #include "../tools/util/helpers.h"
 
-#include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/ActionMapper.h"
+#include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
 #include "util/Wait.h"
 
 #include <allegro.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
+#include <fstream>
 #include <iosfwd>
+#include <iostream>
+#include <math.h>
+#include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <vector>
-#include <stdexcept>
-#include <iostream>
-#include <fstream>
 
-static constexpr unsigned WINDOW_W  = 800;  ///< map window width
-static constexpr unsigned WINDOW_H  = 400;  ///< map window height
-static constexpr unsigned SUB_SIZE  = 32;   ///< size of images
-static constexpr unsigned X_IMAGES  = 30;
-static constexpr unsigned Y_FULL    = 60;
-static constexpr unsigned Y_SUB     = 150;
+static constexpr unsigned WINDOW_W = 800; ///< map window width
+static constexpr unsigned WINDOW_H = 400; ///< map window height
+static constexpr unsigned SUB_SIZE = 32;  ///< size of images
+static constexpr unsigned X_IMAGES = 30;
+static constexpr unsigned Y_FULL = 60;
+static constexpr unsigned Y_SUB = 150;
 
 struct tile_set_t {
-    BITMAP * full_image;
+    BITMAP* full_image;
     std::vector<BITMAP*> tiles;
-    tile_set_t(BITMAP * img, const std::vector<BITMAP*> & tls) : full_image(img), tiles(tls) {}
+    tile_set_t(BITMAP* img, const std::vector<BITMAP*>& tls)
+          : full_image(img), tiles(tls) {}
 };
 
-static void draw_arrow(BITMAP * canvas,
-                       const unsigned cur_tile,
-                       const unsigned gap) {
-    const unsigned y = Y_FULL + SUB_SIZE + 2 * gap + 4 ;
+static void draw_arrow(BITMAP* canvas,
+      const unsigned cur_tile,
+      const unsigned gap) {
+    const unsigned y = Y_FULL + SUB_SIZE + 2 * gap + 4;
     const unsigned x = X_IMAGES + cur_tile * (SUB_SIZE + gap) + SUB_SIZE / 2;
     const int color = makecol(0x00, 0x00, 0x00);
 
@@ -43,28 +44,27 @@ static void draw_arrow(BITMAP * canvas,
     line(canvas, x, y, x + 3, y + 3, color);
 }
 
-
-static void exit_visualizer(const std::string & msg) {
+static void exit_visualizer(const std::string& msg) {
     std::cout << msg << std::endl;
     exit(1);
 }
 
-static void move_right(unsigned & cur_tile, const unsigned max) {
+static void move_right(unsigned& cur_tile, const unsigned max) {
     ++cur_tile;
     if (cur_tile == max)
         cur_tile = 0;
 }
 
-static void move_left(unsigned & cur_tile, const unsigned max) {
+static void move_left(unsigned& cur_tile, const unsigned max) {
     --cur_tile;
     if (cur_tile > max) // overflow
         cur_tile = max - 1;
 }
 
 template <typename MAPPER>
-void show(BITMAP * canvas,
-          const std::string & file_name,
-          unsigned gap_size) {
+void show(BITMAP* canvas,
+      const std::string& file_name,
+      unsigned gap_size) {
     const MAPPER mapper(file_name, 32, 32, gap_size);
     util::Wait wait(50);
     util::Wait miniWait(10);
@@ -92,15 +92,15 @@ void show(BITMAP * canvas,
         }
 
         textprintf_ex(canvas,
-                      font,
-                      X_IMAGES,
-                      40,
-                      0,
-                      bg,
-                      "number of tiles: %lu / tile size: (%02d x %02d)",
-                      mapper.numBmps(),
-                      mapper[cur_tile]->w,
-                      mapper[cur_tile]->h);
+              font,
+              X_IMAGES,
+              40,
+              0,
+              bg,
+              "number of tiles: %lu / tile size: (%02d x %02d)",
+              mapper.numBmps(),
+              mapper[cur_tile]->w,
+              mapper[cur_tile]->h);
         draw_sprite(canvas, mapper.fullBmp(), X_IMAGES, Y_FULL);
         draw_sprite(canvas, mapper[cur_tile], X_IMAGES, Y_SUB);
         draw_arrow(canvas, cur_tile, gap_size);
@@ -118,7 +118,7 @@ void show(BITMAP * canvas,
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     try {
         if (argc != 3) {
             exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file.png> <car|action|tile>");
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
         if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_W, WINDOW_H, 0, 0) != 0)
             tools::throw_allegro_error("set_gfx_mode");
 
-        BITMAP * canvas    = create_bitmap(SCREEN_W, SCREEN_H);
+        BITMAP* canvas = create_bitmap(SCREEN_W, SCREEN_H);
 
         if (type == "car") {
             show<gamelib::allegro::bmp::CarMapper>(canvas, file_name, 1);
@@ -147,10 +147,9 @@ int main(int argc, char *argv[]) {
         }
 
         return 0;
-    } catch (std::exception & e) {
+    } catch (std::exception& e) {
         fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;
     }
 }
 END_OF_MAIN()
-

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "util/Util.h"
 #include "util/Exception.h"
+#include "util/Util.h"
 
+#include "BitmapReader.h"
 #include <allegro.h>
 #include <map>
 #include <memory>
 #include <typeinfo>
-#include "BitmapReader.h"
 
 namespace gamelib {
 namespace allegro {
@@ -31,13 +31,13 @@ public:
         const auto qttyExpected = static_cast<enum_t>(ENUM::LAST);
         if (qttyRead != qttyExpected) {
             throw util::Exception("CBmpMapper - number of bmps read ("
-                                         + std::to_string(qttyRead)
-                                         + ") differs from the expected ("
-                                         + std::to_string(qttyExpected)
-                                         + ") in "
-                                         + fileName
-                                         + " for "
-                                         + typeid(ENUM).name(),
+                                        + std::to_string(qttyRead)
+                                        + ") differs from the expected ("
+                                        + std::to_string(qttyExpected)
+                                        + ") in "
+                                        + fileName
+                                        + " for "
+                                        + typeid(ENUM).name(),
                   1);
         }
         for (auto bmpId : util::CEnumIterator<ENUM>()) {
@@ -84,9 +84,9 @@ public:
         const auto it = bmpMap_.find(bmpId);
         if (it == bmpMap_.end())
             throw util::Exception("CBmpMapper - bmp not found ("
-                                         + std::to_string(static_cast<int>(bmpId))
-                                         + ") for "
-                                         + typeid(ENUM).name(),
+                                        + std::to_string(static_cast<int>(bmpId))
+                                        + ") for "
+                                        + typeid(ENUM).name(),
                   1);
         else {
             return it->second.get();

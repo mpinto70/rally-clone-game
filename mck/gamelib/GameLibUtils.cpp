@@ -20,5 +20,4 @@ std::unique_ptr<GameLib> GameLibUtils::createDefault() {
     return gameLib;
 }
 }
-
 }

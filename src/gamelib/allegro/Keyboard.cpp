@@ -1,7 +1,7 @@
 #include "Keyboard.h"
 
-#include "util/Util.h"
 #include "util/Exception.h"
+#include "util/Util.h"
 
 #include <allegro.h>
 

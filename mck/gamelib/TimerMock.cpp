@@ -5,6 +5,5 @@ namespace mck {
 
 TimerMock::~TimerMock() {
 }
-
 }
 }

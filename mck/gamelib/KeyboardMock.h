@@ -8,16 +8,16 @@ namespace gamelib {
 namespace mck {
 
 class KeyboardMock : public Keyboard {
-    public:
-        ~KeyboardMock() override;
-        bool isKeyPressed(EKey keyCode) const override;
-        std::set<EKey> keysPressed() const override;
+public:
+    ~KeyboardMock() override;
+    bool isKeyPressed(EKey keyCode) const override;
+    std::set<EKey> keysPressed() const override;
 
-        static void add(EKey keyCode);
-        static void remove(EKey keyCode);
-    private:
-        static std::set<EKey> keys_;
+    static void add(EKey keyCode);
+    static void remove(EKey keyCode);
+
+private:
+    static std::set<EKey> keys_;
 };
-
 }
 }

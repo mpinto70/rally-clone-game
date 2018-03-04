@@ -6,9 +6,8 @@ namespace gamelib {
 namespace mck {
 
 class SoundMock : public Sound {
-    public:
-        ~SoundMock() override;
+public:
+    ~SoundMock() override;
 };
-
 }
 }

@@ -45,17 +45,17 @@ void Map::verifyRange(const map_dimension_t x,
       const map_dimension_t y) const {
     if (x >= width_)
         throw util::Exception("CMap() - horizontal coordinate out of range ("
-                                     + std::to_string(x)
-                                     + "/"
-                                     + std::to_string(width_)
-                                     + ")",
+                                    + std::to_string(x)
+                                    + "/"
+                                    + std::to_string(width_)
+                                    + ")",
               x);
     if (y >= height_)
         throw util::Exception("CMap() - vertical coordinate out of range ("
-                                     + std::to_string(y)
-                                     + "/"
-                                     + std::to_string(height_)
-                                     + ")",
+                                    + std::to_string(y)
+                                    + "/"
+                                    + std::to_string(height_)
+                                    + ")",
               y);
 }
 }

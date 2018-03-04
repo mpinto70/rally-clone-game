@@ -44,8 +44,8 @@ public:
           map_dimension_t y) const;
 
 private:
-    map_dimension_t width_;    ///< width
-    map_dimension_t height_;   ///< height
+    map_dimension_t width_;   ///< width
+    map_dimension_t height_;  ///< height
     std::vector<Tile> tiles_; ///< tiles
 
     void verifyRange(map_dimension_t x,

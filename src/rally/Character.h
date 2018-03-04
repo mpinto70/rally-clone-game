@@ -4,7 +4,6 @@
 
 #include <allegro.h>
 
-
 class Character {
 public:
     Character(const Stage& stage, unsigned int TYPE);

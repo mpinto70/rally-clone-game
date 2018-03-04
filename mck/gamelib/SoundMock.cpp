@@ -5,6 +5,5 @@ namespace mck {
 
 SoundMock::~SoundMock() {
 }
-
 }
 }
