@@ -1,12 +1,12 @@
 
 add_library(
     mck_gamelib
-    CGameLibMock.cpp
-    CGameLibUtils.cpp
-    CGraphicMock.cpp
-    CKeyboardMock.cpp
-    CSoundMock.cpp
-    CTimerMock.cpp
+    GameLibMock.cpp
+    GameLibUtils.cpp
+    GraphicMock.cpp
+    KeyboardMock.cpp
+    SoundMock.cpp
+    TimerMock.cpp
 )
 
 target_include_directories(

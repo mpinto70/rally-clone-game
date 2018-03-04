@@ -5,11 +5,13 @@
 
 #include "../tools/util/helpers.h"
 
-#include "gamelib/allegro/bmp/CTileMapper.h"
-#include "gamelib/allegro/bmp/CActionMapper.h"
-#include "map/CMap.h"
-#include "map/CMapIO.h"
-#include "util/EUtil.h"
+#include "map/Map.h"
+#include "map/MapIO.h"
+#include "map/TileType.h"
+#include "map/Action.h"
+#include "gamelib/allegro/bmp/TileMapper.h"
+#include "gamelib/allegro/bmp/ActionMapper.h"
+#include "util/Util.h"
 
 #include <allegro.h>
 
@@ -48,8 +50,8 @@ static constexpr unsigned ACTION_SPACE  = 40;                               ///<
 static constexpr unsigned WINDOW_WIDTH  = ACTION_MAX_X + ACTION_SPACE + 10;
 static constexpr unsigned WINDOW_HEIGHT = UTIL_H + UTIL_H_EX;
 
-static map::ETileType g_cur_tile_type = map::ETileType::GRASS;
-static map::EAction g_cur_act = map::EAction::NONE;
+static map::TileType g_cur_tile_type = map::TileType::GRASS;
+static map::Action g_cur_act = map::Action::NONE;
 static unsigned g_map_drawx, g_map_drawy;
 static unsigned g_max_x, g_max_y;
 static unsigned char g_default_tile;
@@ -82,8 +84,8 @@ struct mapper_t {
     pos_map pos;
 };
 
-typedef mapper_t<gamelib::allegro::bmp::CTileMapper> tiles_t;
-typedef mapper_t<gamelib::allegro::bmp::CActionMapper> actions_t;
+typedef mapper_t<gamelib::allegro::bmp::TileMapper> tiles_t;
+typedef mapper_t<gamelib::allegro::bmp::ActionMapper> actions_t;
 
 // Variaveis usadas pelo CTRL+C CTRL+V
 static bool g_copy_selection_on = false;
@@ -94,12 +96,12 @@ static bool g_take_shot = false;
 static BITMAP * g_selection_preview;
 
 static void map_save(const std::string & filename,
-                     const map::CMap & stageMap) {
+                     const map::Map & stageMap) {
     map::CMapIO::write(filename, stageMap);
 }
 
-static map::CMap map_load(const std::string & filename) {
-    const map::CMap stageMap = map::CMapIO::read(filename);
+static map::Map map_load(const std::string & filename) {
+    const map::Map stageMap = map::CMapIO::read(filename);
 
     g_max_x = stageMap.width();
     g_max_y = stageMap.height();
@@ -108,7 +110,7 @@ static map::CMap map_load(const std::string & filename) {
     return stageMap;
 }
 
-static map::CMap create_clean_map(const int max_x,
+static map::Map create_clean_map(const int max_x,
                                   const int max_y,
                                   const int default_tile) {
     g_max_x = max_x * TILES_X;
@@ -117,9 +119,9 @@ static map::CMap create_clean_map(const int max_x,
         exit(-1);
     }
     g_default_tile = default_tile;
-    const std::vector<map::CTile> tiles(g_max_x * g_max_y, map::CTile(map::ETileType::GRASS, map::EAction::NONE));
+    const std::vector<map::Tile> tiles(g_max_x * g_max_y, map::Tile(map::TileType::GRASS, map::Action::NONE));
 
-    return map::CMap(g_max_x, g_max_y, tiles);
+    return map::Map(g_max_x, g_max_y, tiles);
 }
 
 template <typename MAPPER>
@@ -133,16 +135,16 @@ static void mapper_draw(BITMAP * bmp,
 }
 
 static void tile_draw(BITMAP * bmp,
-                      const gamelib::allegro::bmp::CTileMapper & mapper,
-                      const map::ETileType type,
+                      const gamelib::allegro::bmp::TileMapper & mapper,
+                      const map::TileType type,
                       const int x,
                       const int y) {
     mapper_draw(bmp, mapper, type, x, y);
 }
 
 static void action_draw(BITMAP * bmp,
-                        const gamelib::allegro::bmp::CActionMapper & mapper,
-                        const map::EAction action,
+                        const gamelib::allegro::bmp::ActionMapper & mapper,
+                        const map::Action action,
                         const int x,
                         const int y) {
     mapper_draw(bmp, mapper, action, x, y);
@@ -152,7 +154,7 @@ static void action_draw(BITMAP * bmp,
 // Se draw_actions = true, mostra as actions ao invez do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP * bmp,
-                     const map::CMap & stageMap,
+                     const map::Map & stageMap,
                      const tiles_t & tileMapper,
                      const actions_t & actionMapper,
                      const int map_drawx,
@@ -192,7 +194,7 @@ static void draw_tilesbar(BITMAP * bmp,
                           const tiles_t & tileMapper,
                           const int tiles_num) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
-    for (const auto type : util::CEnumIterator<map::ETileType>()) {
+    for (const auto type : util::CEnumIterator<map::TileType>()) {
         const auto & pos = tileMapper.position(type);
         tile_draw(bmp, tileMapper.mapper, type, pos.x, pos.y);
     }
@@ -211,7 +213,7 @@ static void draw_actionsbar(BITMAP *bmp,
     rectfill(bmp, UTIL_W, 0, WINDOW_WIDTH, SCREEN_H, makecol(255, 255, 255));
     rectfill(bmp, UTIL_W + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
-    for (auto act : util::CEnumIterator<map::EAction>()) {
+    for (auto act : util::CEnumIterator<map::Action>()) {
         const auto & pos = actionMapper.position(act);
         action_draw(bmp, actionMapper.mapper, act, pos.x, pos.y);
 
@@ -322,7 +324,7 @@ static std::pair<point_t, point_t> define_region(point_t p1,
     return std::make_pair(p1, p2);
 }
 
-static void handle_CtrlC_CtrlV(map::CMap & stageMap,
+static void handle_CtrlC_CtrlV(map::Map & stageMap,
                                const size_t x,
                                const size_t y) {
     if (key[KEY_C]) {
@@ -348,7 +350,7 @@ static void handle_CtrlC_CtrlV(map::CMap & stageMap,
             (region.second.y - region.first.y) + 1
         };
 
-        std::vector<map::CTile> selection_data(pt_data_len.x * pt_data_len.y, map::CTile(map::ETileType::GRASS));
+        std::vector<map::Tile> selection_data(pt_data_len.x * pt_data_len.y, map::Tile(map::TileType::GRASS));
 
         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
@@ -368,7 +370,7 @@ static void handle_CtrlC_CtrlV(map::CMap & stageMap,
 }
 
 /// treats clicks inside map area
-static void handle_click(map::CMap & stageMap,
+static void handle_click(map::Map & stageMap,
                          const int X,
                          const int Y,
                          const int button) {
@@ -391,7 +393,7 @@ static void handle_click(map::CMap & stageMap,
         break;
         case 2: {
             // only ROADS may receive actions
-            if (stageMap(x, y).type() == map::ETileType::ROAD)
+            if (stageMap(x, y).type() == map::TileType::ROAD)
                 stageMap(x, y).action(g_cur_act);
         }
         break;
@@ -401,10 +403,10 @@ static void handle_click(map::CMap & stageMap,
 /// loads all actions from file.
 static actions_t load_actions(const std::string & file_name,
                               const unsigned actions_num) {
-    std::map<map::EAction, point_t> pos;
+    std::map<map::Action, point_t> pos;
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
-    for (auto act : util::CEnumIterator<map::EAction>()) {
+    for (auto act : util::CEnumIterator<map::Action>()) {
         pos.insert(std::make_pair(act, point_t{x, y}));
 
         x += ACTION_SPACE;
@@ -419,18 +421,18 @@ static actions_t load_actions(const std::string & file_name,
 
     printf("ACTIONS loaded!\n");
 
-    return actions_t(gamelib::allegro::bmp::CActionMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
+    return actions_t(gamelib::allegro::bmp::ActionMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
 }
 
 /// loads all tiles from file.
 static tiles_t load_tiles(const std::string & file_name,
                           const unsigned tiles_num) {
     constexpr unsigned GAP = 2;
-    std::map<map::ETileType, point_t> pos;
+    std::map<map::TileType, point_t> pos;
 
     unsigned x = TILES_MARGIN;
     unsigned y = UTIL_H;
-    for (const auto type : util::CEnumIterator<map::ETileType>()) {
+    for (const auto type : util::CEnumIterator<map::TileType>()) {
         if (x + TILE_SPACE > UTIL_W) {
             x = TILES_MARGIN;
             y += TILE_SPACE;
@@ -441,7 +443,7 @@ static tiles_t load_tiles(const std::string & file_name,
 
     printf("TILESET loaded!\n");
 
-    return tiles_t(gamelib::allegro::bmp::CTileMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
+    return tiles_t(gamelib::allegro::bmp::TileMapper(file_name, TILE_SIZE, TILE_SIZE, GAP), pos);
 }
 
 static void draw_grid(BITMAP * bmp) {
@@ -453,7 +455,7 @@ static void draw_grid(BITMAP * bmp) {
         hline(bmp, 0, i, SCREEN_W, color);
 }
 
-map::CMap createOrLoadMap(int argc, char *argv[]) {
+map::Map createOrLoadMap(int argc, char *argv[]) {
     const std::string tmp = std::string(argv[1] + std::string("/stage.dat"));
     boost::filesystem::path pathToFile(tmp);
     if (boost::filesystem::exists(pathToFile)) {
@@ -471,8 +473,8 @@ map::CMap createOrLoadMap(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     try {
-        const auto tiles_num = map::from_ETileType<unsigned int>(map::ETileType::LAST);
-        const auto act_num = map::from_EAction<unsigned int>(map::EAction::LAST);
+        const auto tiles_num = map::from_ETileType<unsigned int>(map::TileType::LAST);
+        const auto act_num = map::from_EAction<unsigned int>(map::Action::LAST);
 
         g_map_drawx = g_map_drawy = 0;
 
@@ -495,7 +497,7 @@ int main(int argc, char *argv[]) {
         }
         const std::string tmp = argv[1] + std::string("/stage.dat");
 
-        map::CMap stageMap = createOrLoadMap(argc, argv);
+        map::Map stageMap = createOrLoadMap(argc, argv);
 
         const auto tileMapper(load_tiles(RALLY_ROOT "/Stuff/tileset.bmp", tiles_num));
         const auto actionMapper(load_actions(RALLY_ROOT "/Stuff/actions.bmp", act_num));

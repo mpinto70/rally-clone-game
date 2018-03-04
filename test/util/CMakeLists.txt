@@ -1,8 +1,8 @@
 set(util_srcs
-    CExceptionTest.cpp
-    CSingletonTest.cpp
-    CWaitTest.cpp
-    EUtilTest.cpp
+    ExceptionTest.cpp
+    SingletonTest.cpp
+    WaitTest.cpp
+    UtilTest.cpp
 )
 
 set(util_libs

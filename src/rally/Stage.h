@@ -1,11 +1,11 @@
 #pragma once
 
+#include "camera.h"
+#include "character.h"
+
 #include <map>
 #include <string>
 #include <vector>
-
-#include "camera.h"
-#include "character.h"
 
 class Stage {
 public:

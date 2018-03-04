@@ -1,5 +1,5 @@
 set(game_srcs
-    CControllerTest.cpp
+    ControllerTest.cpp
 )
 
 set(game_libs

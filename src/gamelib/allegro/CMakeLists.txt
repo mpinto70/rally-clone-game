@@ -1,11 +1,11 @@
 
 add_library(
     gamelib_allegro
-    CGameLib.cpp
-    CGraphic.cpp
-    CKeyboard.cpp
-    CSound.cpp
-    CTimer.cpp
+    GameLib.cpp
+    Graphic.cpp
+    Keyboard.cpp
+    Sound.cpp
+    Timer.cpp
 )
 
 target_include_directories(

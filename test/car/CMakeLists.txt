@@ -1,7 +1,7 @@
 set(car_srcs
-    CCarTest.cpp
-    EDirectionTest.cpp
-    EOrientationTest.cpp
+    CarTest.cpp
+    DirectionTest.cpp
+    OrientationTest.cpp
 )
 
 set(car_libs

@@ -1,8 +1,9 @@
 #pragma once
 
+#include "gamelib/AnimationSequence.h"
+
 #include <allegro.h>
 
-#include "gamelib/IAnimationSequence.h"
 
 class Character {
 public:
@@ -38,7 +39,7 @@ public:
 
     int colorOffset;
 
-    IAnimationSequence* spriteSheet;
+    AnimationSequence* spriteSheet;
 
     //TODO: In order to implement A* we need to know map geometry and such... move to stage like:
     // vector<points> path = stage.createPath(point 1, point 2, bool avoid rocks);

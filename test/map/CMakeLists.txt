@@ -1,9 +1,9 @@
 set(map_srcs
-    CMapIOTest.cpp
-    CMapTest.cpp
-    CTileTest.cpp
-    EActionTest.cpp
-    ETileTypeTest.cpp
+    MapIOTest.cpp
+    MapTest.cpp
+    TileTest.cpp
+    ActionTest.cpp
+    TileTypeTest.cpp
 )
 
 set(map_libs

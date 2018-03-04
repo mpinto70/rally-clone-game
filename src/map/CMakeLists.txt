@@ -1,11 +1,11 @@
 
 add_library(
     map
-    CMap.cpp
-    CMapIO.cpp
-    CTile.cpp
-    EAction.cpp
-    ETileType.cpp
+    Map.cpp
+    MapIO.cpp
+    Tile.cpp
+    Action.cpp
+    TileType.cpp
 )
 
 target_include_directories(

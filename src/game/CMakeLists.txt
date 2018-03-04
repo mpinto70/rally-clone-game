@@ -1,7 +1,7 @@
 
 add_library(
     game
-    CController.cpp
+    Controller.cpp
 )
 
 target_include_directories(

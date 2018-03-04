@@ -1,9 +1,9 @@
 
 add_library(
     car
-    CCar.cpp
-    EDirection.cpp
-    EOrientation.cpp
+    Car.cpp
+    Direction.cpp
+    Orientation.cpp
 )
 
 target_include_directories(

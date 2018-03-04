@@ -1,7 +1,7 @@
 
 add_library(
     gamelib_allegro_bmp
-    CBitmapReader.cpp
+    BitmapReader.cpp
 )
 
 target_include_directories(

@@ -1,8 +1,8 @@
 
 add_library(
     util
-    CException.cpp
-    CWait.cpp
+    Exception.cpp
+    Wait.cpp
 )
 
 target_include_directories(

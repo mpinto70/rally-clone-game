@@ -1,11 +1,11 @@
 
 add_library(
     gamelib
-    IGameLib.cpp
-    IGraphic.cpp
-    IKeyboard.cpp
-    ISound.cpp
-    ITimer.cpp
+    GameLib.cpp
+    Graphic.cpp
+    Keyboard.cpp
+    Sound.cpp
+    Timer.cpp
 )
 
 target_include_directories(

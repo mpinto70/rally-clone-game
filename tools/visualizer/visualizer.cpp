@@ -1,9 +1,10 @@
 
 #include "../tools/util/helpers.h"
-#include "gamelib/allegro/bmp/CCarMapper.h"
-#include "gamelib/allegro/bmp/CActionMapper.h"
-#include "gamelib/allegro/bmp/CTileMapper.h"
-#include "util/CWait.h"
+
+#include "gamelib/allegro/bmp/CarMapper.h"
+#include "gamelib/allegro/bmp/ActionMapper.h"
+#include "gamelib/allegro/bmp/TileMapper.h"
+#include "util/Wait.h"
 
 #include <allegro.h>
 
@@ -65,8 +66,8 @@ void show(BITMAP * canvas,
           const std::string & file_name,
           unsigned gap_size) {
     const MAPPER mapper(file_name, 32, 32, gap_size);
-    util::CWait wait(50);
-    util::CWait miniWait(10);
+    util::Wait wait(50);
+    util::Wait miniWait(10);
     unsigned cur_tile = 0;
     const int bg = makecol(0xDE, 0x97, 0x47);
     while (!key[KEY_ESC]) {
@@ -138,11 +139,11 @@ int main(int argc, char *argv[]) {
         BITMAP * canvas    = create_bitmap(SCREEN_W, SCREEN_H);
 
         if (type == "car") {
-            show<gamelib::allegro::bmp::CCarMapper>(canvas, file_name, 1);
+            show<gamelib::allegro::bmp::CarMapper>(canvas, file_name, 1);
         } else if (type == "action") {
-            show<gamelib::allegro::bmp::CActionMapper>(canvas, file_name, 1);
+            show<gamelib::allegro::bmp::ActionMapper>(canvas, file_name, 1);
         } else if (type == "tile") {
-            show<gamelib::allegro::bmp::CTileMapper>(canvas, file_name, 2);
+            show<gamelib::allegro::bmp::TileMapper>(canvas, file_name, 2);
         }
 
         return 0;
