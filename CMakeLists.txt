@@ -31,4 +31,5 @@ include(Boost.cmake)
 # Recurse subdirectories
 add_subdirectory (src)
 add_subdirectory (tools)
+add_subdirectory (mck)
 #add_subdirectory (test)
