@@ -40,5 +40,4 @@ T from_EDirection(EDirection enum_value) {
  * @param enum_value the value to be converted
  */
 std::string to_string(EDirection enum_value);
-
 }

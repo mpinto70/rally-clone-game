@@ -5,6 +5,4 @@ namespace gamelib {
 
 IGameLib::~IGameLib() {
 }
-
 }
-

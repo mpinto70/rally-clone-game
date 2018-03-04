@@ -7,6 +7,4 @@ class ITimer {
 public:
     virtual ~ITimer() = 0;
 };
-
 }
-

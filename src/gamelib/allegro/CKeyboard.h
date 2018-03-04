@@ -18,7 +18,5 @@ public:
     bool isKeyPressed(EKey keyCode) const override;
     std::set<EKey> keysPressed() const override;
 };
-
 }
 }
-

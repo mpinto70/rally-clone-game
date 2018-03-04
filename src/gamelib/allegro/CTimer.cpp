@@ -14,7 +14,5 @@ CTimer::CTimer() {
 
 CTimer::~CTimer() {
 }
-
 }
 }
-

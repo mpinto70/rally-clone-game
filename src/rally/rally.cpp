@@ -3,9 +3,9 @@
  main code.
  */
 
+#include "game/CController.h"
 #include "gamelib/allegro/CGameLib.h"
 #include "util/CException.h"
-#include "game/CController.h"
 
 #include <iostream>
 #include <memory>
@@ -23,8 +23,8 @@ std::string getRallyDir() {
 }
 
 int main() {
-    using gamelib::allegro::CGameLib;
     using gamelib::IGameLib;
+    using gamelib::allegro::CGameLib;
     try {
         const auto rallyDir = getRallyDir();
         std::unique_ptr<IGameLib> gameLib(new CGameLib(UTIL_W, UTIL_H, rallyDir));
@@ -39,4 +39,3 @@ int main() {
     }
 }
 END_OF_MAIN()
-

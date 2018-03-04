@@ -2,9 +2,9 @@
 
 #include "map/CMap.h"
 
-#include <string>
 #include <istream>
 #include <ostream>
+#include <string>
 
 namespace map {
 
@@ -29,5 +29,4 @@ public:
      */
     static void write(std::ostream& os, const CMap& map);
 };
-
 }

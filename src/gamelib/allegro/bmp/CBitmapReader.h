@@ -40,12 +40,10 @@ public:
      \endverbatim
      */
     static tiles_t readBmps(const std::string& fileName,
-                            const unsigned tileWidth,
-                            const unsigned tileHeight,
-                            const unsigned gap);
-
+          const unsigned tileWidth,
+          const unsigned tileHeight,
+          const unsigned gap);
 };
-
 }
 }
 }

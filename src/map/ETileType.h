@@ -56,6 +56,4 @@ T from_ETileType(ETileType enum_value) {
  * @param enum_value the value to be converted
  */
 std::string to_string(ETileType enum_value);
-
 }
-

@@ -29,10 +29,9 @@ std::string to_string(ETileType enum_value) {
         CASE_ENUM_TO_STRING(ETileType::TOP_CORNERS);
         CASE_ENUM_TO_STRING(ETileType::BOTTOM_CORNERS);
         CASE_ENUM_TO_STRING(ETileType::RIGHT_CORNERS);
-    case ETileType::LAST:
-        break;
+        case ETileType::LAST:
+            break;
     }
     throw util::CException("to_string(ETileType) - invalid argument", util::from_Enum<int>(enum_value));
 }
-
 }

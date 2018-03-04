@@ -14,14 +14,14 @@ CMap CMapIO::read(const std::string& fileName) {
 }
 
 void CMapIO::write(const std::string& fileName,
-                   const CMap& map) {
+      const CMap& map) {
     std::ofstream os(fileName, std::ios_base::out | std::ios_base::binary);
     write(os, map);
 }
 
 template <typename T>
 static T readField(std::istream& is,
-                   const std::string& fieldName) {
+      const std::string& fieldName) {
     T t;
     char* buffer = reinterpret_cast<char*>(&t);
     is.read(buffer, sizeof(T));
@@ -55,8 +55,8 @@ CMap CMapIO::read(std::istream& is) {
 
 template <typename T>
 static void writeField(std::ostream& os,
-                       const T t,
-                       const std::string& fieldName) {
+      const T t,
+      const std::string& fieldName) {
     const char* buffer = reinterpret_cast<const char*>(&t);
     os.write(buffer, sizeof(T));
     if (not os) {
@@ -65,8 +65,7 @@ static void writeField(std::ostream& os,
 }
 
 void CMapIO::write(std::ostream& os,
-                   const CMap& map) {
-
+      const CMap& map) {
     writeField(os, map.width(), "width");
     writeField(os, map.height(), "height");
     const auto qttyTiles = map.width() * map.height();
@@ -77,5 +76,4 @@ void CMapIO::write(std::ostream& os,
         writeField(os, a, "action");
     }
 }
-
 }

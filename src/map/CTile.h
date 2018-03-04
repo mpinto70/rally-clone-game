@@ -1,7 +1,7 @@
 #pragma once
 
-#include "map/ETileType.h"
 #include "map/EAction.h"
+#include "map/ETileType.h"
 
 namespace map {
 
@@ -13,7 +13,7 @@ public:
      * @param action the action in the tile
      */
     explicit CTile(ETileType type,
-                   EAction action = EAction::NONE);
+          EAction action = EAction::NONE);
     /** destroys the object. */
     ~CTile();
 
@@ -25,10 +25,11 @@ public:
     void type(ETileType type);
     /** returns the action in the tile. */
     void action(EAction action);
+
 private:
-    ETileType type_;        ///< tile type
-    EAction action_;    ///< tile action
+    ETileType type_; ///< tile type
+    EAction action_; ///< tile action
 };
 
-bool operator == (const CTile& lhs, const CTile& rhs);
+bool operator==(const CTile& lhs, const CTile& rhs);
 }

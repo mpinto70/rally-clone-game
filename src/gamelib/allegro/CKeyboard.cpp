@@ -21,22 +21,22 @@ CKeyboard::~CKeyboard() {
 
 static unsigned int translateKey(EKey keyCode) {
     switch (keyCode) {
-    case EKey::ENTER:
-        return KEY_ENTER;
-    case EKey::LEFT:
-        return KEY_LEFT;
-    case EKey::RIGHT:
-        return KEY_RIGHT;
-    case EKey::UP:
-        return KEY_UP;
-    case EKey::DOWN:
-        return KEY_DOWN;
-    case EKey::SPACE:
-        return KEY_SPACE;
-    case EKey::ESCAPE:
-        return KEY_ESC;
-    case EKey::LAST:
-        return -1;
+        case EKey::ENTER:
+            return KEY_ENTER;
+        case EKey::LEFT:
+            return KEY_LEFT;
+        case EKey::RIGHT:
+            return KEY_RIGHT;
+        case EKey::UP:
+            return KEY_UP;
+        case EKey::DOWN:
+            return KEY_DOWN;
+        case EKey::SPACE:
+            return KEY_SPACE;
+        case EKey::ESCAPE:
+            return KEY_ESC;
+        case EKey::LAST:
+            return -1;
     }
     return -1;
 }
@@ -44,7 +44,7 @@ static unsigned int translateKey(EKey keyCode) {
 bool CKeyboard::isKeyPressed(EKey keyCode) const {
     const unsigned int allegroKey = translateKey(keyCode);
 
-    return (allegroKey != (unsigned int) - 1 && key[allegroKey] != 0);
+    return (allegroKey != (unsigned int) -1 && key[allegroKey] != 0);
 }
 
 std::set<EKey> CKeyboard::keysPressed() const {
@@ -56,7 +56,5 @@ std::set<EKey> CKeyboard::keysPressed() const {
     }
     return res;
 }
-
 }
 }
-

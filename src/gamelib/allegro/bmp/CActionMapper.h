@@ -8,7 +8,6 @@ namespace allegro {
 namespace bmp {
 
 typedef CBmpMapper<map::EAction> CActionMapper;
-
 }
 }
 }

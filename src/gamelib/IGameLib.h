@@ -2,9 +2,9 @@
 #pragma once
 
 #include "gamelib/IGraphic.h"
+#include "gamelib/IKeyboard.h"
 #include "gamelib/ISound.h"
 #include "gamelib/ITimer.h"
-#include "gamelib/IKeyboard.h"
 
 namespace gamelib {
 
@@ -16,5 +16,4 @@ public:
     virtual ITimer& timer() = 0;
     virtual IKeyboard& keyboard() = 0;
 };
-
 }

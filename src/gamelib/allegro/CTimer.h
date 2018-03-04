@@ -15,7 +15,5 @@ public:
     CTimer();
     ~CTimer() override;
 };
-
 }
 }
-

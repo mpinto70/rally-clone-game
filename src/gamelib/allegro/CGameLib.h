@@ -18,8 +18,8 @@ namespace allegro {
 class CGameLib : public IGameLib {
 public:
     CGameLib(unsigned int width,
-             unsigned int height,
-             const std::string& path_to_data);
+          unsigned int height,
+          const std::string& path_to_data);
     ~CGameLib() override;
 
     CGraphic& graphic() override { return *graphic_; }
@@ -33,7 +33,5 @@ private:
     CSound* sound_;
     CTimer* timer_;
 };
-
 }
 }
-

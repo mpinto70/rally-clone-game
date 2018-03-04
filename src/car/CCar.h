@@ -15,10 +15,10 @@ public:
     EDirection nextDirection() const { return nextDirection_; }
     void turn(EDirection direction);
     void stepTurn();
+
 private:
     EOrientation orientation_;
     EDirection direction_;
     EDirection nextDirection_;
 };
-
 }
