@@ -23,6 +23,4 @@ public:
     virtual bool isKeyPressed(EKey keyCode) const = 0;
     virtual std::set<EKey> keysPressed() const = 0;
 };
-
 }
-

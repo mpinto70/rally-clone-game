@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include <sys/time.h>
 #include <cstdio>
+#include <sys/time.h>
 
 namespace util {
 /** responsible for time lapse garantee. */
@@ -22,10 +22,9 @@ public:
     void wait() const;
     /** @returns the end. */
     const timeval& end() const { return end_; }
+
 private:
-    size_t microseconds_;   ///< time to wait
-    timeval end_;           ///< final time
+    size_t microseconds_; ///< time to wait
+    timeval end_;         ///< final time
 };
-
 }
-

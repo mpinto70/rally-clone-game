@@ -11,12 +11,12 @@ namespace gamelib {
 namespace allegro {
 
 CGameLib::CGameLib(unsigned int width,
-                   unsigned int height,
-                   const std::string& path_to_data)
-    : graphic_(nullptr),
-      keyboard_(nullptr),
-      sound_(nullptr),
-      timer_(nullptr) {
+      unsigned int height,
+      const std::string& path_to_data)
+      : graphic_(nullptr),
+        keyboard_(nullptr),
+        sound_(nullptr),
+        timer_(nullptr) {
     using util::CException;
     int allegResult = allegro_init();
     if (allegResult != 0) {
@@ -54,7 +54,5 @@ CGameLib::~CGameLib() {
 
     allegro_exit();
 }
-
 }
 }
-

@@ -21,7 +21,5 @@ CSound::CSound() {
 
 CSound::~CSound() {
 }
-
 }
 }
-

@@ -15,7 +15,5 @@ public:
     CSound();
     ~CSound() override;
 };
-
 }
 }
-

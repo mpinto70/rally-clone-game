@@ -7,8 +7,8 @@
 
 #include "gamelib/IGraphic.h"
 #include "gamelib/allegro/AllegroUtil.h"
-#include "gamelib/allegro/bmp/CTileMapper.h"
 #include "gamelib/allegro/bmp/CActionMapper.h"
+#include "gamelib/allegro/bmp/CTileMapper.h"
 
 #include <allegro.h>
 
@@ -22,17 +22,18 @@ public:
     unsigned width() const override { return SCREEN_W; }
     unsigned height() const override { return SCREEN_H; }
     void printText(const std::string& text,
-                   GFONT gfont,
-                   unsigned x,
-                   unsigned y,
-                   COLOR foreground,
-                   COLOR background) override;
+          GFONT gfont,
+          unsigned x,
+          unsigned y,
+          COLOR foreground,
+          COLOR background) override;
     void draw(const map::CMap& map,
-              size_t x,
-              size_t y,
-              size_t parts) override;
+          size_t x,
+          size_t y,
+          size_t parts) override;
 
     void flip() override;
+
 private:
     BITMAP_PTR buffer_;
     BITMAP_PTR bufferMap_;
@@ -41,7 +42,5 @@ private:
     bmp::CTileMapper tileMapper_;
     bmp::CActionMapper actionMapper_;
 };
-
 }
 }
-

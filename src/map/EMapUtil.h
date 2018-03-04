@@ -10,10 +10,9 @@ namespace map {
  * @param lhs left hand operand
  * @param rhs right hand operanda
  */
-template<typename ENUM>
-bool operator < (ENUM lhs, ENUM rhs) {
+template <typename ENUM>
+bool operator<(ENUM lhs, ENUM rhs) {
     typedef typename std::underlying_type<ENUM>::type enum_type;
     return static_cast<enum_type>(lhs) < static_cast<enum_type>(rhs);
 }
-
 }

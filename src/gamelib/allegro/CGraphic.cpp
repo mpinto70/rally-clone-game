@@ -11,25 +11,25 @@
 namespace gamelib {
 namespace allegro {
 
-static constexpr unsigned TILE_SIZE     = 32;       ///< tile size in pixels
-static constexpr unsigned TILE_GAP      = 2;        ///< gap between tiles
-static constexpr unsigned ACTION_SIZE   = 32;       ///< action size in pixels
-static constexpr unsigned ACTION_GAP    = 1;        ///< gap between actions
-static constexpr unsigned SIDE_BAR_W    = 200;      ///< width of the side bar
-static constexpr unsigned BOTTOM_BAR_H  = 50;      ///< width of the side bar
+static constexpr unsigned TILE_SIZE = 32;    ///< tile size in pixels
+static constexpr unsigned TILE_GAP = 2;      ///< gap between tiles
+static constexpr unsigned ACTION_SIZE = 32;  ///< action size in pixels
+static constexpr unsigned ACTION_GAP = 1;    ///< gap between actions
+static constexpr unsigned SIDE_BAR_W = 200;  ///< width of the side bar
+static constexpr unsigned BOTTOM_BAR_H = 50; ///< width of the side bar
 
 static std::map<COLOR, int> COLORS;
 static void initColor() {
-    COLORS[COLOR::RED]          = makecol32(255,   0,   0);
-    COLORS[COLOR::WINE]         = makecol32(64,   0,   0);
-    COLORS[COLOR::GREEN]        = makecol32(0, 255,   0);
-    COLORS[COLOR::DARKGREEN]    = makecol32(0,  64,   0);
-    COLORS[COLOR::BLUE]         = makecol32(0,   0, 255);
-    COLORS[COLOR::DARKBLUE]     = makecol32(0,   0,  64);
-    COLORS[COLOR::WHITE]        = makecol32(255, 255, 255);
-    COLORS[COLOR::GRAY]         = makecol32(128, 128, 128);
-    COLORS[COLOR::DARKGRAY]     = makecol32(64,  64,  64);
-    COLORS[COLOR::BLACK]        = makecol32(0,   0,   0);
+    COLORS[COLOR::RED] = makecol32(255, 0, 0);
+    COLORS[COLOR::WINE] = makecol32(64, 0, 0);
+    COLORS[COLOR::GREEN] = makecol32(0, 255, 0);
+    COLORS[COLOR::DARKGREEN] = makecol32(0, 64, 0);
+    COLORS[COLOR::BLUE] = makecol32(0, 0, 255);
+    COLORS[COLOR::DARKBLUE] = makecol32(0, 0, 64);
+    COLORS[COLOR::WHITE] = makecol32(255, 255, 255);
+    COLORS[COLOR::GRAY] = makecol32(128, 128, 128);
+    COLORS[COLOR::DARKGRAY] = makecol32(64, 64, 64);
+    COLORS[COLOR::BLACK] = makecol32(0, 0, 0);
 }
 
 static int translate(COLOR color) {
@@ -37,12 +37,12 @@ static int translate(COLOR color) {
 }
 
 CGraphic::CGraphic(const std::string& common_path)
-    : buffer_(nullptr, destroy_bitmap),
-      bufferMap_(nullptr, destroy_bitmap),
-      fontSystem_(nullptr, destroy_font),
-      fontMenu_(nullptr, destroy_font),
-      tileMapper_(common_path + "/tileset.bmp", TILE_SIZE, TILE_SIZE, TILE_GAP),
-      actionMapper_(common_path + "/actions.bmp", ACTION_SIZE, ACTION_SIZE, ACTION_GAP) {
+      : buffer_(nullptr, destroy_bitmap),
+        bufferMap_(nullptr, destroy_bitmap),
+        fontSystem_(nullptr, destroy_font),
+        fontMenu_(nullptr, destroy_font),
+        tileMapper_(common_path + "/tileset.bmp", TILE_SIZE, TILE_SIZE, TILE_GAP),
+        actionMapper_(common_path + "/actions.bmp", ACTION_SIZE, ACTION_SIZE, ACTION_GAP) {
     using util::CException;
     // creates the buffer of the entire screen
     buffer_.reset(create_bitmap(SCREEN_W, SCREEN_H));
@@ -73,11 +73,11 @@ CGraphic::~CGraphic() {
 }
 
 void CGraphic::printText(const std::string& text,
-                         const GFONT gfont,
-                         const unsigned x,
-                         const unsigned y,
-                         COLOR foreground,
-                         COLOR background) {
+      const GFONT gfont,
+      const unsigned x,
+      const unsigned y,
+      COLOR foreground,
+      COLOR background) {
     if (x > width() || y > height()) {
         return;
     }
@@ -92,33 +92,33 @@ void CGraphic::printText(const std::string& text,
 
 template <typename MAPPER>
 static void mapper_draw(BITMAP* bmp,
-                        const MAPPER& mapper,
-                        const typename MAPPER::enum_type type,
-                        const int x,
-                        const int y) {
+      const MAPPER& mapper,
+      const typename MAPPER::enum_type type,
+      const int x,
+      const int y) {
     const auto sub_bmp = mapper[type];
     draw_sprite(bmp, sub_bmp, x, y);
 }
 
 static void tile_draw(BITMAP* bmp,
-                      const gamelib::allegro::bmp::CTileMapper& mapper,
-                      const map::ETileType type,
-                      const int x,
-                      const int y) {
+      const gamelib::allegro::bmp::CTileMapper& mapper,
+      const map::ETileType type,
+      const int x,
+      const int y) {
     mapper_draw(bmp, mapper, type, x, y);
 }
 
 static void action_draw(BITMAP* bmp,
-                        const gamelib::allegro::bmp::CActionMapper& mapper,
-                        const map::EAction action,
-                        const int x,
-                        const int y) {
+      const gamelib::allegro::bmp::CActionMapper& mapper,
+      const map::EAction action,
+      const int x,
+      const int y) {
     mapper_draw(bmp, mapper, action, x, y);
 }
 
 static double calculateMin(double x,
-                           double windowW,
-                           double maxX) {
+      double windowW,
+      double maxX) {
     const double res = x - windowW / 2.0;
     if (res < 0) {
         return 0;
@@ -130,9 +130,9 @@ static double calculateMin(double x,
 }
 
 void CGraphic::draw(const map::CMap& map,
-                    const size_t x_cursor,
-                    const size_t y_cursor,
-                    const size_t parts) {
+      const size_t x_cursor,
+      const size_t y_cursor,
+      const size_t parts) {
     rectfill(buffer_.get(), 0, 0, buffer_->w, buffer_->h, COLORS[COLOR::WINE]);
     rect(buffer_.get(), 0, 0, bufferMap_->w + 3, bufferMap_->h + 3, COLORS[COLOR::WHITE]);
     rect(buffer_.get(), 1, 1, bufferMap_->w + 2, bufferMap_->h + 2, COLORS[COLOR::WHITE]);
@@ -155,16 +155,16 @@ void CGraphic::draw(const map::CMap& map,
     const size_t J1 = (size_t) ceil((window_y0 + bufferMap_->h) / TILE_SIZE);
 
     for (size_t i = I0; i < map.width() && i < I1; ++i) {
-        const int X = (int)(i * TILE_SIZE - window_x0);
+        const int X = (int) (i * TILE_SIZE - window_x0);
         for (size_t j = J0; j < map.height() && j < J1; ++j) {
-            const int Y = (int)(j * TILE_SIZE - window_y0);
+            const int Y = (int) (j * TILE_SIZE - window_y0);
             tile_draw(bufferMap_.get(), tileMapper_, map(i, j).type(), X, Y);
             action_draw(bufferMap_.get(), actionMapper_, map(i, j).action(), X, Y);
         }
     }
     // drawing the cursor
-    const int X = (int)(x - window_x0);
-    const int Y = (int)(y - window_y0);
+    const int X = (int) (x - window_x0);
+    const int Y = (int) (y - window_y0);
     rectfill(bufferMap_.get(), X, Y, X + 3, Y + 3, COLORS[COLOR::BLACK]);
 
     // transfering rendered map to screen buffer
@@ -177,7 +177,5 @@ void CGraphic::flip() {
     clear_bitmap(buffer_.get());
     clear_bitmap(bufferMap_.get());
 }
-
 }
 }
-

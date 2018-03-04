@@ -5,22 +5,23 @@
 #include <typeinfo>
 
 /** define to be used on enum's to_string functions. */
-#define CASE_ENUM_TO_STRING(VALUE) case VALUE: return #VALUE
+#define CASE_ENUM_TO_STRING(VALUE) \
+    case VALUE: return #VALUE
 
 namespace util {
 
-template< typename T >
+template <typename T>
 class CEnumIterator {
 public:
     typedef typename std::underlying_type<T>::type enumType;
     class Iterator {
     public:
         Iterator(enumType value)
-            : value_(value) {
+              : value_(value) {
         }
 
         T operator*() const {
-            return (T)value_;
+            return (T) value_;
         }
 
         void operator++(void) {
@@ -34,15 +35,14 @@ public:
     private:
         enumType value_;
     };
-
 };
 
-template< typename T >
+template <typename T>
 typename CEnumIterator<T>::Iterator begin(CEnumIterator<T>) {
     return typename CEnumIterator<T>::Iterator((typename CEnumIterator<T>::enumType) T::FIRST);
 }
 
-template< typename T >
+template <typename T>
 typename CEnumIterator<T>::Iterator end(CEnumIterator<T>) {
     return typename CEnumIterator<T>::Iterator((typename CEnumIterator<T>::enumType) T::LAST);
 }
@@ -79,5 +79,4 @@ void validate(T t) {
         throw CException(msg, val);
     }
 }
-
 }

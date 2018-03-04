@@ -7,6 +7,4 @@ class ISound {
 public:
     virtual ~ISound() = 0;
 };
-
 }
-

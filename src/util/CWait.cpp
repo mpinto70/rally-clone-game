@@ -6,8 +6,8 @@
 namespace util {
 
 CWait::CWait(const size_t milliseconds)
-    : microseconds_(milliseconds * 1000),
-      end_ {0, 0} {
+      : microseconds_(milliseconds * 1000),
+        end_{ 0, 0 } {
     reset();
 }
 
@@ -26,8 +26,12 @@ void CWait::reset() {
 bool CWait::expired() const {
     timeval t;
     gettimeofday(&t, nullptr);
-    if (t.tv_sec > end_.tv_sec) { return true; }
-    if (t.tv_sec < end_.tv_sec) { return false; }
+    if (t.tv_sec > end_.tv_sec) {
+        return true;
+    }
+    if (t.tv_sec < end_.tv_sec) {
+        return false;
+    }
     return (t.tv_usec >= end_.tv_usec);
 }
 
@@ -36,6 +40,4 @@ void CWait::wait() const {
         usleep(200);
     }
 }
-
 }
-

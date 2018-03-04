@@ -4,6 +4,4 @@
 namespace gamelib {
 
 IKeyboard::~IKeyboard() {}
-
 }
-

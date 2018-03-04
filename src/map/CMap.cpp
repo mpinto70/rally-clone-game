@@ -7,11 +7,11 @@
 namespace map {
 
 CMap::CMap(const map_dimension_t width,
-           const map_dimension_t height,
-           const std::vector<CTile>& tiles)
-    : width_(width),
-      height_(height),
-      tiles_(tiles) {
+      const map_dimension_t height,
+      const std::vector<CTile>& tiles)
+      : width_(width),
+        height_(height),
+        tiles_(tiles) {
     if (width == 0) {
         throw std::invalid_argument("CMap - zero width");
     }
@@ -30,33 +30,32 @@ CMap::CMap(const map_dimension_t width,
 }
 
 CTile& CMap::operator()(const map_dimension_t x,
-                        const map_dimension_t y) {
+      const map_dimension_t y) {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
 const CTile& CMap::operator()(const map_dimension_t x,
-                              const map_dimension_t y) const {
+      const map_dimension_t y) const {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
 void CMap::verifyRange(const map_dimension_t x,
-                       const map_dimension_t y) const {
+      const map_dimension_t y) const {
     if (x >= width_)
         throw util::CException("CMap() - horizontal coordinate out of range ("
-                               + std::to_string(x)
-                               + "/"
-                               + std::to_string(width_)
-                               + ")"
-                               , x);
+                                     + std::to_string(x)
+                                     + "/"
+                                     + std::to_string(width_)
+                                     + ")",
+              x);
     if (y >= height_)
         throw util::CException("CMap() - vertical coordinate out of range ("
-                               + std::to_string(y)
-                               + "/"
-                               + std::to_string(height_)
-                               + ")"
-                               , y);
+                                     + std::to_string(y)
+                                     + "/"
+                                     + std::to_string(height_)
+                                     + ")",
+              y);
 }
-
 }

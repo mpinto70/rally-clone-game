@@ -18,9 +18,9 @@ public:
     /** shall not be constructed nor copied. */
     CSingleton(CSingleton&&) = delete;
     /** shall not be constructed nor copied. */
-    CSingleton& operator = (const CSingleton&) = delete;
+    CSingleton& operator=(const CSingleton&) = delete;
     /** shall not be constructed nor copied. */
-    CSingleton& operator = (CSingleton&&) = delete;
+    CSingleton& operator=(CSingleton&&) = delete;
 
     /** gets the instance of \b T geting a pointer to \b U (U must be derived from T).
      * @param u the unique pointer to \b U
@@ -48,12 +48,11 @@ public:
         }
         return *instance_;
     }
+
 private:
-    static std::unique_ptr<T> instance_;    ///< the instance
+    static std::unique_ptr<T> instance_; ///< the instance
 };
 
 template <typename T>
 std::unique_ptr<T> CSingleton<T>::instance_;
-
 }
-

@@ -11,12 +11,12 @@
 namespace game {
 
 CController::CController(std::unique_ptr<gamelib::IGameLib>& gameLib,
-                         const std::string& pathToRallyDir,
-                         const size_t parts)
-    : gameLib_(std::move(gameLib)),
-      pathToRoot_(pathToRallyDir),
-      map_(nullptr),
-      parts_(parts) {
+      const std::string& pathToRallyDir,
+      const size_t parts)
+      : gameLib_(std::move(gameLib)),
+        pathToRoot_(pathToRallyDir),
+        map_(nullptr),
+        parts_(parts) {
     if (gameLib_.get() == nullptr) {
         throw util::CException("CController - game lib was null", 1);
     }
@@ -73,5 +73,4 @@ void CController::run() {
         gameLib_->graphic().flip();
     }
 }
-
 }

@@ -43,6 +43,4 @@ T from_EAction(EAction enum_value) {
  * @param enum_value the value to be converted
  */
 std::string to_string(EAction enum_value);
-
 }
-
