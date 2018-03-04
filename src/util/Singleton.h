@@ -27,10 +27,10 @@ public:
     template <typename U>
     static void create(std::unique_ptr<U> u) {
         if (u.get() == nullptr) {
-            throw std::logic_error("CSingleton::create - null pointer");
+            throw std::logic_error("Singleton::create - null pointer");
         }
         if (instance_.get() != nullptr) {
-            throw std::logic_error("CSingleton::create - already created");
+            throw std::logic_error("Singleton::create - already created");
         }
         instance_ = std::move(u);
     }
@@ -43,7 +43,7 @@ public:
     /** gets the instance. */
     static T& instance() {
         if (instance_.get() == nullptr) {
-            throw std::logic_error("CSingleton::instance - not created");
+            throw std::logic_error("Singleton::instance - not created");
         }
         return *instance_;
     }

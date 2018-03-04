@@ -4,7 +4,7 @@
 
 namespace gamelib {
 
-enum class EKey : unsigned char {
+enum class Key : unsigned char {
     ENTER = 1,
     LEFT,
     RIGHT,
@@ -19,7 +19,7 @@ enum class EKey : unsigned char {
 class Keyboard {
 public:
     virtual ~Keyboard() = 0;
-    virtual bool isKeyPressed(EKey keyCode) const = 0;
-    virtual std::set<EKey> keysPressed() const = 0;
+    virtual bool isKeyPressed(Key keyCode) const = 0;
+    virtual std::set<Key> keysPressed() const = 0;
 };
 }

@@ -17,24 +17,24 @@ GameLib::GameLib(unsigned int width,
     using util::Exception;
     int allegResult = allegro_init();
     if (allegResult != 0) {
-        throw Exception("CGameLib - Error initializing graphics", allegResult);
+        throw Exception("GameLib - Error initializing graphics", allegResult);
     }
 
     allegResult = install_keyboard();
     if (allegResult != 0) {
-        throw util::Exception("CGameLib - Error initializing keyboard", allegResult);
+        throw util::Exception("GameLib - Error initializing keyboard", allegResult);
     }
 
     allegResult = install_timer();
     if (allegResult != 0) {
-        throw util::Exception("CGameLib - Error initializing timer", allegResult);
+        throw util::Exception("GameLib - Error initializing timer", allegResult);
     }
 
     set_color_depth(32);
 
     allegResult = set_gfx_mode(GFX_AUTODETECT_WINDOWED, width, height, 0, 0);
     if (allegResult != 0) {
-        throw Exception("CGameLib - Error initializing screen", allegResult);
+        throw Exception("GameLib - Error initializing screen", allegResult);
     }
 
     keyboard_ = new Keyboard();

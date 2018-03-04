@@ -14,14 +14,14 @@ BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
     BITMAP_PTR fullBitmap(load_bitmap(fileName.c_str(), nullptr), destroy_bitmap);
 
     if (fullBitmap == nullptr) {
-        throw util::Exception("CTileReader - it was not possible to read the tiles from " + fileName, 1);
+        throw util::Exception("TileReader - it was not possible to read the tiles from " + fileName, 1);
     }
 
     const unsigned w = fullBitmap->w;
     const unsigned h = fullBitmap->h;
 
     if ((w - gap) % (tileWidth + gap) != 0) {
-        throw util::Exception("CTileReader - the image width ("
+        throw util::Exception("TileReader - the image width ("
                                     + std::to_string(w)
                                     + ") is incompatible with tile size ("
                                     + std::to_string(tileWidth)
@@ -32,7 +32,7 @@ BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
               2);
     }
     if (h != gap + tileHeight + gap) {
-        throw util::Exception("CTileReader - the image height ("
+        throw util::Exception("TileReader - the image height ("
                                     + std::to_string(h)
                                     + ") is incompatible with tile size ("
                                     + std::to_string(tileWidth)
@@ -51,7 +51,7 @@ BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
         // a subbitmap that shares parent bitmap's memory.
         BITMAP* sub = create_sub_bitmap(fullBitmap.get(), x, gap, tileWidth, tileHeight);
         if (sub == nullptr) {
-            throw util::Exception("CTileReader - it was not possible to reference the sub tile at ["
+            throw util::Exception("TileReader - it was not possible to reference the sub tile at ["
                                         + std::to_string(x)
                                         + ","
                                         + std::to_string(gap)

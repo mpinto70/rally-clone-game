@@ -14,37 +14,37 @@ Keyboard::Keyboard() {
 Keyboard::~Keyboard() {
 }
 
-static unsigned int translateKey(EKey keyCode) {
+static unsigned int translateKey(Key keyCode) {
     switch (keyCode) {
-        case EKey::ENTER:
+        case Key::ENTER:
             return KEY_ENTER;
-        case EKey::LEFT:
+        case Key::LEFT:
             return KEY_LEFT;
-        case EKey::RIGHT:
+        case Key::RIGHT:
             return KEY_RIGHT;
-        case EKey::UP:
+        case Key::UP:
             return KEY_UP;
-        case EKey::DOWN:
+        case Key::DOWN:
             return KEY_DOWN;
-        case EKey::SPACE:
+        case Key::SPACE:
             return KEY_SPACE;
-        case EKey::ESCAPE:
+        case Key::ESCAPE:
             return KEY_ESC;
-        case EKey::LAST:
+        case Key::LAST:
             return -1;
     }
     return -1;
 }
 
-bool Keyboard::isKeyPressed(EKey keyCode) const {
+bool Keyboard::isKeyPressed(Key keyCode) const {
     const unsigned int allegroKey = translateKey(keyCode);
 
     return (allegroKey != (unsigned int) -1 && key[allegroKey] != 0);
 }
 
-std::set<EKey> Keyboard::keysPressed() const {
-    std::set<EKey> res;
-    for (auto key : util::CEnumIterator<EKey>()) {
+std::set<Key> Keyboard::keysPressed() const {
+    std::set<Key> res;
+    for (auto key : util::EnumIterator<Key>()) {
         if (isKeyPressed(key)) {
             res.insert(key);
         }

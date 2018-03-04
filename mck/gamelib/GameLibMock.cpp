@@ -16,13 +16,13 @@ GameLibMock::GameLibMock(std::unique_ptr<Graphic>& graphic,
         timer_(std::move(timer)),
         keyboard_(std::move(keyboard)) {
     if (graphic_.get() == nullptr)
-        throw util::Exception("CGameLibMock - graphic was null", 1);
+        throw util::Exception("GameLibMock - graphic was null", 1);
     if (sound_.get() == nullptr)
-        throw util::Exception("CGameLibMock - sound was null", 1);
+        throw util::Exception("GameLibMock - sound was null", 1);
     if (timer_.get() == nullptr)
-        throw util::Exception("CGameLibMock - timer was null", 1);
+        throw util::Exception("GameLibMock - timer was null", 1);
     if (keyboard_.get() == nullptr)
-        throw util::Exception("CGameLibMock - keyboard was null", 1);
+        throw util::Exception("GameLibMock - keyboard was null", 1);
 }
 
 GameLibMock::~GameLibMock() {

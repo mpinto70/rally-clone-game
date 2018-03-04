@@ -18,11 +18,10 @@ std::string getRallyDir() {
 }
 
 int main() {
-    using IGameLib = gamelib::GameLib;
     using gamelib::allegro::GameLib;
     try {
         const auto rallyDir = getRallyDir();
-        std::unique_ptr<IGameLib> gameLib(new GameLib(UTIL_W, UTIL_H, rallyDir));
+        std::unique_ptr<gamelib::GameLib> gameLib(new GameLib(UTIL_W, UTIL_H, rallyDir));
         game::Controller controller(gameLib, rallyDir, 15);
         controller.run();
         return 0;

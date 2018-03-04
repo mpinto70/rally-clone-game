@@ -6,11 +6,11 @@
 
 namespace util {
 
-TEST(CSingletonTest, Hierarchy) {
+TEST(SingletonTest, Hierarchy) {
     EXPECT_TRUE((std::is_constructible<Singleton<int>>::value) == false);
 }
 
-TEST(CSingletonTest, Creation) {
+TEST(SingletonTest, Creation) {
     EXPECT_THROW(Singleton<int>::instance(),
           std::logic_error);
     EXPECT_THROW(Singleton<int>::create<int>(nullptr),

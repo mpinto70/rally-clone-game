@@ -11,7 +11,7 @@
 namespace util {
 
 template <typename T>
-class CEnumIterator {
+class EnumIterator {
 public:
     typedef typename std::underlying_type<T>::type enumType;
     class Iterator {
@@ -38,13 +38,13 @@ public:
 };
 
 template <typename T>
-typename CEnumIterator<T>::Iterator begin(CEnumIterator<T>) {
-    return typename CEnumIterator<T>::Iterator((typename CEnumIterator<T>::enumType) T::FIRST);
+typename EnumIterator<T>::Iterator begin(EnumIterator<T>) {
+    return typename EnumIterator<T>::Iterator((typename EnumIterator<T>::enumType) T::FIRST);
 }
 
 template <typename T>
-typename CEnumIterator<T>::Iterator end(CEnumIterator<T>) {
-    return typename CEnumIterator<T>::Iterator((typename CEnumIterator<T>::enumType) T::LAST);
+typename EnumIterator<T>::Iterator end(EnumIterator<T>) {
+    return typename EnumIterator<T>::Iterator((typename EnumIterator<T>::enumType) T::LAST);
 }
 
 template <typename E, typename T>
@@ -76,7 +76,7 @@ void validate(T t) {
     if (not isValid(t)) {
         const auto val = from_Enum<int>(t);
         const std::string msg = std::string(typeid(T).name()) + " - invalid value " + to_string(val);
-        throw CException(msg, val);
+        throw Exception(msg, val);
     }
 }
 }

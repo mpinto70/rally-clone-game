@@ -4,7 +4,7 @@
 
 namespace map {
 
-class CMapIOTest : public ::testing::Test {
+class MapIOTest : public ::testing::Test {
 protected:
     void TearDown() override;
 };

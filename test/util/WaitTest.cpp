@@ -78,7 +78,7 @@ static void verifyWait(const size_t milli) {
         print(__LINE__, milli, after, end);
 }
 
-TEST(CWaitTest, Wait) {
+TEST(WaitTest, Wait) {
     for (size_t i = 0; i < 10; ++i) {
         verifyWait(1);
         verifyWait(10);
@@ -104,7 +104,7 @@ static void verifyEnd(const size_t milli) {
     EXPECT_TRUE(end <= obj.end()) << milli;
 }
 
-TEST(CWaitTest, End) {
+TEST(WaitTest, End) {
     for (size_t i = 0; i < 1000; ++i) {
         verifyEnd(1);
         verifyEnd(10);

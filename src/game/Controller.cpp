@@ -16,49 +16,49 @@ Controller::Controller(std::unique_ptr<gamelib::GameLib>& gameLib,
         map_(nullptr),
         parts_(parts) {
     if (gameLib_.get() == nullptr) {
-        throw util::Exception("CController - game lib was null", 1);
+        throw util::Exception("Controller - game lib was null", 1);
     }
     if (parts == 0) {
-        throw std::invalid_argument("CController - zero parts");
+        throw std::invalid_argument("Controller - zero parts");
     }
     boost::filesystem::path root(pathToRoot_);
     boost::filesystem::path stage0 = root / "stages" / "stage0.dat";
     if (not boost::filesystem::exists(stage0)) {
-        throw util::Exception("CController - stage not found " + stage0.string(), 1);
+        throw util::Exception("Controller - stage not found " + stage0.string(), 1);
     }
 
-    map_.reset(new map::Map(map::CMapIO::read(stage0.string())));
+    map_.reset(new map::Map(map::MapIO::read(stage0.string())));
 }
 
 Controller::~Controller() {
 }
 
 void Controller::run() {
-    using gamelib::EKey;
+    using gamelib::Key;
 
     size_t x = 0, y = 0;
-    while (not gameLib_->keyboard().isKeyPressed(gamelib::EKey::ESCAPE)) {
+    while (not gameLib_->keyboard().isKeyPressed(gamelib::Key::ESCAPE)) {
         util::Wait wait(10);
 
-        if (gameLib_->keyboard().isKeyPressed(EKey::DOWN)) {
+        if (gameLib_->keyboard().isKeyPressed(Key::DOWN)) {
             ++y;
             if (y >= map_->height() * parts_) {
                 y = 0;
             }
         }
-        if (gameLib_->keyboard().isKeyPressed(EKey::UP)) {
+        if (gameLib_->keyboard().isKeyPressed(Key::UP)) {
             if (y == 0) {
                 y = map_->height() * parts_;
             }
             --y;
         }
-        if (gameLib_->keyboard().isKeyPressed(EKey::RIGHT)) {
+        if (gameLib_->keyboard().isKeyPressed(Key::RIGHT)) {
             ++x;
             if (x >= map_->width() * parts_) {
                 x = 0;
             }
         }
-        if (gameLib_->keyboard().isKeyPressed(EKey::LEFT)) {
+        if (gameLib_->keyboard().isKeyPressed(Key::LEFT)) {
             if (x == 0) {
                 x = map_->width() * parts_;
             }

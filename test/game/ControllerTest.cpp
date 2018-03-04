@@ -12,16 +12,16 @@ std::string getRallyDir() {
     return RALLY_ROOT "/test/game/files";
 }
 
-TEST(CControllerTest, Creation) {
+TEST(ControllerTest, Creation) {
     auto gameLib = gamelib::mck::GameLibUtils::createDefault();
     EXPECT_TRUE(gameLib.get() != nullptr);
 
     Controller cont(gameLib, getRallyDir(), 15);
-    gamelib::mck::KeyboardMock::add(gamelib::EKey::ESCAPE);
+    gamelib::mck::KeyboardMock::add(gamelib::Key::ESCAPE);
     cont.run();
 }
 
-TEST(CControllerTest, InvalidCreation) {
+TEST(ControllerTest, InvalidCreation) {
     std::unique_ptr<gamelib::GameLib> empty;
     EXPECT_THROW(Controller c(empty, "some_path", 13),
           util::Exception);

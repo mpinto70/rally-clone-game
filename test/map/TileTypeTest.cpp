@@ -30,7 +30,7 @@ TEST(TileTypeTest, ToString) {
 
     EXPECT_THROW(to_string(TileType::LAST), util::Exception);
 
-    for (const auto type : util::CEnumIterator<TileType>()) {
+    for (const auto type : util::EnumIterator<TileType>()) {
         EXPECT_NO_THROW(to_string(type));
     }
 }

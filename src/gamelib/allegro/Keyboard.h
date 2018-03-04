@@ -10,8 +10,8 @@ public:
     Keyboard();
     ~Keyboard() override;
 
-    bool isKeyPressed(EKey keyCode) const override;
-    std::set<EKey> keysPressed() const override;
+    bool isKeyPressed(Key keyCode) const override;
+    std::set<Key> keysPressed() const override;
 };
 }
 }

@@ -43,23 +43,23 @@ Graphic::Graphic(const std::string& common_path)
     // creates the buffer of the entire screen
     buffer_.reset(create_bitmap(SCREEN_W, SCREEN_H));
     if (buffer_.get() == nullptr) {
-        throw Exception("CGraphic::CGraphic - Error initializing main screen buffer", -1);
+        throw Exception("Graphic::Graphic - Error initializing main screen buffer", -1);
     }
 
     // creates the buffer for the map.
     bufferMap_.reset(create_bitmap(SCREEN_W - SIDE_BAR_W, SCREEN_H - BOTTOM_BAR_H));
     if (bufferMap_.get() == nullptr) {
-        throw Exception("CGraphic::CGraphic - Error initializing map buffer", -1);
+        throw Exception("Graphic::Graphic - Error initializing map buffer", -1);
     }
 
     fontMenu_.reset(load_font((common_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
     if (fontMenu_.get() == nullptr) {
-        throw Exception("CGraphic::CGraphic - Error initializing menu font", -2);
+        throw Exception("Graphic::Graphic - Error initializing menu font", -2);
     }
 
     fontSystem_.reset(load_font((common_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
     if (fontSystem_.get() == nullptr) {
-        throw Exception("CGraphic::CGraphic - Error initializing system font", -3);
+        throw Exception("Graphic::Graphic - Error initializing system font", -3);
     }
 
     initColor();

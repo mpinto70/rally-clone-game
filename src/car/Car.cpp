@@ -20,7 +20,7 @@ Car::Car(Direction direction)
         direction_(direction),
         nextDirection_(Direction::NONE) {
     if (not util::isValid(direction)) {
-        throw util::Exception("CCar - invalid direction", from_Direction<int>(direction));
+        throw util::Exception("Car - invalid direction", from_Direction<int>(direction));
     }
 }
 

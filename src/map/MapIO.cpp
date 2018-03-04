@@ -8,12 +8,12 @@
 
 namespace map {
 
-Map CMapIO::read(const std::string& fileName) {
+Map MapIO::read(const std::string& fileName) {
     std::ifstream is(fileName, std::ios_base::in | std::ios_base::binary);
     return read(is);
 }
 
-void CMapIO::write(const std::string& fileName,
+void MapIO::write(const std::string& fileName,
       const Map& map) {
     std::ofstream os(fileName, std::ios_base::out | std::ios_base::binary);
     write(os, map);
@@ -26,12 +26,12 @@ static T readField(std::istream& is,
     char* buffer = reinterpret_cast<char*>(&t);
     is.read(buffer, sizeof(T));
     if (not is || is.gcount() != sizeof(T)) {
-        throw util::Exception("CMapReader::read(is) - could not read " + fieldName, 1);
+        throw util::Exception("MapReader::read(is) - could not read " + fieldName, 1);
     }
     return t;
 }
 
-Map CMapIO::read(std::istream& is) {
+Map MapIO::read(std::istream& is) {
     const auto width = readField<map_dimension_t>(is, "width");
     const auto height = readField<map_dimension_t>(is, "height");
 
@@ -41,12 +41,12 @@ Map CMapIO::read(std::istream& is) {
     for (size_t i = 0; i < qttyTiles; ++i) {
         const auto t = readField<tile_type_t>(is, "tile");
         if (t >= from_ETileType<tile_type_t>(TileType::LAST)) {
-            throw util::Exception("CMapReader::read(is) - invalid tile " + std::to_string(t) + " read " + std::to_string(i), i);
+            throw util::Exception("MapReader::read(is) - invalid tile " + std::to_string(t) + " read " + std::to_string(i), i);
         }
 
         const auto a = readField<action_t>(is, "action");
         if (a >= from_EAction<action_t>(Action::LAST)) {
-            throw util::Exception("CMapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
+            throw util::Exception("MapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
         }
         tiles.push_back(Tile(to_ETileType(t), to_EAction(a)));
     }
@@ -60,11 +60,11 @@ static void writeField(std::ostream& os,
     const char* buffer = reinterpret_cast<const char*>(&t);
     os.write(buffer, sizeof(T));
     if (not os) {
-        throw util::Exception("CMapReader::write(os) - could not write " + fieldName, 1);
+        throw util::Exception("MapReader::write(os) - could not write " + fieldName, 1);
     }
 }
 
-void CMapIO::write(std::ostream& os,
+void MapIO::write(std::ostream& os,
       const Map& map) {
     writeField(os, map.width(), "width");
     writeField(os, map.height(), "height");

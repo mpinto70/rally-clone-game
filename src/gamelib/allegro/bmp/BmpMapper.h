@@ -30,7 +30,7 @@ public:
         const auto qttyRead = bmps.second.size();
         const auto qttyExpected = static_cast<enum_t>(ENUM::LAST);
         if (qttyRead != qttyExpected) {
-            throw util::Exception("CBmpMapper - number of bmps read ("
+            throw util::Exception("BmpMapper - number of bmps read ("
                                         + std::to_string(qttyRead)
                                         + ") differs from the expected ("
                                         + std::to_string(qttyExpected)
@@ -40,7 +40,7 @@ public:
                                         + typeid(ENUM).name(),
                   1);
         }
-        for (auto bmpId : util::CEnumIterator<ENUM>()) {
+        for (auto bmpId : util::EnumIterator<ENUM>()) {
             const auto index = static_cast<enum_t>(bmpId);
             bmpMap_.insert(std::make_pair(bmpId, std::move(bmps.second.at(index))));
         }
@@ -83,7 +83,7 @@ public:
     BITMAP* subBmp(ENUM bmpId) const {
         const auto it = bmpMap_.find(bmpId);
         if (it == bmpMap_.end())
-            throw util::Exception("CBmpMapper - bmp not found ("
+            throw util::Exception("BmpMapper - bmp not found ("
                                         + std::to_string(static_cast<int>(bmpId))
                                         + ") for "
                                         + typeid(ENUM).name(),

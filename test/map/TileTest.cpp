@@ -5,7 +5,7 @@
 
 namespace map {
 
-TEST(CTileTest, Creation) {
+TEST(TileTest, Creation) {
     const Tile tile1(TileType::RIGHT);
     EXPECT_EQ(tile1.type(), TileType::RIGHT);
     EXPECT_EQ(tile1.action(), Action::NONE);
@@ -22,11 +22,11 @@ TEST(CTileTest, Creation) {
     EXPECT_EQ(tile4.type(), TileType::ROAD);
     EXPECT_EQ(tile4.action(), Action::STONE);
 
-    for (const auto type : util::CEnumIterator<TileType>()) {
+    for (const auto type : util::EnumIterator<TileType>()) {
         Tile tileA(type);
         EXPECT_EQ(tileA.type(), type);
         EXPECT_EQ(tileA.action(), Action::NONE);
-        for (const auto action : util::CEnumIterator<Action>()) {
+        for (const auto action : util::EnumIterator<Action>()) {
             if (action == Action::NONE || type == TileType::ROAD) {
                 Tile tileB(type, action);
                 EXPECT_EQ(tileB.type(), type);
@@ -38,7 +38,7 @@ TEST(CTileTest, Creation) {
     }
 }
 
-TEST(CTileTest, Modification) {
+TEST(TileTest, Modification) {
     Tile tile(TileType::RIGHT);
     EXPECT_EQ(tile.type(), TileType::RIGHT);
     EXPECT_EQ(tile.action(), Action::NONE);
@@ -64,12 +64,12 @@ TEST(CTileTest, Modification) {
     EXPECT_EQ(tile.action(), Action::NONE);
 
     tile.action(Action::NONE);
-    for (const auto type : util::CEnumIterator<TileType>()) {
+    for (const auto type : util::EnumIterator<TileType>()) {
         tile.type(type);
         EXPECT_EQ(tile.type(), type);
     }
     tile.type(TileType::ROAD);
-    for (const auto action : util::CEnumIterator<Action>()) {
+    for (const auto action : util::EnumIterator<Action>()) {
         tile.action(action);
         EXPECT_EQ(tile.type(), TileType::ROAD);
         EXPECT_EQ(tile.action(), action);
@@ -83,7 +83,7 @@ TEST(CTileTest, Modification) {
 
     tile.type(TileType::GRASS);
 
-    for (const auto action : util::CEnumIterator<Action>()) {
+    for (const auto action : util::EnumIterator<Action>()) {
         if (action == Action::NONE) {
             tile.action(action);
             EXPECT_EQ(tile.type(), TileType::GRASS);

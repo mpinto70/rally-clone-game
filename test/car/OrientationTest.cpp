@@ -22,7 +22,7 @@ TEST(OrientationTest, ToString) {
     EXPECT_THROW(to_string(Orientation::LAST),
           util::Exception);
 
-    for (const auto tile : util::CEnumIterator<Orientation>()) {
+    for (const auto tile : util::EnumIterator<Orientation>()) {
         EXPECT_NO_THROW(to_string(tile));
     }
 }

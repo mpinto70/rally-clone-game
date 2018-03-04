@@ -15,7 +15,7 @@ TEST(DirectionTest, ToString) {
     EXPECT_THROW(to_string(Direction::LAST),
           util::Exception);
 
-    for (const auto tile : util::CEnumIterator<Direction>()) {
+    for (const auto tile : util::EnumIterator<Direction>()) {
         EXPECT_NO_THROW(to_string(tile));
     }
 }

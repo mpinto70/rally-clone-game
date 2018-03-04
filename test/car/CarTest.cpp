@@ -13,7 +13,7 @@ void verifyCreation(Direction direction,
     EXPECT_EQ(c.orientation(), orientation) << msg;
     EXPECT_EQ(c.nextDirection(), Direction::NONE) << msg;
 }
-TEST(CCarTest, Creation) {
+TEST(CarTest, Creation) {
     const Car c1(Direction::NORTH);
     EXPECT_EQ(c1.orientation(), Orientation::NORTH);
     EXPECT_EQ(c1.direction(), Direction::NORTH);
@@ -31,12 +31,12 @@ TEST(CCarTest, Creation) {
     verifyCreation(Direction::NONE, Orientation::NORTH);
 }
 
-TEST(CCarTest, InvalidCreation) {
+TEST(CarTest, InvalidCreation) {
     EXPECT_THROW(Car c(Direction::LAST),
           util::Exception);
 }
 
-TEST(CCarTest, Turn) {
+TEST(CarTest, Turn) {
     Car c(Direction::NORTH);
     EXPECT_EQ(c.nextDirection(), Direction::NONE);
     EXPECT_EQ(c.orientation(), Orientation::NORTH);
@@ -108,7 +108,7 @@ static void verifyStepTurnDirections(const Direction direction,
     verifyStepTurn(nextDirection, direction, -step);
 }
 
-TEST(CCarTest, StepTurn) {
+TEST(CarTest, StepTurn) {
     Car c(Direction::NORTH);
     EXPECT_EQ(c.nextDirection(), Direction::NONE);
     EXPECT_EQ(c.orientation(), Orientation::NORTH);

@@ -5,7 +5,7 @@
 
 namespace map {
 
-TEST(CMapTest, Creation) {
+TEST(MapTest, Creation) {
     std::vector<Tile> tiles = {
         Tile{ TileType::ROAD, Action::STONE },
         Tile{ TileType::BUSH, Action::NONE }
@@ -31,7 +31,7 @@ TEST(CMapTest, Creation) {
     EXPECT_EQ(m2.tiles(), tiles);
 }
 
-TEST(CMapTest, InvalidCreation) {
+TEST(MapTest, InvalidCreation) {
     EXPECT_THROW(Map(0, 2, { Tile{ TileType::ROAD, Action::STONE }, Tile{ TileType::BUSH, Action::NONE } }),
           std::invalid_argument);
 
@@ -42,7 +42,7 @@ TEST(CMapTest, InvalidCreation) {
           std::invalid_argument);
 }
 
-TEST(CMapTest, Indexing) {
+TEST(MapTest, Indexing) {
     std::vector<Tile> tiles = {
         Tile{ TileType::ROAD, Action::STONE },
         Tile{ TileType::BUSH, Action::NONE }

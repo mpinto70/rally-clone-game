@@ -12,15 +12,15 @@ namespace map {
 
 constexpr char tmpFileName[] = "tmp_file_name.map";
 
-void CMapIOTest::TearDown() {
+void MapIOTest::TearDown() {
     boost::filesystem::path pathToFile(tmpFileName);
     if (boost::filesystem::exists(pathToFile)) {
         boost::filesystem::remove(pathToFile);
     }
 }
 
-TEST_F(CMapIOTest, Read) {
-    const Map map = CMapIO::read(RALLY_ROOT "/test/map/files/map_12_10.map");
+TEST_F(MapIOTest, Read) {
+    const Map map = MapIO::read(RALLY_ROOT "/test/map/files/map_12_10.map");
     EXPECT_EQ(map.width(), 12u);
     EXPECT_EQ(map.height(), 10u);
     // the first tiles are in sequence
@@ -62,16 +62,16 @@ static void verifyWrite(const map_dimension_t width,
     }
 
     const Map map1(width, height, tiles);
-    CMapIO::write(tmpFileName, map1);
+    MapIO::write(tmpFileName, map1);
 
-    const Map map2 = CMapIO::read(tmpFileName);
+    const Map map2 = MapIO::read(tmpFileName);
 
     EXPECT_EQ(map1.width(), map2.width());
     EXPECT_EQ(map1.height(), map2.height());
     EXPECT_EQ(map1.tiles(), map2.tiles());
 }
 
-TEST_F(CMapIOTest, Write) {
+TEST_F(MapIOTest, Write) {
     verifyWrite(10, 20);
     verifyWrite(200, 100);
 }

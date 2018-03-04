@@ -11,7 +11,7 @@ Tile::Tile(TileType type,
         action_(action) {
     if (action_ != Action::NONE
           && type_ != TileType::ROAD) {
-        throw util::Exception("CTile - incompatible type "
+        throw util::Exception("Tile - incompatible type "
                                     + to_string(type_)
                                     + " and action "
                                     + to_string(action_),
@@ -37,7 +37,7 @@ void Tile::type(TileType type) {
 void Tile::action(Action action) {
     if (action != Action::NONE
           && type_ != TileType::ROAD)
-        throw util::Exception("CTile::action(action) - incompatible type "
+        throw util::Exception("Tile::action(action) - incompatible type "
                                     + to_string(type_)
                                     + " and new action "
                                     + to_string(action),

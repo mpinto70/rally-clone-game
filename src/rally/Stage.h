@@ -53,7 +53,7 @@ private:
 
     int defaultTile;
 
-    std::map<unsigned int, IAnimationSequence*> preLoadedSprites;
+    std::map<unsigned int, AnimationSequence*> preLoadedSprites;
 
     std::map<int, int> offsetMap;
 

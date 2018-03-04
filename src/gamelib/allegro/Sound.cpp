@@ -11,7 +11,7 @@ Sound::Sound() {
     const int allegResult = install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, nullptr);
 
     if (allegResult != 0)
-        throw util::CException("CSound::CSound - Error initializing sound", allegResult);
+        throw util::Exception("Sound::Sound - Error initializing sound", allegResult);
     */
 }
 

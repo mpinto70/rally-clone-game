@@ -97,11 +97,11 @@ static BITMAP* g_selection_preview;
 
 static void map_save(const std::string& filename,
       const map::Map& stageMap) {
-    map::CMapIO::write(filename, stageMap);
+    map::MapIO::write(filename, stageMap);
 }
 
 static map::Map map_load(const std::string& filename) {
-    const map::Map stageMap = map::CMapIO::read(filename);
+    const map::Map stageMap = map::MapIO::read(filename);
 
     g_max_x = stageMap.width();
     g_max_y = stageMap.height();
@@ -194,7 +194,7 @@ static void draw_tilesbar(BITMAP* bmp,
       const tiles_t& tileMapper,
       const int tiles_num) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
-    for (const auto type : util::CEnumIterator<map::TileType>()) {
+    for (const auto type : util::EnumIterator<map::TileType>()) {
         const auto& pos = tileMapper.position(type);
         tile_draw(bmp, tileMapper.mapper, type, pos.x, pos.y);
     }
@@ -213,7 +213,7 @@ static void draw_actionsbar(BITMAP* bmp,
     rectfill(bmp, UTIL_W, 0, WINDOW_WIDTH, SCREEN_H, makecol(255, 255, 255));
     rectfill(bmp, UTIL_W + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
-    for (auto act : util::CEnumIterator<map::Action>()) {
+    for (auto act : util::EnumIterator<map::Action>()) {
         const auto& pos = actionMapper.position(act);
         action_draw(bmp, actionMapper.mapper, act, pos.x, pos.y);
 
@@ -291,7 +291,7 @@ static void handle_bar(typename MAPPER::enum_type& cur,
     if (mouse_b & mouse_button) {
         const unsigned y = mouse_y;
         const unsigned x = mouse_x;
-        for (const auto type : util::CEnumIterator<typename MAPPER::enum_type>()) {
+        for (const auto type : util::EnumIterator<typename MAPPER::enum_type>()) {
             const auto& pos = mapper.position(type);
             if ((x >= pos.x)
                   && (x <= pos.x + TILE_SIZE)
@@ -404,7 +404,7 @@ static actions_t load_actions(const std::string& file_name,
     std::map<map::Action, point_t> pos;
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
-    for (auto act : util::CEnumIterator<map::Action>()) {
+    for (auto act : util::EnumIterator<map::Action>()) {
         pos.insert(std::make_pair(act, point_t{ x, y }));
 
         x += ACTION_SPACE;
@@ -429,7 +429,7 @@ static tiles_t load_tiles(const std::string& file_name,
 
     unsigned x = TILES_MARGIN;
     unsigned y = UTIL_H;
-    for (const auto type : util::CEnumIterator<map::TileType>()) {
+    for (const auto type : util::EnumIterator<map::TileType>()) {
         if (x + TILE_SPACE > UTIL_W) {
             x = TILES_MARGIN;
             y += TILE_SPACE;

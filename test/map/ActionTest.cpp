@@ -16,7 +16,7 @@ TEST(ActionTest, ToString) {
 
     EXPECT_THROW(to_string(Action::LAST), util::Exception);
 
-    for (const auto tile : util::CEnumIterator<Action>()) {
+    for (const auto tile : util::EnumIterator<Action>()) {
         EXPECT_NO_THROW(to_string(tile));
     }
 }

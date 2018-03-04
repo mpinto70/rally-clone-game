@@ -13,13 +13,13 @@ Map::Map(const map_dimension_t width,
         height_(height),
         tiles_(tiles) {
     if (width == 0) {
-        throw std::invalid_argument("CMap - zero width");
+        throw std::invalid_argument("Map - zero width");
     }
     if (height == 0) {
-        throw std::invalid_argument("CMap - zero height");
+        throw std::invalid_argument("Map - zero height");
     }
     if (tiles.size() != width * height) {
-        throw std::invalid_argument("CMap - number of tiles ("
+        throw std::invalid_argument("Map - number of tiles ("
                                     + std::to_string(tiles.size())
                                     + ") is not compatible with width X height ("
                                     + std::to_string(width)
@@ -44,14 +44,14 @@ const Tile& Map::operator()(const map_dimension_t x,
 void Map::verifyRange(const map_dimension_t x,
       const map_dimension_t y) const {
     if (x >= width_)
-        throw util::Exception("CMap() - horizontal coordinate out of range ("
+        throw util::Exception("Map() - horizontal coordinate out of range ("
                                     + std::to_string(x)
                                     + "/"
                                     + std::to_string(width_)
                                     + ")",
               x);
     if (y >= height_)
-        throw util::Exception("CMap() - vertical coordinate out of range ("
+        throw util::Exception("Map() - vertical coordinate out of range ("
                                     + std::to_string(y)
                                     + "/"
                                     + std::to_string(height_)

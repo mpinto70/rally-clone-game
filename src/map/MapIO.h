@@ -8,13 +8,13 @@
 
 namespace map {
 
-class CMapIO {
+class MapIO {
 public:
     /** reads a map from file named \b fileName
      * @param fileName the name of the map file
      */
     static Map read(const std::string& fileName);
-    /** writes the map \b CMap to file \b fileName
+    /** writes the map \b Map to file \b fileName
      * @param fileName the name of the map file to be created
      * @param map the map to be written
      */
@@ -23,7 +23,7 @@ public:
      * @param is the map input stream
      */
     static Map read(std::istream& is);
-    /** writes the map \b CMap to stream \b os
+    /** writes the map \b Map to stream \b os
      * @param os the map output stream
      * @param map the map to be written
      */

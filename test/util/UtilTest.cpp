@@ -19,7 +19,7 @@ enum class Enum : unsigned {
 TEST(EUtilTest, Iteration) {
     const std::vector<Enum> enums = { Enum::ZERO, Enum::ONE, Enum::TWO, Enum::THREE };
     size_t i = 0;
-    for (auto e : CEnumIterator<Enum>()) {
+    for (auto e : EnumIterator<Enum>()) {
         EXPECT_EQ(e, enums[i]);
         ++i;
     }
