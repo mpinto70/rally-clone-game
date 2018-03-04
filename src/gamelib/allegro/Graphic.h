@@ -12,7 +12,7 @@ namespace allegro {
 
 class Graphic : public ::gamelib::Graphic {
 public:
-    Graphic(const std::string& common_path);
+    explicit Graphic(const std::string& common_path);
     ~Graphic() override;
     unsigned width() const override { return SCREEN_W; }
     unsigned height() const override { return SCREEN_H; }

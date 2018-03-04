@@ -10,7 +10,7 @@ public:
     /** creates object
      * @param milliseconds the minimum ammount of milliseconds to wait
      */
-    Wait(size_t milliseconds);
+    explicit Wait(size_t milliseconds);
     /** destructor. */
     ~Wait() = default;
     /** resets time count. */
