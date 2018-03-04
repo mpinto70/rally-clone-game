@@ -13,7 +13,9 @@ set(CMAKE_CXX_FLAGS "-Werror \
     -finline-functions \
     -std=c++14 \
     -Wno-unused-local-typedefs \
-    -D PROJECT_DIR=\"\\\"${CMAKE_SOURCE_DIR}\\\"\"")
+    -D PROJECT_DIR=\"\\\"${CMAKE_SOURCE_DIR}\\\"\" \
+    -D RALLY_ROOT=\"\\\"${CMAKE_SOURCE_DIR}\\\"\""
+)
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
@@ -28,4 +30,5 @@ include(Boost.cmake)
 
 # Recurse subdirectories
 add_subdirectory (src)
+add_subdirectory (tools)
 #add_subdirectory (test)
