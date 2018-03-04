@@ -16,12 +16,13 @@
 #include <allegro.h>
 
 #include <boost/filesystem.hpp>
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
-#include <math.h>
 #include <memory>
 #include <stdexcept>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <typeinfo>
 #include <vector>

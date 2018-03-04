@@ -1,4 +1,3 @@
-
 #include "BitmapReader.h"
 
 #include "util/Exception.h"

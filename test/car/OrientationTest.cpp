@@ -1,4 +1,5 @@
 #include "car/Orientation.h"
+
 #include "util/Exception.h"
 
 #include <gtest/gtest.h>

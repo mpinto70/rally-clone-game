@@ -1,4 +1,3 @@
-
 #include "Action.h"
 
 #include "map/MapUtil.h"

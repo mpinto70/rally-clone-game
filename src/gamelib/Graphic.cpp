@@ -1,4 +1,3 @@
-
 #include "Graphic.h"
 
 namespace gamelib {

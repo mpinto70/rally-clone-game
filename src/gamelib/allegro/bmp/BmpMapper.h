@@ -1,10 +1,11 @@
 #pragma once
 
+#include "gamelib/allegro/bmp/BitmapReader.h"
 #include "util/Exception.h"
 #include "util/Util.h"
 
-#include "BitmapReader.h"
 #include <allegro.h>
+
 #include <map>
 #include <memory>
 #include <typeinfo>

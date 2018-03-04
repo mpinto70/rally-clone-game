@@ -1,4 +1,3 @@
-
 #include "helpers.h"
 
 #include <allegro.h>

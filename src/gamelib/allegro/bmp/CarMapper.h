@@ -1,7 +1,7 @@
 #pragma once
 
-#include "BmpMapper.h"
 #include "car/Orientation.h"
+#include "gamelib/allegro/bmp/BmpMapper.h"
 
 namespace gamelib {
 namespace allegro {

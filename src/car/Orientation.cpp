@@ -1,4 +1,3 @@
-
 #include "Orientation.h"
 
 #include "util/Exception.h"

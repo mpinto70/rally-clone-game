@@ -1,4 +1,5 @@
 #include "Graphic.h"
+
 #include "util/Exception.h"
 
 #include <map>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BmpMapper.h"
+#include "gamelib/allegro/bmp/BmpMapper.h"
 #include "map/Action.h"
 
 namespace gamelib {

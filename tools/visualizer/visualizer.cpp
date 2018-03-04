@@ -1,4 +1,3 @@
-
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/bmp/ActionMapper.h"
@@ -8,13 +7,13 @@
 
 #include <allegro.h>
 
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
-#include <math.h>
 #include <stdexcept>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <vector>
 

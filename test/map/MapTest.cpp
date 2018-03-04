@@ -1,4 +1,5 @@
 #include "map/Map.h"
+
 #include "util/Exception.h"
 
 #include <gtest/gtest.h>

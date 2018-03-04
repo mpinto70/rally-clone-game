@@ -1,8 +1,9 @@
-#include "game/Controller.h"
-#include "util/Exception.h"
-
 #include "../mck/gamelib/GameLibUtils.h"
 #include "../mck/gamelib/KeyboardMock.h"
+
+#include "game/Controller.h"
+
+#include "util/Exception.h"
 
 #include <gtest/gtest.h>
 

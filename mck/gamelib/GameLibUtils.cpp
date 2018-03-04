@@ -1,11 +1,10 @@
-
 #include "GameLibUtils.h"
 
-#include "GameLibMock.h"
-#include "GraphicMock.h"
-#include "KeyboardMock.h"
-#include "SoundMock.h"
-#include "TimerMock.h"
+#include "../mck/gamelib/GameLibMock.h"
+#include "../mck/gamelib/GraphicMock.h"
+#include "../mck/gamelib/KeyboardMock.h"
+#include "../mck/gamelib/SoundMock.h"
+#include "../mck/gamelib/TimerMock.h"
 
 namespace gamelib {
 namespace mck {

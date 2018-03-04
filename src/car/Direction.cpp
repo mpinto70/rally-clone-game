@@ -1,4 +1,3 @@
-
 #include "Direction.h"
 
 #include "util/Exception.h"

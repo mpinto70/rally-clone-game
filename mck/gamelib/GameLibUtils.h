@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameLibMock.h"
+#include "../mck/gamelib/GameLibMock.h"
 
 namespace gamelib {
 namespace mck {

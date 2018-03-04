@@ -1,6 +1,7 @@
 #pragma once
 
 #include <allegro.h>
+
 #include <memory>
 
 namespace gamelib {

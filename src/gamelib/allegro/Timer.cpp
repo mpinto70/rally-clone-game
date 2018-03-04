@@ -1,4 +1,5 @@
 #include "Timer.h"
+
 #include "util/Exception.h"
 
 #include <allegro.h>
