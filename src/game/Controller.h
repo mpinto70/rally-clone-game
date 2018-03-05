@@ -18,7 +18,7 @@ public:
 private:
     std::unique_ptr<GameLib> gameLib_;
     std::string pathToRoot_;
-    std::unique_ptr<map::Map> map_;
+    map::Map map_;
     size_t parts_;
 };
 }
