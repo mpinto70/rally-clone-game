@@ -33,14 +33,6 @@ Controller::Controller(std::unique_ptr<GameLib>& gameLib,
     if (parts == 0) {
         throw std::invalid_argument("Controller - zero parts");
     }
-    boost::filesystem::path root(pathToRoot_);
-    boost::filesystem::path stage0 = root / "stages" / "stage0.dat";
-    if (not boost::filesystem::exists(stage0)) {
-        throw util::Exception("Controller - stage not found " + stage0.string(), 1);
-    }
-}
-
-Controller::~Controller() {
 }
 
 void Controller::run() {

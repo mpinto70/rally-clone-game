@@ -12,7 +12,6 @@ public:
     explicit Controller(std::unique_ptr<GameLib>& gameLib,
           const std::string& pathToRallyDir,
           size_t parts);
-    ~Controller();
     void run();
 
 private:
