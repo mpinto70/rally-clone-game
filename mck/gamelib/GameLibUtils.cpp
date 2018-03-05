@@ -6,7 +6,7 @@
 #include "../mck/gamelib/SoundMock.h"
 #include "../mck/gamelib/TimerMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 std::unique_ptr<GameLib> GameLibUtils::createDefault() {

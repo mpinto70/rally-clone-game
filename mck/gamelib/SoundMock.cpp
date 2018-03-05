@@ -1,6 +1,6 @@
 #include "SoundMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 SoundMock::~SoundMock() {

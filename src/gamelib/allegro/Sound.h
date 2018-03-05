@@ -5,7 +5,7 @@
 namespace gamelib {
 namespace allegro {
 
-class Sound : public ::gamelib::Sound {
+class Sound : public ::game::Sound {
 public:
     Sound();
     ~Sound() override;

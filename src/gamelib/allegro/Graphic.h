@@ -10,18 +10,18 @@
 namespace gamelib {
 namespace allegro {
 
-class Graphic : public ::gamelib::Graphic {
+class Graphic : public ::game::Graphic {
 public:
     explicit Graphic(const std::string& common_path);
     ~Graphic() override;
     unsigned width() const override { return SCREEN_W; }
     unsigned height() const override { return SCREEN_H; }
     void printText(const std::string& text,
-          GFONT gfont,
+          game::GFONT gfont,
           unsigned x,
           unsigned y,
-          COLOR foreground,
-          COLOR background) override;
+          game::COLOR foreground,
+          game::COLOR background) override;
     void draw(const map::Map& map,
           size_t x,
           size_t y,

@@ -15,21 +15,21 @@ static constexpr unsigned ACTION_GAP = 1;    ///< gap between actions
 static constexpr unsigned SIDE_BAR_W = 200;  ///< width of the side bar
 static constexpr unsigned BOTTOM_BAR_H = 50; ///< width of the side bar
 
-static std::map<COLOR, int> COLORS;
+static std::map<game::COLOR, int> COLORS;
 static void initColor() {
-    COLORS[COLOR::RED] = makecol32(255, 0, 0);
-    COLORS[COLOR::WINE] = makecol32(64, 0, 0);
-    COLORS[COLOR::GREEN] = makecol32(0, 255, 0);
-    COLORS[COLOR::DARKGREEN] = makecol32(0, 64, 0);
-    COLORS[COLOR::BLUE] = makecol32(0, 0, 255);
-    COLORS[COLOR::DARKBLUE] = makecol32(0, 0, 64);
-    COLORS[COLOR::WHITE] = makecol32(255, 255, 255);
-    COLORS[COLOR::GRAY] = makecol32(128, 128, 128);
-    COLORS[COLOR::DARKGRAY] = makecol32(64, 64, 64);
-    COLORS[COLOR::BLACK] = makecol32(0, 0, 0);
+    COLORS[game::COLOR::RED] = makecol32(255, 0, 0);
+    COLORS[game::COLOR::WINE] = makecol32(64, 0, 0);
+    COLORS[game::COLOR::GREEN] = makecol32(0, 255, 0);
+    COLORS[game::COLOR::DARKGREEN] = makecol32(0, 64, 0);
+    COLORS[game::COLOR::BLUE] = makecol32(0, 0, 255);
+    COLORS[game::COLOR::DARKBLUE] = makecol32(0, 0, 64);
+    COLORS[game::COLOR::WHITE] = makecol32(255, 255, 255);
+    COLORS[game::COLOR::GRAY] = makecol32(128, 128, 128);
+    COLORS[game::COLOR::DARKGRAY] = makecol32(64, 64, 64);
+    COLORS[game::COLOR::BLACK] = makecol32(0, 0, 0);
 }
 
-static int translate(COLOR color) {
+static int translate(game::COLOR color) {
     return COLORS[color];
 }
 
@@ -70,11 +70,11 @@ Graphic::~Graphic() {
 }
 
 void Graphic::printText(const std::string& text,
-      const GFONT gfont,
+      const game::GFONT gfont,
       const unsigned x,
       const unsigned y,
-      COLOR foreground,
-      COLOR background) {
+      const game::COLOR foreground,
+      const game::COLOR background) {
     if (x > width() || y > height()) {
         return;
     }
@@ -83,7 +83,7 @@ void Graphic::printText(const std::string& text,
         return;
     }
 
-    const FONT* font = gfont == GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
+    const FONT* font = gfont == game::GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
     textprintf_ex(buffer_.get(), font, x, y, translate(foreground), translate(background), "%s", text.c_str());
 }
 
@@ -130,9 +130,9 @@ void Graphic::draw(const map::Map& map,
       const size_t x_cursor,
       const size_t y_cursor,
       const size_t parts) {
-    rectfill(buffer_.get(), 0, 0, buffer_->w, buffer_->h, COLORS[COLOR::WINE]);
-    rect(buffer_.get(), 0, 0, bufferMap_->w + 3, bufferMap_->h + 3, COLORS[COLOR::WHITE]);
-    rect(buffer_.get(), 1, 1, bufferMap_->w + 2, bufferMap_->h + 2, COLORS[COLOR::WHITE]);
+    rectfill(buffer_.get(), 0, 0, buffer_->w, buffer_->h, COLORS[game::COLOR::WINE]);
+    rect(buffer_.get(), 0, 0, bufferMap_->w + 3, bufferMap_->h + 3, COLORS[game::COLOR::WHITE]);
+    rect(buffer_.get(), 1, 1, bufferMap_->w + 2, bufferMap_->h + 2, COLORS[game::COLOR::WHITE]);
 
     // ratio between the tile size on screen and the number of logical divisions inside tile
     const double ratio_S_T = (double) TILE_SIZE / parts;
@@ -162,7 +162,7 @@ void Graphic::draw(const map::Map& map,
     // drawing the cursor
     const int X = (int) (x - window_x0);
     const int Y = (int) (y - window_y0);
-    rectfill(bufferMap_.get(), X, Y, X + 3, Y + 3, COLORS[COLOR::BLACK]);
+    rectfill(bufferMap_.get(), X, Y, X + 3, Y + 3, COLORS[game::COLOR::BLACK]);
 
     // transfering rendered map to screen buffer
     blit(bufferMap_.get(), buffer_.get(), 0, 0, 2, 2, bufferMap_->w, bufferMap_->h);

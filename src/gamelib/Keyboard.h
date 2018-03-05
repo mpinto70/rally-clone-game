@@ -2,7 +2,7 @@
 
 #include <set>
 
-namespace gamelib {
+namespace game {
 
 enum class Key : unsigned char {
     ENTER = 1,

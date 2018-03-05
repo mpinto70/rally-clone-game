@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class GameLibMock : public GameLib {

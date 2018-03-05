@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace gamelib {
+namespace game {
 
 enum class GFONT : unsigned char {
     SYSTEM_FONT = 1,

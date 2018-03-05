@@ -5,7 +5,7 @@
 #include "gamelib/Sound.h"
 #include "gamelib/Timer.h"
 
-namespace gamelib {
+namespace game {
 
 class GameLib {
 public:

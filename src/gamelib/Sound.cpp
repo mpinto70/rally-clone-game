@@ -1,6 +1,6 @@
 #include "Sound.h"
 
-namespace gamelib {
+namespace game {
 
 Sound::~Sound() {}
 }

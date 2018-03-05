@@ -2,7 +2,7 @@
 
 #include "../mck/gamelib/GameLibMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class GameLibUtils {

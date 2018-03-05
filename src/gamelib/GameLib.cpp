@@ -1,6 +1,6 @@
 #include "GameLib.h"
 
-namespace gamelib {
+namespace game {
 
 GameLib::~GameLib() {
 }

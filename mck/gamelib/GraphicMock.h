@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class GraphicMock : public Graphic {

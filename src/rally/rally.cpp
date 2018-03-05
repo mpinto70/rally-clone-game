@@ -21,7 +21,7 @@ int main() {
     using gamelib::allegro::GameLib;
     try {
         const auto rallyDir = getRallyDir();
-        std::unique_ptr<gamelib::GameLib> gameLib(new GameLib(UTIL_W, UTIL_H, rallyDir));
+        std::unique_ptr<game::GameLib> gameLib(new GameLib(UTIL_W, UTIL_H, rallyDir));
         game::Controller controller(gameLib, rallyDir, 15);
         controller.run();
         return 0;

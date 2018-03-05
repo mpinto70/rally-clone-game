@@ -5,13 +5,13 @@
 namespace gamelib {
 namespace allegro {
 
-class Keyboard : public ::gamelib::Keyboard {
+class Keyboard : public ::game::Keyboard {
 public:
     Keyboard();
     ~Keyboard() override;
 
-    bool isKeyPressed(Key keyCode) const override;
-    std::set<Key> keysPressed() const override;
+    bool isKeyPressed(game::Key keyCode) const override;
+    std::set<game::Key> keysPressed() const override;
 };
 }
 }

@@ -1,6 +1,6 @@
 #include "TimerMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 TimerMock::~TimerMock() {

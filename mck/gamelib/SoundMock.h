@@ -2,7 +2,7 @@
 
 #include "gamelib/Sound.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class SoundMock : public Sound {

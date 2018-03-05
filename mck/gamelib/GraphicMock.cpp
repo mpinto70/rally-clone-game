@@ -1,6 +1,6 @@
 #include "GraphicMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 GraphicMock::~GraphicMock() {

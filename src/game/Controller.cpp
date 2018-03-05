@@ -8,7 +8,7 @@
 
 namespace game {
 
-Controller::Controller(std::unique_ptr<gamelib::GameLib>& gameLib,
+Controller::Controller(std::unique_ptr<GameLib>& gameLib,
       const std::string& pathToRallyDir,
       const size_t parts)
       : gameLib_(std::move(gameLib)),
@@ -34,10 +34,8 @@ Controller::~Controller() {
 }
 
 void Controller::run() {
-    using gamelib::Key;
-
     size_t x = 0, y = 0;
-    while (not gameLib_->keyboard().isKeyPressed(gamelib::Key::ESCAPE)) {
+    while (not gameLib_->keyboard().isKeyPressed(Key::ESCAPE)) {
         util::Wait wait(10);
 
         if (gameLib_->keyboard().isKeyPressed(Key::DOWN)) {

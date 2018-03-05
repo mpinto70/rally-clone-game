@@ -1,6 +1,6 @@
 #include "Graphic.h"
 
-namespace gamelib {
+namespace game {
 
 Graphic::~Graphic() {}
 }

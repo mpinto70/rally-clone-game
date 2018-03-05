@@ -4,7 +4,7 @@
 
 #include <set>
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class KeyboardMock : public Keyboard {

@@ -1,6 +1,6 @@
 #include "KeyboardMock.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 std::set<Key> KeyboardMock::keys_;

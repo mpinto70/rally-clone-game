@@ -1,6 +1,6 @@
 #include "Timer.h"
 
-namespace gamelib {
+namespace game {
 
 Timer::~Timer() {}
 }

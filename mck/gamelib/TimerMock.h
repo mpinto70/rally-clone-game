@@ -2,7 +2,7 @@
 
 #include "gamelib/Timer.h"
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 class TimerMock : public Timer {

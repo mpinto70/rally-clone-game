@@ -1,6 +1,6 @@
 #include "Keyboard.h"
 
-namespace gamelib {
+namespace game {
 
 Keyboard::~Keyboard() {}
 }

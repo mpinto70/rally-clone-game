@@ -5,7 +5,7 @@
 namespace gamelib {
 namespace allegro {
 
-class Timer : public ::gamelib::Timer {
+class Timer : public ::game::Timer {
 public:
     Timer();
     ~Timer() override;

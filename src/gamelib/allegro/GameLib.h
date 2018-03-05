@@ -9,7 +9,7 @@
 namespace gamelib {
 namespace allegro {
 
-class GameLib : public ::gamelib::GameLib {
+class GameLib : public ::game::GameLib {
 public:
     GameLib(unsigned int width,
           unsigned int height,

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gamelib {
+namespace game {
 
 class Sound {
 public:

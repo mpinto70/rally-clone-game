@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace gamelib {
+namespace game {
 namespace mck {
 
 GameLibMock::GameLibMock(std::unique_ptr<Graphic>& graphic,
