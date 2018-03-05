@@ -1,7 +1,8 @@
 #pragma once
 
-#include "camera.h"
-#include "character.h"
+#include "Character.h"
+
+#include "gamelib/Camera.h"
 
 #include <map>
 #include <string>
