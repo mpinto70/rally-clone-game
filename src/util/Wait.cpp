@@ -1,5 +1,6 @@
 #include "Wait.h"
 
+#include <cstdlib>
 #include <unistd.h>
 
 namespace util {

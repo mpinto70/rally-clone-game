@@ -11,8 +11,6 @@ public:
      * @param milliseconds the minimum amount of milliseconds to wait
      */
     explicit Wait(size_t milliseconds);
-    /** destructor. */
-    ~Wait() = default;
     /** resets time count. */
     void reset();
     /** @returns if time is expired. */
