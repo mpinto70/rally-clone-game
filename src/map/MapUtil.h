@@ -2,12 +2,12 @@
 
 #include <type_traits>
 
-/** namespaces of elements related to maps. */
+/** namespace of elements related to maps. */
 namespace map {
 
 /** generic comparator for enum values
  * @param lhs left hand operand
- * @param rhs right hand operanda
+ * @param rhs right hand operand
  */
 template <typename ENUM>
 bool operator<(ENUM lhs, ENUM rhs) {

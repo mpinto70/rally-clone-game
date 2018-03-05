@@ -4,18 +4,18 @@
 #include <sys/time.h>
 
 namespace util {
-/** responsible for time lapse garantee. */
+/** responsible for time lapse guarantee. */
 class Wait {
 public:
     /** creates object
-     * @param milliseconds the minimum ammount of milliseconds to wait
+     * @param milliseconds the minimum amount of milliseconds to wait
      */
     explicit Wait(size_t milliseconds);
     /** destructor. */
     ~Wait() = default;
     /** resets time count. */
     void reset();
-    /** @returns se o tempo já expirou. */
+    /** @returns if time is expired. */
     bool expired() const;
     /** wait until expires. */
     void wait() const;

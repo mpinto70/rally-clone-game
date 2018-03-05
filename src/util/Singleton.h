@@ -21,7 +21,7 @@ public:
     /** shall not be constructed nor copied. */
     Singleton& operator=(Singleton&&) = delete;
 
-    /** gets the instance of \b T geting a pointer to \b U (U must be derived from T).
+    /** gets the instance of \b T getting a pointer to \b U (U must be derived from T).
      * @param u the unique pointer to \b U
      */
     template <typename U>

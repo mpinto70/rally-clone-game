@@ -16,10 +16,10 @@ namespace bmp {
 class BitmapReader {
 public:
     typedef std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>> tiles_t;
-    /** Reads the bitmap and subbitmaps from a file
+    /** Reads the bitmap and sub-bitmaps from a file
      * @param fileName      name of the file with the image
-     * @param tileWidth     size of each subbitmap
-     * @param tileHeight    size of each subbitmap
+     * @param tileWidth     size of each sub-bitmap
+     * @param tileHeight    size of each sub-bitmap
      * @param gap           gap between, above and below each tile
      * @return the full bitmap and the tiles (sub bitmaps)
      * the expected format of the file is

@@ -50,20 +50,7 @@ elif [ "$1" = "test" ]; then
     done
 elif [ "$1" = "demo" ]; then
     do_build
-    dependency_dir=$(pwd)
-    echo "---> $dependency_dir"
-    command="${dependency_dir}/bin/dependency \
-        -o \"-I ${dependency_dir}/src --std=c++14\" \
-        -c ${dependency_dir} \
-        -f ${dependency_dir}/src \
-        -s \
-        -H dependency \
-        -H controller \
-        > depend.dot"
-    echo -e "demo command: \x1b[0;38;5;10m${command}\x1b[0m" | sed -e "s/ \+/ /g"
-    eval ${command}
-    dot -Tsvg depend.dot -o depend.svg
-    echo -e "run \x1b[0;38;5;10meog depend.svg\x1b[0m to see the result"
+    ./bin/rally
 elif [ "$1" = "check" ]; then
     do_build
     cppcheck --enable=warning,style,unusedFunction --error-exitcode=-1 src
