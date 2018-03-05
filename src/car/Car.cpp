@@ -4,6 +4,26 @@
 
 namespace car {
 
+namespace {
+static int signalStep(const int final, const int current) {
+    const auto distance = final - current;
+    const auto absDistance = abs(distance);
+    if (absDistance <= 6) {
+        if (distance < 0) {
+            return -1;
+        } else {
+            return 1;
+        }
+    } else {
+        if (distance < 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+}
+}
+
 Orientation Car::convert(Direction direction) {
     switch (direction) {
         case Direction::NORTH: return Orientation::NORTH;
@@ -23,30 +43,8 @@ Car::Car(Direction direction)
     }
 }
 
-Car::~Car() {
-}
-
 void Car::turn(Direction direction) {
     nextDirection_ = direction;
-}
-
-static int signalStep(const int final,
-      const int current) {
-    const auto distance = final - current;
-    const auto absDistance = abs(distance);
-    if (absDistance <= 6) {
-        if (distance < 0) {
-            return -1;
-        } else {
-            return 1;
-        }
-    } else {
-        if (distance < 0) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
 }
 
 void Car::stepTurn() {
@@ -59,7 +57,7 @@ void Car::stepTurn() {
 
     auto stepOrientation = current + signalStep(final, current);
 
-    const auto last = from_Orientation<int>(Orientation::LAST);
+    constexpr auto last = from_Orientation<int>(Orientation::LAST);
     if (stepOrientation < 0) {
         stepOrientation += last;
     }

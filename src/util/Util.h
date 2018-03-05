@@ -62,12 +62,12 @@ E to_Enum(T t) {
 }
 
 template <typename T, typename E>
-T from_Enum(E e) {
+constexpr T from_Enum(E e) {
     return static_cast<T>(e);
 }
 
 template <typename T>
-bool isValid(T t) {
+constexpr bool isValid(T t) {
     return t >= T::FIRST && t < T::LAST;
 }
 

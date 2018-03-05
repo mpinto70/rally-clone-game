@@ -9,7 +9,6 @@ class Car {
 public:
     static Orientation convert(Direction direction);
     explicit Car(Direction direction);
-    ~Car();
     Orientation orientation() const { return orientation_; }
     Direction direction() const { return direction_; }
     Direction nextDirection() const { return nextDirection_; }

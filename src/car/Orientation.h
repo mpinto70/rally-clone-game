@@ -39,7 +39,7 @@ Orientation to_Orientation(T t) {
  * @param enum_value the value to be converted
  */
 template <typename T>
-T from_Orientation(Orientation enum_value) {
+constexpr T from_Orientation(Orientation enum_value) {
     return util::from_Enum<T, Orientation>(enum_value);
 }
 
