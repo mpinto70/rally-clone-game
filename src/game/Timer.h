@@ -4,6 +4,6 @@ namespace game {
 
 class Timer {
 public:
-    virtual ~Timer() = 0;
+    virtual ~Timer() = default;
 };
 }

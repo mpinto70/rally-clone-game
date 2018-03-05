@@ -18,7 +18,7 @@ enum class Key : unsigned char {
 
 class Keyboard {
 public:
-    virtual ~Keyboard() = 0;
+    virtual ~Keyboard() = default;
     virtual bool isKeyPressed(Key keyCode) const = 0;
     virtual std::set<Key> keysPressed() const = 0;
 };

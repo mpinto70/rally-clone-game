@@ -4,6 +4,6 @@ namespace game {
 
 class Sound {
 public:
-    virtual ~Sound() = 0;
+    virtual ~Sound() = default;
 };
 }

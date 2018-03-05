@@ -9,7 +9,7 @@ namespace game {
 
 class GameLib {
 public:
-    virtual ~GameLib() = 0;
+    virtual ~GameLib() = default;
     virtual Graphic& graphic() = 0;
     virtual Sound& sound() = 0;
     virtual Timer& timer() = 0;
