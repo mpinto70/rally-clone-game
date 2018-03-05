@@ -60,7 +60,7 @@ Graphic::Graphic(const std::string& common_path)
 
     fontSystem_.reset(load_font((common_path + "/Menu_font.pcx").c_str(), nullptr, nullptr));
     if (fontSystem_.get() == nullptr) {
-        throw Exception("Graphic::Graphic - Error initializing system font", -3);
+        throw Exception("Graphic::Graphic - Error initializing system font [" + common_path + "/Menu_font.pcx]", -3);
     }
 
     initColor();

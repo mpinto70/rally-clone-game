@@ -6,7 +6,7 @@
 #include <memory>
 
 // Essas duas constantes ficam por aqui mesmo?
-static const unsigned int UTIL_W = 640, UTIL_H = 480;
+static constexpr unsigned int UTIL_W = 640, UTIL_H = 480;
 
 std::string getRallyDir() {
     const char* home = getenv("HOME");
