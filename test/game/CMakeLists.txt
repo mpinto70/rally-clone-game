@@ -3,9 +3,8 @@ set(game_srcs
 )
 
 set(game_libs
+    mck_game
     game
-    mck_gamelib
-    gamelib
     car
     map
     util

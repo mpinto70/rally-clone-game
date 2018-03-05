@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/Sound.h"
+#include "game/Sound.h"
 
 namespace gamelib {
 namespace allegro {

@@ -1,6 +1,6 @@
 
 add_library(
-    mck_gamelib
+    mck_game
     GameLibMock.cpp
     GameLibUtils.cpp
     GraphicMock.cpp
@@ -10,6 +10,6 @@ add_library(
 )
 
 target_include_directories(
-    mck_gamelib
+    mck_game
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
 )

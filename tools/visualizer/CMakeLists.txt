@@ -7,10 +7,9 @@ add_executable(
 target_link_libraries(
     visualizer
     tools_util
-    game
     gamelib_allegro
     gamelib_allegro_bmp
-    gamelib
+    game
     car
     map
     util

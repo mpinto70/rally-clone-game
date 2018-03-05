@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/Graphic.h"
+#include "game/Graphic.h"
 #include "gamelib/allegro/AllegroUtil.h"
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"

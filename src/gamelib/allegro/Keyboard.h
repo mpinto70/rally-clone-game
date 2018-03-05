@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/Keyboard.h"
+#include "game/Keyboard.h"
 
 namespace gamelib {
 namespace allegro {

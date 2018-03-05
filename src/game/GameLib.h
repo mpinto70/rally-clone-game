@@ -1,9 +1,9 @@
 #pragma once
 
-#include "gamelib/Graphic.h"
-#include "gamelib/Keyboard.h"
-#include "gamelib/Sound.h"
-#include "gamelib/Timer.h"
+#include "game/Graphic.h"
+#include "game/Keyboard.h"
+#include "game/Sound.h"
+#include "game/Timer.h"
 
 namespace game {
 

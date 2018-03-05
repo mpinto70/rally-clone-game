@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/Timer.h"
+#include "game/Timer.h"
 
 namespace game {
 namespace mck {

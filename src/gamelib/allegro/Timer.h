@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/Timer.h"
+#include "game/Timer.h"
 
 namespace gamelib {
 namespace allegro {

@@ -1,5 +1,5 @@
-#include "../mck/gamelib/GameLibUtils.h"
-#include "../mck/gamelib/KeyboardMock.h"
+#include "../mck/game/GameLibUtils.h"
+#include "../mck/game/KeyboardMock.h"
 
 #include "game/Controller.h"
 

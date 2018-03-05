@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamelib/GameLib.h"
+#include "game/GameLib.h"
 #include "map/Map.h"
 
 #include <memory>
