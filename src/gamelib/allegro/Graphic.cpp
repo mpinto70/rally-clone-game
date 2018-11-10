@@ -3,7 +3,7 @@
 #include "util/Exception.h"
 
 #include <map>
-#include <math.h>
+#include <cmath>
 
 namespace gamelib {
 namespace allegro {

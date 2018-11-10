@@ -7,12 +7,15 @@ include(CTest)
 
 find_package(Threads REQUIRED)
 
-set(CMAKE_CXX_FLAGS "-Werror \
+set(CMAKE_CXX_FLAGS " \
+    -Wno-parentheses \
+    -Werror \
     -Wall \
     -O2 \
     -finline-functions \
     -std=c++14 \
     -Wno-unused-local-typedefs \
+    -D ALLEGRO_NO_FIX_ALIASES \
     -D PROJECT_DIR=\"\\\"${CMAKE_SOURCE_DIR}\\\"\" \
     -D RALLY_ROOT=\"\\\"${CMAKE_SOURCE_DIR}\\\"\""
 )
