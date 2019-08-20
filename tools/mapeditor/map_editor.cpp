@@ -1,6 +1,6 @@
 /*
  * TODO: Definir um header bonitinho.
- * NOTA: SUPER HIPER NÃO OPTIMIZADO, não tem que ser, ele só monta o mapa, não tem ação nenhuma nele.
+ * NOTA: SUPER HIPER NAO OPTIMIZADO, nao tem que ser, ele so monta o mapa, nao tem acao nenhuma nele.
 */
 
 #include "../tools/util/helpers.h"
@@ -29,7 +29,7 @@
 
 // TODO:
 // Usando os defines no megaman, temos que rever isso aqui.
-// O jogo original tem uma resolução de 288 x 224, sugiro que a gente dobre: 576 x 448
+// O jogo original tem uma resolucao de 288 x 224, sugiro que a gente dobre: 576 x 448
 // Verificar tamanho dos tiles e setar um novo pra gente.
 static constexpr unsigned TILE_SIZE = 32;                         ///< tile size in pixels
 static constexpr unsigned TILE_GAP = 4;                           ///< space around a tile at the tiles bar
@@ -152,7 +152,7 @@ static void action_draw(BITMAP* bmp,
 }
 
 // Desenha o mapa partindo do map_drawx, map_drawy.
-// Se draw_actions = true, mostra as actions ao invez do desenho do tile.
+// Se draw_actions = true, mostra as actions ao inves do desenho do tile.
 // Se ignoreVoid = true, desenha as actios E o desenho dos tiles.
 static void map_draw(BITMAP* bmp,
       const map::Map& stageMap,
@@ -193,7 +193,7 @@ static void map_draw(BITMAP* bmp,
 
 static void draw_tilesbar(BITMAP* bmp,
       const tiles_t& tileMapper,
-      const int tiles_num) {
+      const int /*tiles_num*/) {
     rectfill(bmp, 0, UTIL_H, UTIL_W, UTIL_H + UTIL_H_EX, makecol(30, 40, 100));
     for (const auto type : util::EnumIterator<map::TileType>()) {
         const auto& pos = tileMapper.position(type);
@@ -210,7 +210,7 @@ static void draw_tilesbar(BITMAP* bmp,
 // Desenha painel das actions
 static void draw_actionsbar(BITMAP* bmp,
       const actions_t& actionMapper,
-      const unsigned act_num) {
+      const unsigned /*act_num*/) {
     rectfill(bmp, UTIL_W, 0, WINDOW_WIDTH, SCREEN_H, makecol(255, 255, 255));
     rectfill(bmp, UTIL_W + 4, 4, WINDOW_WIDTH - 4, SCREEN_H - 4, makecol(0, 50, 50));
 
@@ -288,7 +288,7 @@ template <typename MAPPER>
 static void handle_bar(typename MAPPER::enum_type& cur,
       const MAPPER& mapper,
       const int mouse_button,
-      const std::string& function) {
+      const std::string& /*function*/) {
     if (mouse_b & mouse_button) {
         const unsigned y = mouse_y;
         const unsigned x = mouse_x;
@@ -401,7 +401,7 @@ static void handle_click(map::Map& stageMap,
 
 /// loads all actions from file.
 static actions_t load_actions(const std::string& file_name,
-      const unsigned actions_num) {
+      const unsigned /*actions_num*/) {
     std::map<map::Action, point_t> pos;
     unsigned x = ACTION_X0, y = ACTION_Y0;
 
@@ -424,7 +424,7 @@ static actions_t load_actions(const std::string& file_name,
 
 /// loads all tiles from file.
 static tiles_t load_tiles(const std::string& file_name,
-      const unsigned tiles_num) {
+      const unsigned /*tiles_num*/) {
     constexpr unsigned GAP = 2;
     std::map<map::TileType, point_t> pos;
 
@@ -563,7 +563,7 @@ int main(int argc, char* argv[]) {
 
             if (key[KEY_LSHIFT]) {
                 map_save(tmp, stageMap);
-                // Evita que fique salvando loucamente o mapa, segura até o sujeito soltar a tecla.
+                // Evita que fique salvando loucamente o mapa, segura atï¿½ o sujeito soltar a tecla.
                 tools::hold_while_pressed(KEY_LSHIFT);
             }
 
