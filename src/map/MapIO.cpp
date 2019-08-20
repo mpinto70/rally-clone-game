@@ -13,8 +13,7 @@ Map MapIO::read(const std::string& fileName) {
     return read(is);
 }
 
-void MapIO::write(const std::string& fileName,
-      const Map& map) {
+void MapIO::write(const std::string& fileName, const Map& map) {
     std::ofstream os(fileName, std::ios_base::out | std::ios_base::binary);
     write(os, map);
 }
@@ -48,7 +47,7 @@ Map MapIO::read(std::istream& is) {
         if (a >= from_EAction<action_t>(Action::LAST)) {
             throw util::Exception("MapReader::read(is) - invalid action " + std::to_string(a) + " read " + std::to_string(i), i);
         }
-        tiles.push_back(Tile(to_ETileType(t), to_EAction(a)));
+        tiles.emplace_back(to_ETileType(t), to_EAction(a));
     }
     return Map(width, height, tiles);
 }

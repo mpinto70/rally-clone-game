@@ -13,7 +13,7 @@ public:
      */
     Exception(const std::string& msg, int code);
     /** return the error code. */
-    int code() const { return code_; }
+    [[nodiscard]] int code() const { return code_; }
 
 private:
     int code_; ///< error code

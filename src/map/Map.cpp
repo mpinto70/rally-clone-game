@@ -29,20 +29,17 @@ Map::Map(const map_dimension_t width,
     }
 }
 
-Tile& Map::operator()(const map_dimension_t x,
-      const map_dimension_t y) {
+Tile& Map::operator()(const map_dimension_t x, const map_dimension_t y) {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-const Tile& Map::operator()(const map_dimension_t x,
-      const map_dimension_t y) const {
+const Tile& Map::operator()(const map_dimension_t x, const map_dimension_t y) const {
     verifyRange(x, y);
     return tiles_.at(y * width_ + x);
 }
 
-void Map::verifyRange(const map_dimension_t x,
-      const map_dimension_t y) const {
+void Map::verifyRange(const map_dimension_t x, const map_dimension_t y) const {
     if (x >= width_)
         throw util::Exception("Map() - horizontal coordinate out of range ("
                                     + std::to_string(x)

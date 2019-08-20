@@ -1,6 +1,5 @@
 #include "TileType.h"
 
-#include "map/MapUtil.h"
 #include "util/Exception.h"
 
 namespace map {

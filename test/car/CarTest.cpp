@@ -5,8 +5,7 @@
 
 namespace car {
 
-void verifyCreation(Direction direction,
-      Orientation orientation) {
+void verifyCreation(Direction direction, Orientation orientation) {
     const std::string msg = to_string(direction) + " / " + to_string(orientation);
     const Car c(direction);
     EXPECT_EQ(c.direction(), direction) << msg;

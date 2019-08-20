@@ -5,9 +5,9 @@
 namespace car {
 
 namespace {
-int signalStep(const int final, const int current) {
+constexpr int signalStep(const int final, const int current) {
     const auto distance = final - current;
-    const auto absDistance = abs(distance);
+    const auto absDistance = distance >= 0 ? distance : -distance;
     if (absDistance <= 6) {
         if (distance < 0) {
             return -1;

@@ -13,10 +13,10 @@ namespace util {
 template <typename T>
 class EnumIterator {
 public:
-    typedef typename std::underlying_type<T>::type enumType;
+    using enumType = typename std::underlying_type<T>::type;
     class Iterator {
     public:
-        Iterator(enumType value)
+        explicit Iterator(enumType value)
               : value_(value) {
         }
 
@@ -24,7 +24,7 @@ public:
             return (T) value_;
         }
 
-        void operator++(void) {
+        void operator++() {
             ++value_;
         }
 

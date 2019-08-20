@@ -63,14 +63,13 @@ struct point_t {
 
 template <typename MAPPER>
 struct mapper_t {
-    typedef typename MAPPER::enum_type enum_type;
-    typedef std::map<enum_type, point_t> pos_map;
-    mapper_t(MAPPER&& m,
-          const pos_map& p)
+    using enum_type = typename MAPPER::enum_type;
+    using pos_map = std::map<enum_type, point_t>;
+    mapper_t(MAPPER m, pos_map p)
           : mapper(std::move(m)),
-            pos(p) {
-    }
-    const point_t& position(enum_type type) const {
+            pos(std::move(p)){}
+                        [[nodiscard]] const point_t
+                  & position(enum_type type) const {
         const auto it = pos.find(type);
         if (it == pos.end()) {
             throw std::invalid_argument("position of "
@@ -85,8 +84,8 @@ struct mapper_t {
     pos_map pos;
 };
 
-typedef mapper_t<gamelib::allegro::bmp::TileMapper> tiles_t;
-typedef mapper_t<gamelib::allegro::bmp::ActionMapper> actions_t;
+using tiles_t = mapper_t<gamelib::allegro::bmp::TileMapper>;
+using actions_t = mapper_t<gamelib::allegro::bmp::ActionMapper>;
 
 // Variaveis usadas pelo CTRL+C CTRL+V
 static bool g_copy_selection_on = false;
@@ -96,8 +95,7 @@ static bool g_draw_selection = false;
 static bool g_take_shot = false;
 static BITMAP* g_selection_preview;
 
-static void map_save(const std::string& filename,
-      const map::Map& stageMap) {
+static void map_save(const std::string& filename, const map::Map& stageMap) {
     map::MapIO::write(filename, stageMap);
 }
 
@@ -179,11 +177,11 @@ static void map_draw(BITMAP* bmp,
 
             const auto& tile = stageMap(X, Y);
             tile_draw(bmp, tileMapper.mapper, tile.type(), x, y);
-            if (draw_actions == true) {
+            if (draw_actions) {
                 action_draw(bmp, actionMapper.mapper, tile.action(), x, y);
             }
 
-            if (key[KEY_F] == 0 && g_take_shot == false) {
+            if (key[KEY_F] == 0 && not g_take_shot) {
                 static int color = makecol32(255, 255, 255);
                 textprintf_ex(bmp, font, x + 2, y + 2, 0, color, "%02d", map::from_EAction<int>(stageMap(X, Y).action()));
             }
@@ -251,7 +249,7 @@ static void draw_actionsbar(BITMAP* bmp,
     if (key[KEY_O])
         textprintf_ex(bmp, font, UTIL_W + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02u", (unsigned) mouse_x % TILE_SIZE);
 
-    if (g_draw_selection == true)
+    if (g_draw_selection)
         textprintf_ex(bmp, font, UTIL_W + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
 }
 
@@ -382,7 +380,7 @@ static void handle_click(map::Map& stageMap,
     if (x >= stageMap.width() || y >= stageMap.height())
         return; // out of map
     switch (button) {
-        case 1: {
+        case 1:
             if (!key[KEY_LCONTROL]) { // CTRL is not pressed.
                 stageMap(x, y).type(g_cur_tile_type);
             } else { // CTRL is pressed.
@@ -390,12 +388,14 @@ static void handle_click(map::Map& stageMap,
                     handle_CtrlC_CtrlV(stageMap, x, y);
                 }
             }
-        } break;
-        case 2: {
+            break;
+        case 2:
             // only ROADS may receive actions
             if (stageMap(x, y).type() == map::TileType::ROAD)
                 stageMap(x, y).action(g_cur_act);
-        } break;
+            break;
+        default:
+            break;
     }
 }
 
@@ -511,33 +511,33 @@ int main(int argc, char* argv[]) {
                     handle_click(stageMap, mouse_x, mouse_y, 2);
             }
 
-            if (key[KEY_RIGHT] && g_draw_selection == false) {
+            if (key[KEY_RIGHT] && not g_draw_selection) {
                 if ((g_map_drawx / TILE_SIZE) < (g_max_x - TILES_X)) {
                     g_map_drawx += TILE_SIZE;
                 }
-            } else if (key[KEY_LEFT] && g_draw_selection == false) {
+            } else if (key[KEY_LEFT] && not g_draw_selection) {
                 if (g_map_drawx > 0) {
                     g_map_drawx -= TILE_SIZE;
                 }
             }
 
-            if (key[KEY_UP] && g_draw_selection == false) {
+            if (key[KEY_UP] && not g_draw_selection) {
                 if (g_map_drawy > 0) {
                     g_map_drawy -= TILE_SIZE;
                 }
-            } else if (key[KEY_DOWN] && g_draw_selection == false) {
+            } else if (key[KEY_DOWN] && not g_draw_selection) {
                 if ((g_map_drawy / TILE_SIZE) < (g_max_y - TILES_Y)) {
                     g_map_drawy += TILE_SIZE;
                 }
             }
 
-            if (key[KEY_D] && g_draw_selection == false) {
+            if (key[KEY_D] && not g_draw_selection) {
                 g_map_drawx += STEP_X;
                 if (g_map_drawx / TILE_SIZE >= (g_max_x - TILES_X))
                     g_map_drawx = (g_max_x - TILES_X) * TILE_SIZE;
 
                 tools::hold_while_pressed(KEY_D);
-            } else if (key[KEY_A] && g_draw_selection == false) {
+            } else if (key[KEY_A] && not g_draw_selection) {
                 if (g_map_drawx < STEP_X)
                     g_map_drawx = 0;
                 else
@@ -546,14 +546,14 @@ int main(int argc, char* argv[]) {
                 tools::hold_while_pressed(KEY_A);
             }
 
-            if (key[KEY_W] && g_draw_selection == false) {
+            if (key[KEY_W] && not g_draw_selection) {
                 if (g_map_drawy < STEP_Y)
                     g_map_drawy = 0;
                 else
                     g_map_drawy -= STEP_Y;
 
                 tools::hold_while_pressed(KEY_W);
-            } else if (key[KEY_S] && g_draw_selection == false) {
+            } else if (key[KEY_S] && not g_draw_selection) {
                 g_map_drawy += STEP_Y;
                 if (g_map_drawy / TILE_SIZE >= (g_max_y - TILES_Y))
                     g_map_drawy = (g_max_y - TILES_Y) * TILE_SIZE;
@@ -577,7 +577,7 @@ int main(int argc, char* argv[]) {
             map_draw(&(*buffer), stageMap, tileMapper, actionMapper, g_map_drawx, g_map_drawy, draw_actions);
 
             if (!key[KEY_G]) {
-                if (g_take_shot == false)
+                if (not g_take_shot)
                     draw_grid(&(*buffer));
             }
             draw_tilesbar(&(*buffer), tileMapper, tiles_num);
@@ -593,19 +593,19 @@ int main(int argc, char* argv[]) {
                 if (key[KEY_O])
                     ypos += mouse_y % TILE_SIZE - TILE_SIZE / 2;
                 action_draw(&(*buffer), actionMapper.mapper, g_cur_act, xpos, ypos);
-            } else if (g_take_shot == false) {
+            } else if (not g_take_shot) {
                 circlefill(&(*buffer), mouse_x, mouse_y, 5, 0);
                 circlefill(&(*buffer), mouse_x, mouse_y, 3, makecol(255, 255, 255));
             }
 
-            if (g_draw_selection == true) {
+            if (g_draw_selection) {
                 const auto region = define_region(g_copy_ini_point, g_copy_end_point);
                 const auto xini = (region.first.x * TILE_SIZE) - g_map_drawx;
                 const auto yini = (region.first.y * TILE_SIZE) - g_map_drawy;
                 const auto xend = ((region.second.x + 1) * TILE_SIZE) - g_map_drawx;
                 const auto yend = ((region.second.y + 1) * TILE_SIZE) - g_map_drawy;
 
-                if (g_take_shot == true) {
+                if (g_take_shot) {
                     stretch_blit(&(*buffer), g_selection_preview, xini, yini, xend - xini, yend - yini, 0, 0, g_selection_preview->w, g_selection_preview->h);
                     g_take_shot = false;
                 }

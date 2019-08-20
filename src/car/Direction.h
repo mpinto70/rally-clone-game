@@ -8,7 +8,7 @@
 namespace car {
 
 /** the underlying enum type. */
-typedef std::uint8_t direction_t;
+using direction_t = std::uint8_t;
 /** car directions. */
 enum class Direction : direction_t {
     NONE,

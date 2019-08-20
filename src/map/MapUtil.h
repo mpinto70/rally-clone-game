@@ -11,7 +11,7 @@ namespace map {
  */
 template <typename ENUM>
 bool operator<(ENUM lhs, ENUM rhs) {
-    typedef typename std::underlying_type<ENUM>::type enum_type;
+    using enum_type = typename std::underlying_type<ENUM>::type;
     return static_cast<enum_type>(lhs) < static_cast<enum_type>(rhs);
 }
 }

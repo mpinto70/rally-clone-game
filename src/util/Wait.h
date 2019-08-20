@@ -14,11 +14,11 @@ public:
     /** resets time count. */
     void reset();
     /** @returns if time is expired. */
-    bool expired() const;
+    [[nodiscard]] bool expired() const;
     /** wait until expires. */
     void wait() const;
     /** @returns the end. */
-    const timeval& end() const { return end_; }
+    [[nodiscard]] const timeval& end() const { return end_; }
 
 private:
     size_t microseconds_; ///< time to wait

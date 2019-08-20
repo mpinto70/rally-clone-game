@@ -5,21 +5,15 @@
 
 namespace map {
 
-Tile::Tile(TileType type,
-      Action action)
-      : type_(type),
-        action_(action) {
-    if (action_ != Action::NONE
-          && type_ != TileType::ROAD) {
+Tile::Tile(TileType type, Action action)
+      : type_(type), action_(action) {
+    if (action_ != Action::NONE && type_ != TileType::ROAD) {
         throw util::Exception("Tile - incompatible type "
                                     + to_string(type_)
                                     + " and action "
                                     + to_string(action_),
               1);
     }
-}
-
-Tile::~Tile() {
 }
 
 bool operator==(const Tile& lhs, const Tile& rhs) {

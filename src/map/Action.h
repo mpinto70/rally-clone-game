@@ -10,7 +10,7 @@
 namespace map {
 
 /** the underlying enum type. */
-typedef std::uint8_t action_t;
+using action_t = std::uint8_t;
 /** Types of actions. */
 enum class Action : action_t {
     NONE,

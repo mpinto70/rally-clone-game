@@ -3,7 +3,7 @@
 #include <allegro.h>
 
 #include <stdexcept>
-#include <string.h>
+#include <cstring>
 
 namespace tools {
 

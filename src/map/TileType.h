@@ -9,7 +9,7 @@
 namespace map {
 
 /** the underlying enum type. */
-typedef std::uint8_t tile_type_t;
+using tile_type_t = std::uint8_t;
 /** Types of tiles. */
 enum class TileType : tile_type_t {
     TOP_LEFT,
