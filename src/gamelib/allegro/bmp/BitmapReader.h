@@ -15,7 +15,7 @@ namespace bmp {
 
 class BitmapReader {
 public:
-    typedef std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>> tiles_t;
+    using tiles_t = std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>>;
     /** Reads the bitmap and sub-bitmaps from a file
      * @param fileName      name of the file with the image
      * @param tileWidth     size of each sub-bitmap
@@ -33,7 +33,7 @@ public:
      height | a | tile  | a | tile  | a | tile  | a | tile  | a | tile  | a | tile  | a |  | tile
          |  | p |       | p |       | p |       | p |       | p |       | p |       | p |  | height
          |  |   |       |   |       |   |       |   |       |   |       |   |       |   |  |
-         |  |   `-------´   `-------´   `-------´   `-------´   `-------´   `-------´   |---
+         |  |   `-------ï¿½   `-------ï¿½   `-------ï¿½   `-------ï¿½   `-------ï¿½   `-------ï¿½   |---
          |  |    g a p        g a p       g a p       g a p       g a p       g a p     |
         _|_ |___________________________________________________________________________|
                                                                              |------|

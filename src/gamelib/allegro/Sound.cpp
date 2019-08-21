@@ -17,6 +17,5 @@ Sound::Sound() {
 }
 
 Sound::~Sound() = default;
-
 }
 }

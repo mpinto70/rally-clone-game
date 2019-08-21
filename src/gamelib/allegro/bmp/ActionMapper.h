@@ -7,7 +7,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-typedef BmpMapper<map::Action> ActionMapper;
+using ActionMapper = BmpMapper<map::Action>;
 }
 }
 }

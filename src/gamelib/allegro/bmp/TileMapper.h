@@ -7,7 +7,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-typedef BmpMapper<map::TileType> TileMapper;
+using TileMapper = BmpMapper<map::TileType>;
 }
 }
 }

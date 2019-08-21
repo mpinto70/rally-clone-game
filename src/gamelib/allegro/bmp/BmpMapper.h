@@ -17,7 +17,7 @@ namespace bmp {
 template <typename ENUM>
 class BmpMapper {
 public:
-    typedef ENUM enum_type;
+    using enum_type = ENUM;
 
     BmpMapper(const std::string& fileName,
           unsigned subBmpWidth,
@@ -26,7 +26,7 @@ public:
           : fullBitmap_(nullptr, destroy_bitmap) {
         auto bmps = BitmapReader::readBmps(fileName, subBmpWidth, subBmpHeight, gap);
         fullBitmap_.swap(bmps.first);
-        typedef typename std::underlying_type<ENUM>::type enum_t;
+        using enum_t = typename std::underlying_type<ENUM>::type;
 
         const auto qttyRead = bmps.second.size();
         const auto qttyExpected = static_cast<enum_t>(ENUM::LAST);

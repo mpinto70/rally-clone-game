@@ -7,7 +7,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-typedef BmpMapper<car::Orientation> CarMapper;
+using CarMapper = BmpMapper<car::Orientation>;
 }
 }
 }

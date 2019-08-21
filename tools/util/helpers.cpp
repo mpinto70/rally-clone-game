@@ -2,8 +2,8 @@
 
 #include <allegro.h>
 
-#include <stdexcept>
 #include <cstring>
+#include <stdexcept>
 
 namespace tools {
 

@@ -7,7 +7,7 @@
 
 namespace map {
 
-typedef std::uint32_t map_dimension_t;
+using map_dimension_t = std::uint32_t;
 
 /** represents a full map. */
 class Map {

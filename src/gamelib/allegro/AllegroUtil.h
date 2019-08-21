@@ -7,7 +7,7 @@
 namespace gamelib {
 namespace allegro {
 
-typedef std::unique_ptr<BITMAP, void (*)(BITMAP*)> BITMAP_PTR;
-typedef std::unique_ptr<FONT, void (*)(FONT*)> FONT_PTR;
+using BITMAP_PTR = std::unique_ptr<BITMAP, void (*)(BITMAP*)>;
+using FONT_PTR = std::unique_ptr<FONT, void (*)(FONT*)>;
 }
 }
