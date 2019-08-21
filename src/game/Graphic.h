@@ -27,8 +27,8 @@ enum class COLOR : unsigned {
 class Graphic {
 public:
     virtual ~Graphic() = default;
-    virtual unsigned width() const = 0;
-    virtual unsigned height() const = 0;
+    [[nodiscard]] virtual unsigned width() const = 0;
+    [[nodiscard]] virtual unsigned height() const = 0;
     virtual void printText(const std::string& text,
           GFONT font,
           unsigned x,

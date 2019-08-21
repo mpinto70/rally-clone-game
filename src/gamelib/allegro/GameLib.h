@@ -6,6 +6,8 @@
 #include "gamelib/allegro/Sound.h"
 #include "gamelib/allegro/Timer.h"
 
+#include <memory>
+
 namespace gamelib {
 namespace allegro {
 
@@ -22,10 +24,10 @@ public:
     Keyboard& keyboard() override { return *keyboard_; }
 
 private:
-    Graphic* graphic_;
-    Keyboard* keyboard_;
-    Sound* sound_;
-    Timer* timer_;
+    std::unique_ptr<Graphic> graphic_;
+    std::unique_ptr<Keyboard> keyboard_;
+    std::unique_ptr<Sound> sound_;
+    std::unique_ptr<Timer> timer_;
 };
 }
 }

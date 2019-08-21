@@ -16,7 +16,7 @@ Sound::Sound() {
     */
 }
 
-Sound::~Sound() {
-}
+Sound::~Sound() = default;
+
 }
 }

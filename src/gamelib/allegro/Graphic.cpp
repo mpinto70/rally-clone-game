@@ -66,8 +66,7 @@ Graphic::Graphic(const std::string& common_path)
     initColor();
 }
 
-Graphic::~Graphic() {
-}
+Graphic::~Graphic() = default;
 
 void Graphic::printText(const std::string& text,
       const game::GFONT gfont,

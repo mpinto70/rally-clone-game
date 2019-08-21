@@ -6,10 +6,8 @@
 
 namespace gamelib {
 namespace allegro {
-Timer::Timer() {
-}
+Timer::Timer() = default;
 
-Timer::~Timer() {
-}
+Timer::~Timer() = default;
 }
 }

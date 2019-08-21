@@ -14,8 +14,8 @@ class Graphic : public ::game::Graphic {
 public:
     explicit Graphic(const std::string& common_path);
     ~Graphic() override;
-    unsigned width() const override { return SCREEN_W; }
-    unsigned height() const override { return SCREEN_H; }
+    [[nodiscard]] unsigned width() const override { return SCREEN_W; }
+    [[nodiscard]] unsigned height() const override { return SCREEN_H; }
     void printText(const std::string& text,
           game::GFONT gfont,
           unsigned x,

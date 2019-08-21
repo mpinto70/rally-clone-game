@@ -10,8 +10,8 @@ public:
     Keyboard();
     ~Keyboard() override;
 
-    bool isKeyPressed(game::Key keyCode) const override;
-    std::set<game::Key> keysPressed() const override;
+    [[nodiscard]] bool isKeyPressed(game::Key keyCode) const override;
+    [[nodiscard]] std::set<game::Key> keysPressed() const override;
 };
 }
 }

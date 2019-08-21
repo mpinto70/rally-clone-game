@@ -37,17 +37,17 @@ GameLib::GameLib(unsigned int width,
         throw Exception("GameLib - Error initializing screen", allegResult);
     }
 
-    keyboard_ = new Keyboard();
-    timer_ = new Timer();
-    sound_ = new Sound();
-    graphic_ = new Graphic(path_to_data + "/stages/common");
+    keyboard_ = std::make_unique<Keyboard>();
+    timer_ = std::make_unique<Timer>();
+    sound_ = std::make_unique<Sound>();
+    graphic_ = std::make_unique<Graphic>(path_to_data + "/stages/common");
 }
 
 GameLib::~GameLib() {
-    delete graphic_;
-    delete sound_;
-    delete timer_;
-    delete keyboard_;
+    graphic_.reset();
+    sound_.reset();
+    timer_.reset();
+    keyboard_.reset();
 
     allegro_exit();
 }

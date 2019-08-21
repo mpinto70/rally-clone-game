@@ -8,11 +8,9 @@
 namespace gamelib {
 namespace allegro {
 
-Keyboard::Keyboard() {
-}
+Keyboard::Keyboard() = default;
 
-Keyboard::~Keyboard() {
-}
+Keyboard::~Keyboard() = default;
 
 static unsigned int translateKey(game::Key keyCode) {
     switch (keyCode) {
