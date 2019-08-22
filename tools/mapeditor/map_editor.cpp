@@ -41,13 +41,13 @@ static constexpr unsigned UTIL_H = TILE_SIZE * UTIL_ROWS + 10;    ///< map windo
 static constexpr unsigned UTIL_H_EX = 350;                        ///< ?
 static constexpr unsigned TILES_X = UTIL_W / TILE_SIZE;           ///< number of whole tiles in the horizontal direction
 static constexpr unsigned TILES_Y = UTIL_H / TILE_SIZE;           ///< number of whole tiles in the vertical direction
-static constexpr unsigned TILES_MARGIN = 8;
-static constexpr unsigned STEP_X = TILE_SIZE * TILES_X;   ///< ?
-static constexpr unsigned STEP_Y = TILE_SIZE * TILES_Y;   ///< ?
-static constexpr unsigned ACTION_X0 = UTIL_W + 10;        ///< base distance of action from left border
-static constexpr unsigned ACTION_MAX_X = ACTION_X0 + 180; ///< maximum distance of action from left border
-static constexpr unsigned ACTION_Y0 = 10;                 ///< base distance of action from top border
-static constexpr unsigned ACTION_SPACE = 40;              ///< distance between the beginning of two consecutive actions
+static constexpr unsigned TILES_MARGIN = 8;                       ///< ?
+static constexpr unsigned STEP_X = TILE_SIZE * TILES_X;           ///< ?
+static constexpr unsigned STEP_Y = TILE_SIZE * TILES_Y;           ///< ?
+static constexpr unsigned ACTION_X0 = UTIL_W + 10;                ///< base distance of action from left border
+static constexpr unsigned ACTION_MAX_X = ACTION_X0 + 180;         ///< maximum distance of action from left border
+static constexpr unsigned ACTION_Y0 = 10;                         ///< base distance of action from top border
+static constexpr unsigned ACTION_SPACE = 40;                      ///< distance between the beginning of two consecutive actions
 static constexpr unsigned WINDOW_WIDTH = ACTION_MAX_X + ACTION_SPACE + 10;
 static constexpr unsigned WINDOW_HEIGHT = UTIL_H + UTIL_H_EX;
 
@@ -67,9 +67,9 @@ struct mapper_t {
     using pos_map = std::map<enum_type, point_t>;
     mapper_t(MAPPER m, pos_map p)
           : mapper(std::move(m)),
-            pos(std::move(p)){}
-                        [[nodiscard]] const point_t
-                  & position(enum_type type) const {
+            pos(std::move(p)) {}
+
+    [[nodiscard]] const point_t& position(enum_type type) const {
         const auto it = pos.find(type);
         if (it == pos.end()) {
             throw std::invalid_argument("position of "
