@@ -1,8 +1,3 @@
-/*
- * TODO: Definir um header bonitinho.
- * NOTA: SUPER HIPER NAO OPTIMIZADO, nao tem que ser, ele so monta o mapa, nao tem acao nenhuma nele.
-*/
-
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/bmp/ActionMapper.h"
@@ -17,21 +12,14 @@
 
 #include <boost/filesystem.hpp>
 
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
 #include <vector>
 
 namespace {
-// TODO:
-// Usando os defines no megaman, temos que rever isso aqui.
-// O jogo original tem uma resolucao de 288 x 224, sugiro que a gente dobre: 576 x 448
-// Verificar tamanho dos tiles e setar um novo pra gente.
 constexpr unsigned TILE_SIZE = 32;                                              ///< tile size in pixels
 constexpr unsigned TILE_GAP = 10;                                               ///< space between tiles at tiles section
 constexpr unsigned MAP_COLUMNS = 16;                                            ///< map section's number of columns
@@ -112,7 +100,7 @@ struct mapper_t {
 using tiles_t = mapper_t<gamelib::allegro::bmp::TileMapper>;
 using actions_t = mapper_t<gamelib::allegro::bmp::ActionMapper>;
 
-// Variaveis usadas pelo CTRL+C CTRL+V
+// Variables used by CTRL+C CTRL+V
 bool g_copy_selection_on = false;
 point_t g_copy_ini_point;
 point_t g_copy_end_point;
@@ -120,18 +108,18 @@ bool g_draw_selection = false;
 bool g_take_shot = false;
 BITMAP* g_selection_preview;
 
-void map_save(const std::string& filename, const map::Map& stageMap) {
-    map::MapIO::write(filename, stageMap);
+void map_save(const std::string& file_name, const map::Map& stageMap) {
+    map::MapIO::write(file_name, stageMap);
 }
 
-map::Map map_load(const std::string& filename) {
-    const map::Map stageMap = map::MapIO::read(filename);
+map::Map map_load(const std::string& file_name) {
+    const map::Map stage_map = map::MapIO::read(file_name);
 
-    g_max_i = stageMap.width();
-    g_max_j = stageMap.height();
+    g_max_i = stage_map.width();
+    g_max_j = stage_map.height();
     g_default_tile = 6;
 
-    return stageMap;
+    return stage_map;
 }
 
 map::Map create_clean_map(const int max_x,
@@ -263,12 +251,12 @@ void draw_status_bar(BITMAP* bmp) {
         textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y + 30, STATUS_FG, STATUS_BG, "SELECTION ON-SCROLL OFF");
 }
 
-void draw_actions_bar(BITMAP* bmp, const actions_t& actionMapper) {
+void draw_actions_bar(BITMAP* bmp, const actions_t& action_mapper) {
     rectfill(bmp, ACTION_X0, ACTION_Y0, ACTION_X0 + ACTION_W, ACTION_Y0 + ACTION_H, ACTION_BG);
 
     for (auto act : util::EnumIterator<map::Action>()) {
-        const auto& pos = actionMapper.position(act);
-        draw_action(bmp, actionMapper.mapper, act, pos.x, pos.y);
+        const auto& pos = action_mapper.position(act);
+        draw_action(bmp, action_mapper.mapper, act, pos.x, pos.y);
 
         if (g_cur_act == act) {
             rect(bmp,
@@ -312,8 +300,7 @@ void draw_help(BITMAP* canvas) {
 template <typename MAPPER>
 void handle_bar(typename MAPPER::enum_type& cur,
       const MAPPER& mapper,
-      const int mouse_button,
-      const std::string& /*function*/) {
+      const int mouse_button) {
     if (mouse_b & mouse_button) {
         const unsigned y = mouse_y;
         const unsigned x = mouse_x;
@@ -331,17 +318,16 @@ void handle_bar(typename MAPPER::enum_type& cur,
 }
 
 /// handle clicks inside tile bar
-void handle_tile_bar(const tiles_t& tileMapper) {
-    handle_bar(g_cur_tile_type, tileMapper, 1, "handle_tile_bar");
+void handle_tile_bar(const tiles_t& tile_mapper) {
+    handle_bar(g_cur_tile_type, tile_mapper, 1);
 }
 
 /// handle clicks inside action bar
-void handle_action_bar(const actions_t& actionMapper) {
-    handle_bar(g_cur_act, actionMapper, 2, "handle_action_bar");
+void handle_action_bar(const actions_t& action_mapper) {
+    handle_bar(g_cur_act, action_mapper, 2);
 }
 
-std::pair<point_t, point_t> define_region(point_t p1,
-      point_t p2) {
+std::pair<point_t, point_t> define_region(point_t p1, point_t p2) {
     if (p2.x < p1.x)
         std::swap(p2.x, p1.x);
     if (p2.y < p1.y)
@@ -350,7 +336,7 @@ std::pair<point_t, point_t> define_region(point_t p1,
     return std::make_pair(p1, p2);
 }
 
-void handle_CtrlC_CtrlV(map::Map& stageMap,
+void handle_CtrlC_CtrlV(map::Map& stage_map,
       const size_t x,
       const size_t y) {
     if (key[KEY_C]) {
@@ -380,13 +366,13 @@ void handle_CtrlC_CtrlV(map::Map& stageMap,
 
         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                selection_data.at(ys * (pt_data_len.x) + xs) = stageMap(region.first.x + xs, region.first.y + ys);
+                selection_data.at(ys * (pt_data_len.x) + xs) = stage_map(region.first.x + xs, region.first.y + ys);
             }
         }
 
         for (unsigned ys = 0; ys < pt_data_len.y; ++ys) {
             for (unsigned xs = 0; xs < pt_data_len.x; ++xs) {
-                stageMap(x + xs, y + ys) = selection_data.at(ys * (pt_data_len.x) + xs);
+                stage_map(x + xs, y + ys) = selection_data.at(ys * (pt_data_len.x) + xs);
             }
         }
 
@@ -396,30 +382,30 @@ void handle_CtrlC_CtrlV(map::Map& stageMap,
 }
 
 /// treats clicks inside map area
-void handle_click(map::Map& stageMap,
+void handle_click(map::Map& stage_map,
       const int X,
       const int Y,
       const int button) {
-    // aplica o deslocamento da tela e normaliza o x,y do mouse para unidades de TILE_SIZE
+    // apply screen displacement and normalize mouse's x,y to TILE_SIZE units
     const size_t x = (X + g_map_draw_x) / TILE_SIZE;
     const size_t y = (Y + g_map_draw_y) / TILE_SIZE;
 
-    if (x >= stageMap.width() || y >= stageMap.height())
+    if (x >= stage_map.width() || y >= stage_map.height())
         return; // out of map
     switch (button) {
         case 1:
             if (!key[KEY_LCONTROL]) { // CTRL is not pressed.
-                stageMap(x, y).type(g_cur_tile_type);
+                stage_map(x, y).type(g_cur_tile_type);
             } else { // CTRL is pressed.
                 if (key[KEY_C] || key[KEY_V]) {
-                    handle_CtrlC_CtrlV(stageMap, x, y);
+                    handle_CtrlC_CtrlV(stage_map, x, y);
                 }
             }
             break;
         case 2:
             // only ROADS may receive actions
-            if (stageMap(x, y).type() == map::TileType::ROAD)
-                stageMap(x, y).action(g_cur_act);
+            if (stage_map(x, y).type() == map::TileType::ROAD)
+                stage_map(x, y).action(g_cur_act);
             break;
         default:
             break;
@@ -485,8 +471,8 @@ void draw_grid(BITMAP* bmp) {
 
 map::Map create_or_load_map(int argc, char** argv) {
     const std::string tmp = std::string(argv[1] + std::string("/stage.dat"));
-    boost::filesystem::path pathToFile(tmp);
-    if (boost::filesystem::exists(pathToFile)) {
+    boost::filesystem::path path_to_file(tmp);
+    if (boost::filesystem::exists(path_to_file)) {
         return map_load(tmp);
     } else {
         if (argc < 5) {
@@ -646,13 +632,22 @@ int main(int argc, char* argv[]) {
 
             if (g_draw_selection) {
                 const auto region = define_region(g_copy_ini_point, g_copy_end_point);
-                const auto xini = (region.first.x * TILE_SIZE) - g_map_draw_x;
-                const auto yini = (region.first.y * TILE_SIZE) - g_map_draw_y;
-                const auto xend = ((region.second.x + 1) * TILE_SIZE) - g_map_draw_x;
-                const auto yend = ((region.second.y + 1) * TILE_SIZE) - g_map_draw_y;
+                const auto x_ini = (region.first.x * TILE_SIZE) - g_map_draw_x;
+                const auto y_ini = (region.first.y * TILE_SIZE) - g_map_draw_y;
+                const auto x_end = ((region.second.x + 1) * TILE_SIZE) - g_map_draw_x;
+                const auto y_end = ((region.second.y + 1) * TILE_SIZE) - g_map_draw_y;
 
                 if (g_take_shot) {
-                    stretch_blit(&(*buffer), g_selection_preview, xini, yini, xend - xini, yend - yini, 0, 0, g_selection_preview->w, g_selection_preview->h);
+                    stretch_blit(&(*buffer),
+                          g_selection_preview,
+                          x_ini,
+                          y_ini,
+                          x_end - x_ini,
+                          y_end - y_ini,
+                          0,
+                          0,
+                          g_selection_preview->w,
+                          g_selection_preview->h);
                     g_take_shot = false;
                 }
                 rect(&(*buffer),
@@ -662,14 +657,21 @@ int main(int argc, char* argv[]) {
                       SCREEN_H - 392 + g_selection_preview->h + 3,
                       makecol(255, 255, 255));
 
-                blit(g_selection_preview, &(*buffer), 0, 0, SCREEN_W - 192, SCREEN_H - 390, g_selection_preview->w, g_selection_preview->h);
+                blit(g_selection_preview,
+                      &(*buffer),
+                      0,
+                      0,
+                      SCREEN_W - 192,
+                      SCREEN_H - 390,
+                      g_selection_preview->w,
+                      g_selection_preview->h);
 
                 set_trans_blender(128, 128, 128, 128);
                 drawing_mode(DRAW_MODE_TRANS, nullptr, 0, 0);
-                rectfill(&(*buffer), xini, yini, xend, yend, makecol(30, 30, 255));
+                rectfill(&(*buffer), x_ini, y_ini, x_end, y_end, makecol(30, 30, 255));
                 drawing_mode(DRAW_MODE_SOLID, nullptr, 0, 0);
-                rect(&(*buffer), xini, yini, xend, yend, 0);
-                rect(&(*buffer), xini + 1, yini + 1, xend - 1, yend - 1, 0);
+                rect(&(*buffer), x_ini, y_ini, x_end, y_end, 0);
+                rect(&(*buffer), x_ini + 1, y_ini + 1, x_end - 1, y_end - 1, 0);
             }
 
             vsync();
