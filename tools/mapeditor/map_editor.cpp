@@ -71,6 +71,17 @@ unsigned g_map_draw_x, g_map_draw_y;
 unsigned g_max_i, g_max_j;
 unsigned char g_default_tile;
 
+int MAP_FG = 0;
+int TILES_BG = 0;
+int TILES_FG = 0;
+int STATUS_BG = 0;
+int STATUS_FG = 0;
+int ACTION_BG = 0;
+int ACTION_FG = 0;
+int HELP_FG = 0;
+int HELP_BG = 0;
+int WINDOW_BG = 0;
+
 struct point_t {
     unsigned x, y;
 };
@@ -178,7 +189,6 @@ void draw_map(BITMAP* bmp,
 
     const unsigned i_disp = map_i + MAP_COLUMNS == g_max_i ? 0 : 1;
     const unsigned j_disp = map_j + MAP_ROWS == g_max_j ? 0 : 1;
-    const int color = makecol32(255, 255, 255);
     for (unsigned i = 0; i < MAP_ROWS + j_disp; ++i) {
         for (unsigned j = 0; j < MAP_COLUMNS + i_disp; ++j) {
             const unsigned x = j * TILE_SIZE + MAP_X0;
@@ -194,15 +204,14 @@ void draw_map(BITMAP* bmp,
             }
 
             if (key[KEY_F] == 0 && not g_take_shot) {
-                textprintf_ex(bmp, font, x + 2, y + 2, 0, color, "%02d", map::from_EAction<int>(tile.action()));
+                textprintf_ex(bmp, font, x + 2, y + 2, 0, MAP_FG, "%02d", map::from_EAction<int>(tile.action()));
             }
         }
     }
 }
 
 void draw_tiles_bar(BITMAP* bmp, const tiles_t& tile_mapper) {
-    const int bg = makecol(0x2e, 0x62, 0x76);
-    rectfill(bmp, TILES_X0, TILES_Y0, TILES_X0 + TILES_W, MAP_H + HELP_H, bg);
+    rectfill(bmp, TILES_X0, TILES_Y0, TILES_X0 + TILES_W, MAP_H + HELP_H, TILES_BG);
     for (const auto type : util::EnumIterator<map::TileType>()) {
         const auto& pos = tile_mapper.position(type);
         draw_tile(bmp, tile_mapper.mapper, type, pos.x, pos.y);
@@ -213,8 +222,7 @@ void draw_tiles_bar(BITMAP* bmp, const tiles_t& tile_mapper) {
     const auto y = pos.y;
 
     const auto gap = TILE_GAP - 2;
-    const int fg = makecol(0xe7, 0xf6, 0xf8);
-    rect(bmp, x - gap, y - gap, x + TILE_SIZE + gap - 1, y + TILE_SIZE + gap - 1, fg);
+    rect(bmp, x - gap, y - gap, x + TILE_SIZE + gap - 1, y + TILE_SIZE + gap - 1, TILES_FG);
 }
 
 bool mouse_in_map() {
@@ -234,27 +242,29 @@ void draw_status_bar(BITMAP* bmp) {
     const auto POS_LT_X = STATUS_X0 + 5;
     const auto POS_LT_Y = STATUS_Y0 + 5;
 
-    const int bg = makecol(0xf8, 0xdf, 0xe2);
-    const int fg = makecol(0x8b, 0x13, 0x03);
+    rectfill(bmp, STATUS_X0, STATUS_Y0, STATUS_X0 + STATUS_W, STATUS_Y0 + STATUS_H, STATUS_BG);
 
-    rectfill(bmp, STATUS_X0, STATUS_Y0, STATUS_X0 + STATUS_W, STATUS_Y0 + STATUS_H, bg);
-
+    const int x = mouse_x - MAP_X0;
     if (mouse_in_map()) {
-        const int x = mouse_x - MAP_X0;
         const int y = mouse_y - MAP_Y0;
         const int i = x / TILE_SIZE;
         const int j = y / TILE_SIZE;
         char tmp[80];
         snprintf(tmp, sizeof(tmp), "mouse: (%3d,%3d)", x, y);
-        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y, STATUS_FG, STATUS_BG, "%-20s", tmp);
         snprintf(tmp, sizeof(tmp), "tile:  (%3d,%3d)", i, j);
-        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y + 10, fg, bg, "%-20s", tmp);
+        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y + 10, STATUS_FG, STATUS_BG, "%-20s", tmp);
     }
+
+    if (key[KEY_O])
+        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y + 20, STATUS_FG, STATUS_BG, "OFFSET: %02u", x % TILE_SIZE);
+
+    if (g_draw_selection)
+        textprintf_ex(bmp, font, POS_LT_X, POS_LT_Y + 30, STATUS_FG, STATUS_BG, "SELECTION ON-SCROLL OFF");
 }
 
 void draw_actions_bar(BITMAP* bmp, const actions_t& actionMapper) {
-    const int bg = makecol(0x4d, 0x80, 0x55);
-    rectfill(bmp, ACTION_X0, ACTION_Y0, ACTION_X0 + ACTION_W, ACTION_Y0 + ACTION_H, bg);
+    rectfill(bmp, ACTION_X0, ACTION_Y0, ACTION_X0 + ACTION_W, ACTION_Y0 + ACTION_H, ACTION_BG);
 
     for (auto act : util::EnumIterator<map::Action>()) {
         const auto& pos = actionMapper.position(act);
@@ -266,24 +276,16 @@ void draw_actions_bar(BITMAP* bmp, const actions_t& actionMapper) {
                   pos.y - 2,
                   pos.x + TILE_SIZE + 2,
                   pos.y + TILE_SIZE + 2,
-                  makecol(255, 50, 50));
+                  ACTION_FG);
         }
     }
 
     draw_status_bar(bmp);
-
-    if (key[KEY_O])
-        textprintf_ex(bmp, font, MAP_W + 20, SCREEN_H - 50, makecol(0, 50, 200), makecol(255, 255, 255), "OFFSET: %02u", (unsigned) mouse_x % TILE_SIZE);
-
-    if (g_draw_selection)
-        textprintf_ex(bmp, font, MAP_W + 8, SCREEN_H - 80, makecol(255, 0, 0), 0, "SELECTION ON-SCROLL OFF");
 }
 
 void draw_help(BITMAP* canvas) {
     constexpr int step_y = 15;
-    const int fg = makecol(0x1a, 0x44, 0x80);
-    const int bg = makecol(0xd9, 0xe8, 0xf6);
-    rectfill(canvas, HELP_X0, HELP_Y0, HELP_X0 + HELP_W, HELP_Y0 + HELP_H, bg);
+    rectfill(canvas, HELP_X0, HELP_Y0, HELP_X0 + HELP_W, HELP_Y0 + HELP_H, HELP_BG);
 
     const std::vector<std::string> manual = {
         "ESC - closes the editor",
@@ -302,7 +304,7 @@ void draw_help(BITMAP* canvas) {
         "X - cancel region selected"
     };
     for (size_t i = 0; i < manual.size(); ++i) {
-        textprintf_ex(canvas, font, HELP_X0 + 20, (i + 1) * step_y + HELP_Y0, fg, bg, "%s", manual[i].c_str());
+        textprintf_ex(canvas, font, HELP_X0 + 20, (i + 1) * step_y + HELP_Y0, HELP_FG, HELP_BG, "%s", manual[i].c_str());
     }
 }
 
@@ -469,19 +471,15 @@ tiles_t load_tiles(const std::string& file_name) {
 }
 
 void clear_window(BITMAP* bmp) {
-    const int dark_gray = makecol(20, 20, 20);
-
-    rectfill(bmp, 0, 0, WINDOW_W, WINDOW_H, dark_gray);
+    rectfill(bmp, 0, 0, WINDOW_W, WINDOW_H, WINDOW_BG);
 }
 
 void draw_grid(BITMAP* bmp) {
-    const int color = makecol(255, 255, 255);
-
     for (unsigned x = MAP_X0; x < MAP_X0 + MAP_W; x += TILE_SIZE) {
-        vline(bmp, x, MAP_Y0, MAP_Y0 + MAP_H, color);
+        vline(bmp, x, MAP_Y0, MAP_Y0 + MAP_H, MAP_FG);
     }
     for (unsigned y = MAP_Y0; y < MAP_Y0 + MAP_H; y += TILE_SIZE) {
-        hline(bmp, MAP_X0, y, MAP_X0 + MAP_W, color);
+        hline(bmp, MAP_X0, y, MAP_X0 + MAP_W, MAP_FG);
     }
 }
 
@@ -500,6 +498,20 @@ map::Map create_or_load_map(int argc, char** argv) {
         return create_clean_map(max_x, max_y, default_tile);
     }
 }
+
+void initialize_colors() {
+    MAP_FG = makecol32(0xff, 0xff, 0xff);
+    TILES_BG = makecol(0x2e, 0x62, 0x76);
+    TILES_FG = makecol(0xe7, 0xf6, 0xf8);
+    STATUS_BG = makecol(0xf8, 0xdf, 0xe2);
+    STATUS_FG = makecol(0x8b, 0x13, 0x03);
+    ACTION_BG = makecol(0x4d, 0x80, 0x55);
+    ACTION_FG = makecol(0xec, 0xf3, 0xec);
+    HELP_FG = makecol(0x1a, 0x44, 0x80);
+    HELP_BG = makecol(0xd9, 0xe8, 0xf6);
+    WINDOW_BG = makecol(0x3d, 0x45, 0x51);
+}
+
 }
 
 int main(int argc, char* argv[]) {
@@ -513,6 +525,8 @@ int main(int argc, char* argv[]) {
 
         set_color_depth(32);
         set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_W, WINDOW_H, 0, 0);
+
+        initialize_colors();
 
         gamelib::allegro::BITMAP_PTR buffer(create_bitmap(SCREEN_W, SCREEN_H), destroy_bitmap);
         g_selection_preview = create_bitmap(185, 150);
