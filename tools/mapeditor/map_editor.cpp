@@ -201,7 +201,8 @@ void draw_map(BITMAP* bmp,
 }
 
 void draw_tiles_bar(BITMAP* bmp, const tiles_t& tile_mapper) {
-    rectfill(bmp, TILES_X0, TILES_Y0, TILES_X0 + TILES_W, MAP_H + HELP_H, makecol(30, 40, 100));
+    const int bg = makecol(0x2e, 0x62, 0x76);
+    rectfill(bmp, TILES_X0, TILES_Y0, TILES_X0 + TILES_W, MAP_H + HELP_H, bg);
     for (const auto type : util::EnumIterator<map::TileType>()) {
         const auto& pos = tile_mapper.position(type);
         draw_tile(bmp, tile_mapper.mapper, type, pos.x, pos.y);
@@ -211,30 +212,30 @@ void draw_tiles_bar(BITMAP* bmp, const tiles_t& tile_mapper) {
     const auto x = pos.x;
     const auto y = pos.y;
 
-    rect(bmp, x - TILE_GAP, y - TILE_GAP, x + TILE_SIZE + TILE_GAP, y + TILE_SIZE + TILE_GAP, makecol(255, 255, 255));
+    const auto gap = TILE_GAP - 2;
+    const int fg = makecol(0xe7, 0xf6, 0xf8);
+    rect(bmp, x - gap, y - gap, x + TILE_SIZE + gap - 1, y + TILE_SIZE + gap - 1, fg);
 }
 
 bool mouse_in_map() {
-    const unsigned x = static_cast<unsigned>(mouse_x);
+    const auto x = static_cast<unsigned>(mouse_x);
     if (x < MAP_X0)
         return false;
     if (x >= MAP_X0 + MAP_W)
         return false;
 
-    const unsigned y = static_cast<unsigned>(mouse_y);
+    const auto y = static_cast<unsigned>(mouse_y);
     if (y < MAP_Y0)
         return false;
-    if (y >= MAP_Y0 + MAP_H)
-        return false;
-
-    return true;
+    return y < MAP_Y0 + MAP_H;
 }
+
 void draw_status_bar(BITMAP* bmp) {
     const auto POS_LT_X = STATUS_X0 + 5;
     const auto POS_LT_Y = STATUS_Y0 + 5;
 
-    const int bg = makecol(0, 50, 200);
-    const int fg = makecol(255, 255, 255);
+    const int bg = makecol(0xf8, 0xdf, 0xe2);
+    const int fg = makecol(0x8b, 0x13, 0x03);
 
     rectfill(bmp, STATUS_X0, STATUS_Y0, STATUS_X0 + STATUS_W, STATUS_Y0 + STATUS_H, bg);
 
@@ -252,8 +253,8 @@ void draw_status_bar(BITMAP* bmp) {
 }
 
 void draw_actions_bar(BITMAP* bmp, const actions_t& actionMapper) {
-    const int teal = makecol(0, 50, 50);
-    rectfill(bmp, ACTION_X0, ACTION_Y0, ACTION_X0 + ACTION_W, ACTION_Y0 + ACTION_H, teal);
+    const int bg = makecol(0x4d, 0x80, 0x55);
+    rectfill(bmp, ACTION_X0, ACTION_Y0, ACTION_X0 + ACTION_W, ACTION_Y0 + ACTION_H, bg);
 
     for (auto act : util::EnumIterator<map::Action>()) {
         const auto& pos = actionMapper.position(act);
@@ -280,9 +281,9 @@ void draw_actions_bar(BITMAP* bmp, const actions_t& actionMapper) {
 
 void draw_help(BITMAP* canvas) {
     constexpr int step_y = 15;
-    rectfill(canvas, HELP_X0, HELP_Y0, HELP_X0 + HELP_W, HELP_Y0 + HELP_H, makecol(255, 255, 255));
-    const int bg = makecol(255, 255, 255);
-    const int fg = makecol(0, 50, 200);
+    const int fg = makecol(0x1a, 0x44, 0x80);
+    const int bg = makecol(0xd9, 0xe8, 0xf6);
+    rectfill(canvas, HELP_X0, HELP_Y0, HELP_X0 + HELP_W, HELP_Y0 + HELP_H, bg);
 
     const std::vector<std::string> manual = {
         "ESC - closes the editor",
