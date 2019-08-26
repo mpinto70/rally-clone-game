@@ -23,7 +23,7 @@ public:
           unsigned subBmpWidth,
           unsigned subBmpHeight,
           unsigned gap)
-          : fullBitmap_(nullptr, destroy_bitmap) {
+          : fullBitmap_(nullptr, destroy_bitmap), gap_(gap) {
         auto bmps = BitmapReader::readBmps(fileName, subBmpWidth, subBmpHeight, gap);
         fullBitmap_.swap(bmps.first);
         using enum_t = typename std::underlying_type<ENUM>::type;
@@ -55,20 +55,22 @@ public:
     BmpMapper(const BmpMapper&) = delete;
     BmpMapper& operator=(const BmpMapper&) = delete;
 
-    BmpMapper(BmpMapper&& rhs)
+    BmpMapper(BmpMapper&& rhs) noexcept
           : bmpMap_(std::move(rhs.bmpMap_)),
-            fullBitmap_(std::move(rhs.fullBitmap_)) {
+            fullBitmap_(std::move(rhs.fullBitmap_)),
+            gap_(rhs.gap_) {
     }
 
-    BmpMapper& operator=(BmpMapper&& rhs) {
+    BmpMapper& operator=(BmpMapper&& rhs) noexcept {
         bmpMap_.clear();
         fullBitmap_.reset();
         fullBitmap_ = std::move(rhs.fullBitmap_);
         bmpMap_ = std::move(rhs.bmpMap_);
+        gap_ = rhs.gap_;
         return *this;
     }
 
-    BITMAP* fullBmp() const {
+    [[nodiscard]] BITMAP* fullBmp() const {
         return fullBitmap_.get();
     }
 
@@ -100,13 +102,18 @@ public:
         return subBmp(tl);
     }
 
-    size_t numBmps() const {
+    [[nodiscard]] size_t numBmps() const {
         return bmpMap_.size();
+    }
+
+    [[nodiscard]] unsigned gap() const {
+        return gap_;
     }
 
 private:
     std::map<ENUM, BITMAP_PTR> bmpMap_;
     BITMAP_PTR fullBitmap_;
+    unsigned gap_;
 };
 }
 }
