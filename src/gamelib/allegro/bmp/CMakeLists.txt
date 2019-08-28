@@ -2,6 +2,7 @@
 add_library(
     gamelib_allegro_bmp
     BitmapReader.cpp
+    SpriteReader.cpp
 )
 
 target_include_directories(

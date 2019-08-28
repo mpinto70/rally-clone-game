@@ -23,8 +23,8 @@ public:
           unsigned subBmpWidth,
           unsigned subBmpHeight,
           unsigned gap)
-          : fullBitmap_(nullptr, destroy_bitmap), gap_(gap) {
-        auto bmps = BitmapReader::readBmps(fileName, subBmpWidth, subBmpHeight, gap);
+          : fullBitmap_(nullptr, destroy_bitmap), imageWidth_(subBmpWidth), imageHeight_(subBmpHeight) {
+        auto bmps = BitmapReader::readImages(fileName, subBmpWidth, subBmpHeight, gap);
         fullBitmap_.swap(bmps.first);
         using enum_t = typename std::underlying_type<ENUM>::type;
 
@@ -55,35 +55,23 @@ public:
     BmpMapper(const BmpMapper&) = delete;
     BmpMapper& operator=(const BmpMapper&) = delete;
 
-    BmpMapper(BmpMapper&& rhs) noexcept
-          : bmpMap_(std::move(rhs.bmpMap_)),
-            fullBitmap_(std::move(rhs.fullBitmap_)),
-            gap_(rhs.gap_) {
-    }
+    BmpMapper(BmpMapper&& rhs) noexcept = default;
+    BmpMapper& operator=(BmpMapper&& rhs) noexcept = default;
 
-    BmpMapper& operator=(BmpMapper&& rhs) noexcept {
-        bmpMap_.clear();
-        fullBitmap_.reset();
-        fullBitmap_ = std::move(rhs.fullBitmap_);
-        bmpMap_ = std::move(rhs.bmpMap_);
-        gap_ = rhs.gap_;
-        return *this;
-    }
-
-    [[nodiscard]] BITMAP* fullBmp() const {
+    [[nodiscard]] BITMAP* fullImage() const {
         return fullBitmap_.get();
     }
 
     BITMAP* operator[](ENUM bmpId) const {
-        return subBmp(bmpId);
+        return image(bmpId);
     }
 
     template <typename T>
     BITMAP* operator[](T t) const {
-        return subBmp(t);
+        return image(t);
     }
 
-    BITMAP* subBmp(ENUM bmpId) const {
+    BITMAP* image(ENUM bmpId) const {
         const auto it = bmpMap_.find(bmpId);
         if (it == bmpMap_.end())
             throw util::Exception("BmpMapper - bmp not found ("
@@ -97,23 +85,28 @@ public:
     }
 
     template <typename T>
-    BITMAP* subBmp(T t) const {
-        auto tl = util::to_Enum<ENUM, T>(t);
-        return subBmp(tl);
+    BITMAP* image(T bmpId) const {
+        auto tl = util::to_Enum<ENUM, T>(bmpId);
+        return image(tl);
     }
 
-    [[nodiscard]] size_t numBmps() const {
+    [[nodiscard]] size_t numImages() const {
         return bmpMap_.size();
     }
 
-    [[nodiscard]] unsigned gap() const {
-        return gap_;
+    [[nodiscard]] unsigned imageWidth() const {
+        return imageHeight_;
+    }
+
+    [[nodiscard]] unsigned imageHeight() const {
+        return imageWidth_;
     }
 
 private:
     std::map<ENUM, BITMAP_PTR> bmpMap_;
     BITMAP_PTR fullBitmap_;
-    unsigned gap_;
+    unsigned imageWidth_;
+    unsigned imageHeight_;
 };
 }
 }

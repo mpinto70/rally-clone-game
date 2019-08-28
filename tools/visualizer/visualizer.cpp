@@ -3,8 +3,8 @@
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
-#include "util/Wait.h"
 #include "util/Util.h"
+#include "util/Wait.h"
 
 #include <allegro.h>
 
@@ -30,6 +30,7 @@ constexpr unsigned DESCRIPTION_Y = CURRENT_Y + SUB_SIZE + 10; ///< description t
 int ARROW_FG = 0;
 int WINDOW_BG = 0;
 int TEXT_FG = 0;
+int FRAME_FG = 0;
 
 struct tile_set_t {
     BITMAP* full_image;
@@ -38,11 +39,12 @@ struct tile_set_t {
           : full_image(img), tiles(std::move(tls)) {}
 };
 
+template <typename MAPPER>
 void draw_arrow(BITMAP* canvas,
-      const unsigned cur_tile,
-      const unsigned gap) {
+      const MAPPER& mapper,
+      const unsigned cur_tile) {
     const unsigned y = ARROW_Y;
-    const unsigned x = IMAGES_X + cur_tile * (SUB_SIZE + gap) + SUB_SIZE / 2;
+    const unsigned x = IMAGES_X + (mapper.imageWidth() + 1) * cur_tile + mapper.imageWidth() / 2;
 
     rectfill(canvas, x - 1, y, x, y + ARROW_H, ARROW_FG);
     line(canvas, x - 1, y, x - 4, y + 3, ARROW_FG);
@@ -58,8 +60,16 @@ void draw_full_image(BITMAP* canvas, const MAPPER& mapper) {
           TEXT_FG,
           WINDOW_BG,
           "number of tiles: %lu",
-          mapper.numBmps());
-    draw_sprite(canvas, mapper.fullBmp(), IMAGES_X, IMAGES_Y);
+          mapper.numImages());
+
+    auto x = IMAGES_X;
+    auto y = IMAGES_Y;
+    using enum_type = typename MAPPER::enum_type;
+    for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
+        draw_sprite(canvas, mapper[i], x, y);
+        rect(canvas, x - 1, y - 1, x + mapper.imageWidth(), y + mapper.imageHeight(), FRAME_FG);
+        x += mapper[i]->w + 1;
+    }
 }
 
 template <typename MAPPER>
@@ -77,7 +87,8 @@ void draw_curr_tile(BITMAP* canvas, const MAPPER& mapper, unsigned cur_tile) {
           mapper[cur_tile]->w,
           mapper[cur_tile]->h);
     draw_sprite(canvas, mapper[cur_tile], IMAGES_X, CURRENT_Y);
-    draw_arrow(canvas, cur_tile, mapper.gap());
+
+    draw_arrow(canvas, mapper, cur_tile);
 }
 
 void exit_visualizer(const std::string& msg) {
@@ -108,16 +119,16 @@ void show(BITMAP* canvas, const MAPPER& mapper) {
         bool should_wait = false;
         wait.reset();
         if (key[KEY_RIGHT]) {
-            move_right(cur_tile, mapper.numBmps());
+            move_right(cur_tile, mapper.numImages());
             should_wait = true;
         } else if (key[KEY_LEFT]) {
             should_wait = true;
-            move_left(cur_tile, mapper.numBmps());
+            move_left(cur_tile, mapper.numImages());
         } else if (key[KEY_D]) {
-            move_right(cur_tile, mapper.numBmps());
+            move_right(cur_tile, mapper.numImages());
             key_wait = KEY_D;
         } else if (key[KEY_A]) {
-            move_left(cur_tile, mapper.numBmps());
+            move_left(cur_tile, mapper.numImages());
             key_wait = KEY_A;
         }
 
@@ -139,6 +150,7 @@ void initialize_colors() {
     ARROW_FG = makecol(0x00, 0x00, 0x00);
     WINDOW_BG = makecol(0xf8, 0xdf, 0xe2);
     TEXT_FG = makecol(0x00, 0x00, 0x00);
+    FRAME_FG = makecol(0xff, 0x00, 0x00);
 }
 }
 

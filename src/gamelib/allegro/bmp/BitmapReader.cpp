@@ -6,7 +6,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-BitmapReader::tiles_t BitmapReader::readBmps(const std::string& fileName,
+BitmapReader::tiles_t BitmapReader::readImages(const std::string& fileName,
       const unsigned tileWidth,
       const unsigned tileHeight,
       const unsigned gap) {

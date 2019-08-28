@@ -41,10 +41,10 @@ public:
                                                                                width
      \endverbatim
      */
-    static tiles_t readBmps(const std::string& fileName,
-          const unsigned tileWidth,
-          const unsigned tileHeight,
-          const unsigned gap);
+    static tiles_t readImages(const std::string& fileName,
+          unsigned tileWidth,
+          unsigned tileHeight,
+          unsigned gap);
 };
 }
 }
