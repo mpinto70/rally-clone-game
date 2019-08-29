@@ -177,8 +177,8 @@ int main(int argc, char* argv[]) {
         BITMAP* canvas = create_bitmap(SCREEN_W, SCREEN_H);
 
         if (type == "car") {
-            using gamelib::allegro::bmp::CarMapper;
-            const CarMapper mapper(file_name, 32, 32, 1);
+            using gamelib::allegro::bmp::CarSpriteMapper;
+            const CarSpriteMapper mapper(file_name, 16, 16, 0, 0, 12, 1);
             show(canvas, mapper);
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;

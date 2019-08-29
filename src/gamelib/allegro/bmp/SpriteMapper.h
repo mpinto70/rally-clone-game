@@ -93,7 +93,7 @@ public:
         return image(tl);
     }
 
-    [[nodiscard]] size_t numSprites() const {
+    [[nodiscard]] size_t numImages() const {
         return spriteMap_.size();
     }
 
