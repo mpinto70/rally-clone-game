@@ -4,7 +4,6 @@
 #include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
 #include "util/Util.h"
-#include "util/Wait.h"
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -14,7 +13,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <iosfwd>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -25,7 +23,7 @@ constexpr unsigned WINDOW_H = 400;                            ///< map window he
 constexpr unsigned SUB_SIZE = 32;                             ///< size of images
 constexpr unsigned IMAGES_X = 30;                             ///< images left position
 constexpr unsigned IMAGES_Y = 60;                             ///< images top position
-constexpr unsigned TITLE_Y = 40;                              ///< title text top position
+constexpr unsigned TITLE_Y = 30;                              ///< title text top position
 constexpr unsigned ARROW_Y = IMAGES_Y + SUB_SIZE + 10;        ///< arrow top position
 constexpr unsigned ARROW_H = 10;                              ///< arrow height
 constexpr unsigned CURRENT_Y = ARROW_Y + ARROW_H + 10;        ///< current image top position
@@ -138,6 +136,12 @@ void show(const MAPPER& mapper,
                     case ALLEGRO_KEY_LEFT:
                         keys[RIGHT] = true;
                         break;
+                    case ALLEGRO_KEY_D:
+                        move_right(cur_tile, mapper.numImages());
+                        break;
+                    case ALLEGRO_KEY_A:
+                        move_left(cur_tile, mapper.numImages());
+                        break;
                 }
                 break;
             case ALLEGRO_EVENT_KEY_UP:
@@ -152,13 +156,13 @@ void show(const MAPPER& mapper,
                 break;
         }
 
-        if (keys[RIGHT])
-            move_right(cur_tile, mapper.numImages());
-        if (keys[LEFT])
-            move_left(cur_tile, mapper.numImages());
-
         if (draw) {
             draw = false;
+            if (keys[RIGHT])
+                move_right(cur_tile, mapper.numImages());
+            if (keys[LEFT])
+                move_left(cur_tile, mapper.numImages());
+
             draw_full_image(mapper, font);
             draw_curr_tile(mapper, font, cur_tile);
 
@@ -178,12 +182,18 @@ void initialize_colors() {
 
 int main(int argc, char* argv[]) {
     try {
-        if (argc != 3) {
-            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file> <car|action|tile>");
+        if (argc != 3 && argc != 4) {
+            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file> <car|action|tile> [<number>]\n"
+                            "    for car <number> in [0..3]\n"
+                            "    for tile <number> in [0..7]");
         }
 
         const std::string file_name = argv[1];
         const std::string type = argv[2];
+        if ((type == "car" || type == "tile") && argc != 4) {
+            exit_visualizer("for car and tile you have to inform the number");
+        }
+        const std::string number = argc == 4 ? argv[3] : "";
 
         if (not al_init())
             tools::throw_allegro_error("could not init Allegro");
@@ -198,7 +208,7 @@ int main(int argc, char* argv[]) {
         if (display == nullptr)
             tools::throw_allegro_error("could not create display");
 
-        ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
+        ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
 
@@ -218,8 +228,11 @@ int main(int argc, char* argv[]) {
 
         al_start_timer(timer);
         if (type == "car") {
-            using gamelib::allegro::bmp::CarSpriteMapper;
-            const CarSpriteMapper mapper(file_name, 16, 16, 0, 0, 12, 1);
+            using gamelib::allegro::bmp::CarMapper;
+            using gamelib::allegro::bmp::createCarMapper;
+            using gamelib::allegro::bmp::ECarType;
+            const auto car_type = util::to_Enum<ECarType>(std::stoi(number));
+            const auto mapper = createCarMapper(file_name, car_type);
             show(mapper, font, event_queue);
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;

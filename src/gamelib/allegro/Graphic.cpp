@@ -131,7 +131,7 @@ void Graphic::draw(const map::Map& map,
       const size_t y_cursor,
       const size_t parts) {
     al_draw_filled_rectangle(0, 0, width_, height_, COLORS[game::COLOR::WINE]);
-    al_draw_rectangle(0, 0, width_ - 1,height_ - 1, COLORS[game::COLOR::WHITE], 2);
+    al_draw_rectangle(0, 0, width_ - 1, height_ - 1, COLORS[game::COLOR::WHITE], 2);
 
     // ratio between the tile size on screen and the number of logical divisions inside tile
     const double ratio_S_T = (double) TILE_SIZE / parts;

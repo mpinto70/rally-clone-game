@@ -11,7 +11,7 @@ GameLib::GameLib(unsigned int width,
       unsigned int height,
       const std::string& path_to_data)
       : display_(nullptr, al_destroy_display),
-      graphic_(nullptr),
+        graphic_(nullptr),
         keyboard_(nullptr),
         sound_(nullptr),
         timer_(nullptr) {
