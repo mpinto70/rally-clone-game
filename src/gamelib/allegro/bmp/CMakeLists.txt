@@ -6,6 +6,7 @@ add_library(
     CarMapper.cpp
     FuelMapper.cpp
     TileMapper.cpp
+    MiniMapMapper.cpp
 )
 
 target_include_directories(

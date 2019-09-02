@@ -13,6 +13,6 @@ std::string to_string(Type enum_value) {
         case Type::LAST:
             break;
     }
-    throw util::Exception("to_string(Type) - invalid argument", util::from_Enum<int>(enum_value));
+    throw util::Exception("to_string(fuel::Type) - invalid argument", util::from_Enum<int>(enum_value));
 }
 }

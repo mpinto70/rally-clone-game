@@ -12,6 +12,7 @@ target_link_libraries(
     game
     car
     fuel
+    minimap
     map
     util
     allegro

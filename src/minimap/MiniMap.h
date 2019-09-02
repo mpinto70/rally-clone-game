@@ -4,24 +4,25 @@
 
 #include <cstdint>
 
-namespace fuel {
+namespace minimap {
 
 /** the underlying enum type. */
-using fuel_t = std::uint8_t;
+using minimap_t = std::uint8_t;
 /** car directions. */
-enum class Type : fuel_t {
+enum class Type : minimap_t {
+    PLAYER_ON,
+    PLAYER_OFF,
     FUEL,
-    FUEL_S,
-    FUEL_L,
+    ENEMY,
     LAST,
-    FIRST = FUEL
+    FIRST = PLAYER_ON
 };
 
 /** convert a value of type \b T to a Type value.
  * @param t the value to be converted
  */
 template <typename T>
-Type to_Fuel(T t) {
+Type to_MiniMap(T t) {
     return util::to_Enum<Type, T>(t);
 }
 
@@ -29,7 +30,7 @@ Type to_Fuel(T t) {
  * @param enum_value the value to be converted
  */
 template <typename T>
-constexpr T from_Fuel(Type enum_value) {
+constexpr T from_MiniMap(Type enum_value) {
     return util::from_Enum<T, Type>(enum_value);
 }
 

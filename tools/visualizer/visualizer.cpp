@@ -3,6 +3,7 @@
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/FuelMapper.h"
+#include "gamelib/allegro/bmp/MiniMapMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
 #include "util/Util.h"
 
@@ -192,7 +193,7 @@ void initialize_colors() {
 int main(int argc, char* argv[]) {
     try {
         if (argc != 3 && argc != 4) {
-            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file> <car|action|tile> [<number>]\n"
+            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file> <car|action|tile|minimap> [<number>]\n"
                             "    for car <number> in [0..3]\n"
                             "    for tile <number> in [0..7]");
         }
@@ -247,6 +248,11 @@ int main(int argc, char* argv[]) {
             using gamelib::allegro::bmp::createFuelMapper;
             using gamelib::allegro::bmp::FuelMapper;
             const auto mapper = createFuelMapper(file_name);
+            show(mapper, font, event_queue);
+        } else if (type == "minimap") {
+            using gamelib::allegro::bmp::createMiniMapMapper;
+            using gamelib::allegro::bmp::MiniMapMapper;
+            const auto mapper = createMiniMapMapper(file_name);
             show(mapper, font, event_queue);
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;
