@@ -3,7 +3,7 @@
 #include "util/Exception.h"
 #include "util/Util.h"
 
-#include <allegro.h>
+#include <allegro5/allegro.h>
 
 namespace gamelib {
 namespace allegro {
@@ -12,24 +12,26 @@ Keyboard::Keyboard() = default;
 
 Keyboard::~Keyboard() = default;
 
-static unsigned int translateKey(game::Key keyCode) {
+static int translateKey(game::Key keyCode) {
     switch (keyCode) {
-        case game::Key::ENTER: return KEY_ENTER;
-        case game::Key::LEFT: return KEY_LEFT;
-        case game::Key::RIGHT: return KEY_RIGHT;
-        case game::Key::UP: return KEY_UP;
-        case game::Key::DOWN: return KEY_DOWN;
-        case game::Key::SPACE: return KEY_SPACE;
-        case game::Key::ESCAPE: return KEY_ESC;
+        case game::Key::ENTER: return ALLEGRO_KEY_ENTER;
+        case game::Key::LEFT: return ALLEGRO_KEY_LEFT;
+        case game::Key::RIGHT: return ALLEGRO_KEY_RIGHT;
+        case game::Key::UP: return ALLEGRO_KEY_UP;
+        case game::Key::DOWN: return ALLEGRO_KEY_DOWN;
+        case game::Key::SPACE: return ALLEGRO_KEY_SPACE;
+        case game::Key::ESCAPE: return ALLEGRO_KEY_ESCAPE;
         case game::Key::LAST: return -1;
     }
     return -1;
 }
 
 bool Keyboard::isKeyPressed(game::Key keyCode) const {
-    const unsigned int allegroKey = translateKey(keyCode);
+    const int allegroKey = translateKey(keyCode);
+    ALLEGRO_KEYBOARD_STATE state;
+    al_get_keyboard_state(&state);
 
-    return (allegroKey != (unsigned int) -1 && key[allegroKey] != 0);
+    return (allegroKey != -1 && al_key_down(&state, allegroKey));
 }
 
 std::set<game::Key> Keyboard::keysPressed() const {

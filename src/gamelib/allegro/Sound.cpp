@@ -1,9 +1,5 @@
 #include "Sound.h"
 
-#include "util/Exception.h"
-
-#include <allegro.h>
-
 namespace gamelib {
 namespace allegro {
 

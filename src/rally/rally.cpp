@@ -32,4 +32,3 @@ int main() {
         return 1;
     }
 }
-END_OF_MAIN()

@@ -6,7 +6,11 @@
 #include "util/Util.h"
 #include "util/Wait.h"
 
-#include <allegro.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -27,68 +31,65 @@ constexpr unsigned ARROW_H = 10;                              ///< arrow height
 constexpr unsigned CURRENT_Y = ARROW_Y + ARROW_H + 10;        ///< current image top position
 constexpr unsigned DESCRIPTION_Y = CURRENT_Y + SUB_SIZE + 10; ///< description top position
 
-int ARROW_FG = 0;
-int WINDOW_BG = 0;
-int TEXT_FG = 0;
-int FRAME_FG = 0;
+ALLEGRO_COLOR ARROW_FG = {};
+ALLEGRO_COLOR WINDOW_BG = {};
+ALLEGRO_COLOR TEXT_FG = {};
+ALLEGRO_COLOR FRAME_FG = {};
+enum KEY {
+    LEFT,
+    RIGHT,
+    NUM_KEYS,
+};
+
+bool keys[NUM_KEYS] = {};
 
 struct tile_set_t {
-    BITMAP* full_image;
-    std::vector<BITMAP*> tiles;
-    tile_set_t(BITMAP* img, std::vector<BITMAP*> tls)
+    ALLEGRO_BITMAP* full_image;
+    std::vector<ALLEGRO_BITMAP*> tiles;
+    tile_set_t(ALLEGRO_BITMAP* img, std::vector<ALLEGRO_BITMAP*> tls)
           : full_image(img), tiles(std::move(tls)) {}
 };
 
 template <typename MAPPER>
-void draw_arrow(BITMAP* canvas,
-      const MAPPER& mapper,
-      const unsigned cur_tile) {
+void draw_arrow(const MAPPER& mapper, const unsigned cur_tile) {
     const unsigned y = ARROW_Y;
     const unsigned x = IMAGES_X + (mapper.imageWidth() + 1) * cur_tile + mapper.imageWidth() / 2;
 
-    rectfill(canvas, x - 1, y, x, y + ARROW_H, ARROW_FG);
-    line(canvas, x - 1, y, x - 4, y + 3, ARROW_FG);
-    line(canvas, x, y, x + 3, y + 3, ARROW_FG);
+    al_draw_filled_rectangle(x - 1, y, x, y + ARROW_H, ARROW_FG);
+    al_draw_line(x - 1, y, x - 4, y + 3, ARROW_FG, 1);
+    al_draw_line(x, y, x + 3, y + 3, ARROW_FG, 1);
 }
 
 template <typename MAPPER>
-void draw_full_image(BITMAP* canvas, const MAPPER& mapper) {
-    textprintf_ex(canvas,
-          font,
-          IMAGES_X,
-          TITLE_Y,
-          TEXT_FG,
-          WINDOW_BG,
-          "number of tiles: %lu",
-          mapper.numImages());
+void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
+    al_draw_textf(font, TEXT_FG, IMAGES_X, TITLE_Y, 0, "number of tiles: %lu", mapper.numImages());
 
     auto x = IMAGES_X;
     auto y = IMAGES_Y;
     using enum_type = typename MAPPER::enum_type;
     for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
-        draw_sprite(canvas, mapper[i], x, y);
-        rect(canvas, x - 1, y - 1, x + mapper.imageWidth(), y + mapper.imageHeight(), FRAME_FG);
-        x += mapper[i]->w + 1;
+        al_draw_bitmap(mapper[i], x, y, 0);
+        al_draw_rectangle(x - 1, y - 1, x + mapper.imageWidth(), y + mapper.imageHeight(), FRAME_FG, 1);
+        x += al_get_bitmap_width(mapper[i]) + 1;
     }
 }
 
 template <typename MAPPER>
-void draw_curr_tile(BITMAP* canvas, const MAPPER& mapper, unsigned cur_tile) {
+void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur_tile) {
     const auto type = util::to_Enum<typename MAPPER::enum_type>(cur_tile);
-    textprintf_ex(canvas,
-          font,
+    al_draw_textf(font,
+          TEXT_FG,
           IMAGES_X,
           DESCRIPTION_Y,
-          TEXT_FG,
-          WINDOW_BG,
+          0,
           "current tile: %2u / type: %-30s / tile size: (%2d x %2d)",
           cur_tile,
           to_string(type).c_str(),
-          mapper[cur_tile]->w,
-          mapper[cur_tile]->h);
-    draw_sprite(canvas, mapper[cur_tile], IMAGES_X, CURRENT_Y);
+          al_get_bitmap_width(mapper[cur_tile]),
+          al_get_bitmap_width(mapper[cur_tile]));
 
-    draw_arrow(canvas, mapper, cur_tile);
+    al_draw_bitmap(mapper[cur_tile], IMAGES_X, CURRENT_Y, 0);
+    draw_arrow(mapper, cur_tile);
 }
 
 void exit_visualizer(const std::string& msg) {
@@ -109,48 +110,69 @@ void move_left(unsigned& cur_tile, const unsigned max) {
 }
 
 template <typename MAPPER>
-void show(BITMAP* canvas, const MAPPER& mapper) {
-    util::Wait wait(50);
+void show(const MAPPER& mapper,
+      const ALLEGRO_FONT* font,
+      ALLEGRO_EVENT_QUEUE* event_queue) {
     unsigned cur_tile = 0;
-    while (!key[KEY_ESC]) {
-        rectfill(canvas, 0, 0, WINDOW_W, WINDOW_H, WINDOW_BG);
+    bool done = false;
+    bool draw = true;
+    ALLEGRO_EVENT ev;
+    while (not done) {
+        al_wait_for_event(event_queue, &ev);
 
-        int key_wait = 0;
-        bool should_wait = false;
-        wait.reset();
-        if (key[KEY_RIGHT]) {
-            move_right(cur_tile, mapper.numImages());
-            should_wait = true;
-        } else if (key[KEY_LEFT]) {
-            should_wait = true;
-            move_left(cur_tile, mapper.numImages());
-        } else if (key[KEY_D]) {
-            move_right(cur_tile, mapper.numImages());
-            key_wait = KEY_D;
-        } else if (key[KEY_A]) {
-            move_left(cur_tile, mapper.numImages());
-            key_wait = KEY_A;
+        switch (ev.type) {
+            case ALLEGRO_EVENT_DISPLAY_CLOSE:
+                done = true;
+                break;
+            case ALLEGRO_EVENT_TIMER:
+                draw = true;
+                break;
+            case ALLEGRO_EVENT_KEY_DOWN:
+                switch (ev.keyboard.keycode) {
+                    case ALLEGRO_KEY_ESCAPE:
+                        done = true;
+                        break;
+                    case ALLEGRO_KEY_RIGHT:
+                        keys[RIGHT] = true;
+                        break;
+                    case ALLEGRO_KEY_LEFT:
+                        keys[RIGHT] = true;
+                        break;
+                }
+                break;
+            case ALLEGRO_EVENT_KEY_UP:
+                switch (ev.keyboard.keycode) {
+                    case ALLEGRO_KEY_RIGHT:
+                        keys[RIGHT] = false;
+                        break;
+                    case ALLEGRO_KEY_LEFT:
+                        keys[RIGHT] = false;
+                        break;
+                }
+                break;
         }
 
-        draw_full_image(canvas, mapper);
-        draw_curr_tile(canvas, mapper, cur_tile);
+        if (keys[RIGHT])
+            move_right(cur_tile, mapper.numImages());
+        if (keys[LEFT])
+            move_left(cur_tile, mapper.numImages());
 
-        vsync();
-        blit(canvas, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
-        clear_bitmap(canvas);
+        if (draw) {
+            draw = false;
+            draw_full_image(mapper, font);
+            draw_curr_tile(mapper, font, cur_tile);
 
-        if (key_wait != 0)
-            tools::hold_while_pressed(key_wait);
-        else if (should_wait)
-            wait.wait();
+            al_flip_display();
+            al_clear_to_color(WINDOW_BG);
+        }
     }
 }
 
 void initialize_colors() {
-    ARROW_FG = makecol(0x00, 0x00, 0x00);
-    WINDOW_BG = makecol(0xf8, 0xdf, 0xe2);
-    TEXT_FG = makecol(0x00, 0x00, 0x00);
-    FRAME_FG = makecol(0xff, 0x00, 0x00);
+    ARROW_FG = al_map_rgb(0x00, 0x00, 0x00);
+    WINDOW_BG = al_map_rgb(0xf8, 0xdf, 0xe2);
+    TEXT_FG = al_map_rgb(0x00, 0x00, 0x00);
+    FRAME_FG = al_map_rgb(0xff, 0x00, 0x00);
 }
 }
 
@@ -163,32 +185,58 @@ int main(int argc, char* argv[]) {
         const std::string file_name = argv[1];
         const std::string type = argv[2];
 
-        allegro_init();
-        install_mouse();
-        install_keyboard();
-        install_timer();
+        if (not al_init())
+            tools::throw_allegro_error("could not init Allegro");
 
-        set_color_depth(32);
-        if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, WINDOW_W, WINDOW_H, 0, 0) != 0)
-            tools::throw_allegro_error("set_gfx_mode");
+        al_init_font_addon();
+        al_init_ttf_addon();
+        al_init_primitives_addon();
+        al_init_image_addon();
+        al_install_keyboard();
+
+        ALLEGRO_DISPLAY* display = al_create_display(WINDOW_W, WINDOW_H);
+        if (display == nullptr)
+            tools::throw_allegro_error("could not create display");
+
+        ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
+        if (timer == nullptr)
+            tools::throw_allegro_error("could not create timer");
 
         initialize_colors();
 
-        BITMAP* canvas = create_bitmap(SCREEN_W, SCREEN_H);
+        ALLEGRO_FONT* font = al_load_font("./Stuff/font.ttf", 18, 0);
+        if (font == nullptr)
+            tools::throw_allegro_error("could not load font");
 
+        ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
+        if (event_queue == nullptr)
+            tools::throw_allegro_error("could not create event queue");
+
+        al_register_event_source(event_queue, al_get_keyboard_event_source());
+        al_register_event_source(event_queue, al_get_display_event_source(display));
+        al_register_event_source(event_queue, al_get_timer_event_source(timer));
+
+        al_start_timer(timer);
         if (type == "car") {
             using gamelib::allegro::bmp::CarSpriteMapper;
             const CarSpriteMapper mapper(file_name, 16, 16, 0, 0, 12, 1);
-            show(canvas, mapper);
+            show(mapper, font, event_queue);
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;
             const ActionMapper mapper(file_name, 32, 32, 1);
-            show(canvas, mapper);
+            show(mapper, font, event_queue);
         } else if (type == "tile") {
             using gamelib::allegro::bmp::TileMapper;
             const TileMapper mapper(file_name, 32, 32, 2);
-            show(canvas, mapper);
+            show(mapper, font, event_queue);
         }
+
+        al_stop_timer(timer);
+
+        al_destroy_event_queue(event_queue);
+        al_destroy_font(font);
+        al_destroy_timer(timer);
+        al_destroy_display(display);
 
         return 0;
     } catch (std::exception& e) {
@@ -196,4 +244,3 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 }
-END_OF_MAIN()

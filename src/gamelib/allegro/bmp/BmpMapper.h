@@ -4,7 +4,7 @@
 #include "util/Exception.h"
 #include "util/Util.h"
 
-#include <allegro.h>
+#include <allegro5/bitmap.h>
 
 #include <map>
 #include <memory>
@@ -23,7 +23,7 @@ public:
           unsigned subBmpWidth,
           unsigned subBmpHeight,
           unsigned gap)
-          : fullBitmap_(nullptr, destroy_bitmap), imageWidth_(subBmpWidth), imageHeight_(subBmpHeight) {
+          : fullBitmap_(nullptr, al_destroy_bitmap), imageWidth_(subBmpWidth), imageHeight_(subBmpHeight) {
         auto bmps = BitmapReader::readImages(fileName, subBmpWidth, subBmpHeight, gap);
         fullBitmap_.swap(bmps.first);
         using enum_t = typename std::underlying_type<ENUM>::type;
@@ -58,20 +58,20 @@ public:
     BmpMapper(BmpMapper&& rhs) noexcept = default;
     BmpMapper& operator=(BmpMapper&& rhs) noexcept = default;
 
-    [[nodiscard]] BITMAP* fullImage() const {
+    [[nodiscard]] ALLEGRO_BITMAP* fullImage() const {
         return fullBitmap_.get();
     }
 
-    BITMAP* operator[](ENUM bmpId) const {
+    ALLEGRO_BITMAP* operator[](ENUM bmpId) const {
         return image(bmpId);
     }
 
     template <typename T>
-    BITMAP* operator[](T t) const {
+    ALLEGRO_BITMAP* operator[](T t) const {
         return image(t);
     }
 
-    BITMAP* image(ENUM bmpId) const {
+    ALLEGRO_BITMAP* image(ENUM bmpId) const {
         const auto it = bmpMap_.find(bmpId);
         if (it == bmpMap_.end())
             throw util::Exception("BmpMapper - bmp not found ("
@@ -85,7 +85,7 @@ public:
     }
 
     template <typename T>
-    BITMAP* image(T bmpId) const {
+    ALLEGRO_BITMAP* image(T bmpId) const {
         auto tl = util::to_Enum<ENUM, T>(bmpId);
         return image(tl);
     }

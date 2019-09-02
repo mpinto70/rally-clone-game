@@ -4,7 +4,7 @@
 #include "util/Exception.h"
 #include "util/Util.h"
 
-#include <allegro.h>
+#include <allegro5/bitmap.h>
 
 #include <map>
 #include <memory>
@@ -26,7 +26,7 @@ public:
           const unsigned topFirst,
           const unsigned numColumns,
           const unsigned numRows)
-          : fullImage_(nullptr, destroy_bitmap), imageWidth_(spriteWidth), imageHeight_(spriteHeight) {
+          : fullImage_(nullptr, al_destroy_bitmap), imageWidth_(spriteWidth), imageHeight_(spriteHeight) {
         auto sprites = SpriteReader::readImages(fileName, spriteWidth, spriteHeight, leftFirst, topFirst, numColumns, numRows);
         fullImage_.swap(sprites.first);
         using enum_t = typename std::underlying_type<ENUM>::type;
@@ -61,20 +61,20 @@ public:
     SpriteMapper(SpriteMapper&& rhs) noexcept = default;
     SpriteMapper& operator=(SpriteMapper&& rhs) noexcept = default;
 
-    [[nodiscard]] BITMAP* fullImage() const {
+    [[nodiscard]] ALLEGRO_BITMAP* fullImage() const {
         return fullImage_.get();
     }
 
-    BITMAP* operator[](ENUM spriteId) const {
+    ALLEGRO_BITMAP* operator[](ENUM spriteId) const {
         return image(spriteId);
     }
 
     template <typename T>
-    BITMAP* operator[](T t) const {
+    ALLEGRO_BITMAP* operator[](T t) const {
         return image(t);
     }
 
-    BITMAP* image(ENUM spriteId) const {
+    ALLEGRO_BITMAP* image(ENUM spriteId) const {
         const auto it = spriteMap_.find(spriteId);
         if (it == spriteMap_.end())
             throw util::Exception("SpriteMapper - sprite not found ("
@@ -88,7 +88,7 @@ public:
     }
 
     template <typename T>
-    BITMAP* image(T bmpId) const {
+    ALLEGRO_BITMAP* image(T bmpId) const {
         auto tl = util::to_Enum<ENUM, T>(bmpId);
         return image(tl);
     }

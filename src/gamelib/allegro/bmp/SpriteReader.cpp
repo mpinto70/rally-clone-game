@@ -13,14 +13,14 @@ SpriteReader::sprites_t SpriteReader::readImages(const std::string& fileName,
       unsigned topFirst,
       unsigned numColumns,
       unsigned numRows) {
-    BITMAP_PTR fullBitmap(load_bitmap(fileName.c_str(), nullptr), destroy_bitmap);
+    BITMAP_PTR fullBitmap(al_load_bitmap(fileName.c_str()), al_destroy_bitmap);
 
     if (fullBitmap == nullptr) {
         throw util::Exception("SpriteReader - it was not possible to read the sprites from " + fileName, 1);
     }
 
-    const unsigned w = fullBitmap->w;
-    const unsigned h = fullBitmap->h;
+    const unsigned w = al_get_bitmap_width(fullBitmap.get());
+    const unsigned h = al_get_bitmap_height(fullBitmap.get());
 
     if (w < leftFirst + numColumns * spriteWidth) {
         throw util::Exception("SpriteReader - the image width ("
@@ -52,7 +52,7 @@ SpriteReader::sprites_t SpriteReader::readImages(const std::string& fileName,
     std::vector<BITMAP_PTR> sprites;
     for (unsigned r = 0, y = topFirst; r < numRows; ++r, y += spriteHeight) {
         for (unsigned c = 0, x = leftFirst; c < numColumns; ++c, x += spriteWidth) {
-            BITMAP* sub = create_sub_bitmap(fullBitmap.get(), x, y, spriteWidth, spriteHeight);
+            ALLEGRO_BITMAP* sub = al_create_sub_bitmap(fullBitmap.get(), x, y, spriteWidth, spriteHeight);
             if (sub == nullptr) {
                 throw util::Exception("SpriteReader - it was not possible to reference the sub sprite at ["
                                             + std::to_string(x)
@@ -62,7 +62,7 @@ SpriteReader::sprites_t SpriteReader::readImages(const std::string& fileName,
                                             + fileName,
                       4);
             }
-            sprites.emplace_back(sub, destroy_bitmap);
+            sprites.emplace_back(sub, al_destroy_bitmap);
         }
     }
 

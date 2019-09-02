@@ -1,6 +1,6 @@
 #include "helpers.h"
 
-#include <allegro.h>
+#include <allegro5/allegro.h>
 
 #include <cstring>
 #include <stdexcept>
@@ -17,12 +17,16 @@ void throw_file_error(const std::string& filename) {
 }
 
 void throw_allegro_error(const std::string& filename) {
-    const std::string msg = std::string(filename) + " " + allegro_error;
-    throw std::runtime_error(msg);
+    throw std::runtime_error(filename);
 }
 
 void hold_while_pressed(const int index) {
-    while (key[index])
+    ALLEGRO_KEYBOARD_STATE state;
+    al_get_keyboard_state(&state);
+
+    while (al_key_down(&state, index)) {
         usleep(1000);
+        al_get_keyboard_state(&state);
+    }
 }
 }

@@ -2,8 +2,6 @@
 
 #include "gamelib/allegro/AllegroUtil.h"
 
-#include <allegro.h>
-
 #include <memory>
 #include <string>
 #include <utility>
