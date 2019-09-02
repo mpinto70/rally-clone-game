@@ -4,7 +4,8 @@ add_library(
     BitmapReader.cpp
     SpriteReader.cpp
     CarMapper.cpp
-        CarMapper.cpp)
+    FuelMapper.cpp
+)
 
 target_include_directories(
     gamelib_allegro_bmp

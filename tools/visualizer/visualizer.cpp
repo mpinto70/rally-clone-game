@@ -2,6 +2,7 @@
 
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/CarMapper.h"
+#include "gamelib/allegro/bmp/FuelMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
 #include "util/Util.h"
 
@@ -13,6 +14,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <gamelib/allegro/bmp/FuelMapper.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -229,10 +231,15 @@ int main(int argc, char* argv[]) {
         al_start_timer(timer);
         if (type == "car") {
             using gamelib::allegro::bmp::CarMapper;
+            using gamelib::allegro::bmp::CarSource;
             using gamelib::allegro::bmp::createCarMapper;
-            using gamelib::allegro::bmp::ECarType;
-            const auto car_type = util::to_Enum<ECarType>(std::stoi(number));
+            const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
             const auto mapper = createCarMapper(file_name, car_type);
+            show(mapper, font, event_queue);
+        } else if (type == "fuel") {
+            using gamelib::allegro::bmp::createFuelMapper;
+            using gamelib::allegro::bmp::FuelMapper;
+            const auto mapper = createFuelMapper(file_name);
             show(mapper, font, event_queue);
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;

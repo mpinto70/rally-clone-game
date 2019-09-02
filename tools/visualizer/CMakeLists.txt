@@ -11,6 +11,7 @@ target_link_libraries(
     gamelib_allegro_bmp
     game
     car
+    fuel
     map
     util
     allegro
