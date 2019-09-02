@@ -42,7 +42,7 @@ Graphic::Graphic(const std::string& common_path, unsigned width, unsigned height
         bufferMap_(nullptr, al_destroy_bitmap),
         fontSystem_(nullptr, al_destroy_font),
         fontMenu_(nullptr, al_destroy_font),
-        tileMapper_(common_path + "/tileset.bmp", TILE_SIZE, TILE_SIZE, TILE_GAP),
+        tileMapper_(bmp::createTileMapper(common_path + "/tileset.bmp", bmp::TileSource::GREEN)),
         actionMapper_(common_path + "/actions.bmp", ACTION_SIZE, ACTION_SIZE, ACTION_GAP) {
     using util::Exception;
     // creates the buffer of the entire screen

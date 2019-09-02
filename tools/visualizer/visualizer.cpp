@@ -14,7 +14,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <gamelib/allegro/bmp/FuelMapper.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -68,8 +67,8 @@ void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
     auto y = IMAGES_Y;
     using enum_type = typename MAPPER::enum_type;
     for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
+        al_draw_rectangle(x, y, x + mapper.imageWidth() + 1, y + mapper.imageHeight() + 1, FRAME_FG, 1);
         al_draw_bitmap(mapper[i], x, y, 0);
-        al_draw_rectangle(x - 1, y - 1, x + mapper.imageWidth(), y + mapper.imageHeight(), FRAME_FG, 1);
         x += al_get_bitmap_width(mapper[i]) + 1;
     }
 }
@@ -247,7 +246,10 @@ int main(int argc, char* argv[]) {
             show(mapper, font, event_queue);
         } else if (type == "tile") {
             using gamelib::allegro::bmp::TileMapper;
-            const TileMapper mapper(file_name, 32, 32, 2);
+            using gamelib::allegro::bmp::TileSource;
+            using gamelib::allegro::bmp::createTileMapper;
+            const auto tile_type = util::to_Enum<TileSource>(std::stoi(number));
+            const auto mapper = createTileMapper(file_name, tile_type);
             show(mapper, font, event_queue);
         }
 

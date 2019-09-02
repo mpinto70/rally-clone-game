@@ -5,6 +5,7 @@ add_library(
     SpriteReader.cpp
     CarMapper.cpp
     FuelMapper.cpp
+    TileMapper.cpp
 )
 
 target_include_directories(
