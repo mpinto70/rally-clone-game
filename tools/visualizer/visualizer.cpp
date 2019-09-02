@@ -19,15 +19,12 @@
 #include <vector>
 
 namespace {
-constexpr unsigned WINDOW_W = 800;                     ///< map window width
-constexpr unsigned WINDOW_H = 400;                     ///< map window height
-constexpr unsigned SUB_SIZE = 32;                      ///< size of images
-constexpr unsigned IMAGES_X = 30;                      ///< images left position
-constexpr unsigned IMAGES_Y = 60;                      ///< images top position
-constexpr unsigned IMAGES_DY = 30;                     ///< vertical distance of images that don't feet the window
-constexpr unsigned TITLE_Y = 30;                       ///< title text top position
-constexpr unsigned ARROW_Y = IMAGES_Y + SUB_SIZE + 10; ///< arrow top position
-constexpr unsigned ARROW_H = 10;                       ///< arrow height
+constexpr unsigned WINDOW_W = 800; ///< map window width
+constexpr unsigned WINDOW_H = 800; ///< map window height
+constexpr unsigned IMAGES_X = 30;  ///< images left position
+constexpr unsigned IMAGES_Y = 60;  ///< images top position
+constexpr unsigned IMAGES_DY = 30; ///< vertical distance of images that don't feet the window
+constexpr unsigned TITLE_Y = 30;   ///< title text top position
 
 ALLEGRO_COLOR ARROW_FG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
@@ -56,7 +53,6 @@ void draw_arrow(const MAPPER& mapper, const unsigned cur_tile) {
     auto y = IMAGES_Y + line * (mapper.imageHeight() + IMAGES_DY) + mapper.imageHeight() + 2;
     auto x = IMAGES_X + column * (mapper.imageWidth() + 1) + mapper.imageWidth() / 2;
 
-    //al_draw_filled_rectangle(x - 1, y + 2, x, y + ARROW_H, ARROW_FG);
     al_draw_filled_triangle(x, y, x - 5, y + 5, x + 5, y + 5, ARROW_FG);
 }
 

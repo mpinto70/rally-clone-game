@@ -5,10 +5,15 @@ namespace allegro {
 namespace bmp {
 
 TileMapper createTileMapper(const std::string& file_name, TileSource type) {
+    constexpr unsigned TILE_SIZE = 24 * SIZE_MULTIPLIER;
+    constexpr unsigned NUM_COLUMNS = 7;
+    constexpr unsigned NUM_LINES = 4;
+    constexpr unsigned FIRST_LINE_Y = 112 * SIZE_MULTIPLIER;
+
     const auto idx = util::from_Enum<unsigned>(type);
-    const auto x0 = (idx % 2) * 48 * 7;
-    const auto y0 = (idx / 2) * 48 * 4 + 224;
-    return TileMapper(file_name, 48, 48, x0, y0, 7, 4);
+    const auto x0 = (idx % 2) * TILE_SIZE * NUM_COLUMNS;
+    const auto y0 = (idx / 2) * TILE_SIZE * NUM_LINES + FIRST_LINE_Y;
+    return TileMapper(file_name, TILE_SIZE, TILE_SIZE, x0, y0, NUM_COLUMNS, NUM_LINES);
 }
 
 std::string to_string(TileSource enum_value) {
