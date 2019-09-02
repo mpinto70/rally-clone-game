@@ -10,36 +10,39 @@ namespace map {
 
 /** the underlying enum type. */
 using tile_type_t = std::uint8_t;
-/** Types of tiles. */
+/** Types of tiles.
+ * TOP, LEFT, RIGHT and BOTTOM refer to the sides
+ * NW, SW, SE and NE refer to the corners
+ */
 enum class TileType : tile_type_t {
     ROAD,
     TOP_LEFT,
     TOP,
     RIGHT_TOP,
-    TILE_4,
-    TILE_5,
-    TILE_6,
+    TOP_LEFT_SE,
+    RIGHT_TOP_LEFT,
+    RIGHT_TOP_SW,
     IGNORED_1,
     LEFT,
     GRASS,
     RIGHT,
-    TILE_11,
-    TILE_12,
-    TILE_13,
+    TOP_LEFT_BOTTOM,
+    NW_SW_SE_NE,
+    BOTTOM_RIGHT_TOP,
     IGNORED_2,
     LEFT_BOTTOM,
     BOTTOM,
     BOTTOM_RIGHT,
-    TILE_18,
-    TILE_19,
-    TILE_20,
+    LEFT_BOTTOM_NE,
+    LEFT_BOTTOM_RIGHT,
+    BOTTOM_RIGHT_NW,
     BUSH,
     IGNORED_3,
     IGNORED_4,
-    TILE_24,
-    TILE_25,
-    TILE_26,
-    TILE_27,
+    TOP_SW_SE,
+    LEFT_SE_NE,
+    BOTTOM_NE_NW,
+    RIGHT_NW_SW,
     LAST,
     FIRST = ROAD
 };

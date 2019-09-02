@@ -19,16 +19,15 @@
 #include <vector>
 
 namespace {
-constexpr unsigned WINDOW_W = 800;                            ///< map window width
-constexpr unsigned WINDOW_H = 400;                            ///< map window height
-constexpr unsigned SUB_SIZE = 32;                             ///< size of images
-constexpr unsigned IMAGES_X = 30;                             ///< images left position
-constexpr unsigned IMAGES_Y = 60;                             ///< images top position
-constexpr unsigned TITLE_Y = 30;                              ///< title text top position
-constexpr unsigned ARROW_Y = IMAGES_Y + SUB_SIZE + 10;        ///< arrow top position
-constexpr unsigned ARROW_H = 10;                              ///< arrow height
-constexpr unsigned CURRENT_Y = ARROW_Y + ARROW_H + 10;        ///< current image top position
-constexpr unsigned DESCRIPTION_Y = CURRENT_Y + SUB_SIZE + 10; ///< description top position
+constexpr unsigned WINDOW_W = 800;                     ///< map window width
+constexpr unsigned WINDOW_H = 400;                     ///< map window height
+constexpr unsigned SUB_SIZE = 32;                      ///< size of images
+constexpr unsigned IMAGES_X = 30;                      ///< images left position
+constexpr unsigned IMAGES_Y = 60;                      ///< images top position
+constexpr unsigned IMAGES_DY = 30;                     ///< vertical distance of images that don't feet the window
+constexpr unsigned TITLE_Y = 30;                       ///< title text top position
+constexpr unsigned ARROW_Y = IMAGES_Y + SUB_SIZE + 10; ///< arrow top position
+constexpr unsigned ARROW_H = 10;                       ///< arrow height
 
 ALLEGRO_COLOR ARROW_FG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
@@ -51,12 +50,14 @@ struct tile_set_t {
 
 template <typename MAPPER>
 void draw_arrow(const MAPPER& mapper, const unsigned cur_tile) {
-    const unsigned y = ARROW_Y;
-    const unsigned x = IMAGES_X + (mapper.imageWidth() + 1) * cur_tile + mapper.imageWidth() / 2;
+    const auto tiles_per_line = (WINDOW_W - 2 * IMAGES_X) / (mapper.imageWidth() + 1);
+    const auto line = cur_tile / tiles_per_line;
+    const auto column = cur_tile % tiles_per_line;
+    auto y = IMAGES_Y + line * (mapper.imageHeight() + IMAGES_DY) + mapper.imageHeight() + 2;
+    auto x = IMAGES_X + column * (mapper.imageWidth() + 1) + mapper.imageWidth() / 2;
 
-    al_draw_filled_rectangle(x - 1, y, x, y + ARROW_H, ARROW_FG);
-    al_draw_line(x - 1, y, x - 4, y + 3, ARROW_FG, 1);
-    al_draw_line(x, y, x + 3, y + 3, ARROW_FG, 1);
+    //al_draw_filled_rectangle(x - 1, y + 2, x, y + ARROW_H, ARROW_FG);
+    al_draw_filled_triangle(x, y, x - 5, y + 5, x + 5, y + 5, ARROW_FG);
 }
 
 template <typename MAPPER>
@@ -67,6 +68,10 @@ void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
     auto y = IMAGES_Y;
     using enum_type = typename MAPPER::enum_type;
     for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
+        if (x + mapper.imageWidth() + IMAGES_X > WINDOW_W) {
+            x = IMAGES_X;
+            y += mapper.imageHeight() + IMAGES_DY;
+        }
         al_draw_rectangle(x, y, x + mapper.imageWidth() + 1, y + mapper.imageHeight() + 1, FRAME_FG, 1);
         al_draw_bitmap(mapper[i], x, y, 0);
         x += al_get_bitmap_width(mapper[i]) + 1;
@@ -75,11 +80,19 @@ void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
 
 template <typename MAPPER>
 void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur_tile) {
+    const auto tiles_per_line = (WINDOW_W - 2 * IMAGES_X) / (mapper.imageWidth() + 1);
+    const auto num_tile_lines = mapper.numImages() / tiles_per_line + (mapper.numImages() % tiles_per_line == 0 ? 0 : 1);
+    auto y = IMAGES_Y + num_tile_lines * (mapper.imageHeight() + IMAGES_DY);
+
+    al_draw_bitmap(mapper[cur_tile], IMAGES_X, y, 0);
+
+    y += mapper.imageHeight() + IMAGES_DY;
+
     const auto type = util::to_Enum<typename MAPPER::enum_type>(cur_tile);
     al_draw_textf(font,
           TEXT_FG,
           IMAGES_X,
-          DESCRIPTION_Y,
+          y,
           0,
           "current tile: %2u / type: %-30s / tile size: (%2d x %2d)",
           cur_tile,
@@ -87,7 +100,6 @@ void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur
           al_get_bitmap_width(mapper[cur_tile]),
           al_get_bitmap_width(mapper[cur_tile]));
 
-    al_draw_bitmap(mapper[cur_tile], IMAGES_X, CURRENT_Y, 0);
     draw_arrow(mapper, cur_tile);
 }
 
@@ -245,9 +257,9 @@ int main(int argc, char* argv[]) {
             const ActionMapper mapper(file_name, 32, 32, 1);
             show(mapper, font, event_queue);
         } else if (type == "tile") {
+            using gamelib::allegro::bmp::createTileMapper;
             using gamelib::allegro::bmp::TileMapper;
             using gamelib::allegro::bmp::TileSource;
-            using gamelib::allegro::bmp::createTileMapper;
             const auto tile_type = util::to_Enum<TileSource>(std::stoi(number));
             const auto mapper = createTileMapper(file_name, tile_type);
             show(mapper, font, event_queue);
