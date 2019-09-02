@@ -238,9 +238,9 @@ int main(int argc, char* argv[]) {
 
         al_start_timer(timer);
         if (type == "car") {
+            using gamelib::allegro::bmp::createCarMapper;
             using gamelib::allegro::bmp::CarMapper;
             using gamelib::allegro::bmp::CarSource;
-            using gamelib::allegro::bmp::createCarMapper;
             const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
             const auto mapper = createCarMapper(file_name, car_type);
             show(mapper, font, event_queue);
