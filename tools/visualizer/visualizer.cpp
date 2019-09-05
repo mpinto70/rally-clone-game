@@ -5,6 +5,7 @@
 #include "gamelib/allegro/bmp/FuelMapper.h"
 #include "gamelib/allegro/bmp/MiniMapMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
+#include "gamelib/allegro/AllegroUtil.h"
 #include "util/Util.h"
 
 #include <allegro5/allegro.h>
@@ -214,65 +215,60 @@ int main(int argc, char* argv[]) {
         al_init_image_addon();
         al_install_keyboard();
 
-        ALLEGRO_DISPLAY* display = al_create_display(WINDOW_W, WINDOW_H);
+        auto display = gamelib::allegro::DISPLAY_PTR(al_create_display(WINDOW_W, WINDOW_H), al_destroy_display);
         if (display == nullptr)
             tools::throw_allegro_error("could not create display");
 
-        ALLEGRO_TIMER* timer = al_create_timer(1.0 / 30.0);
+        auto timer = gamelib::allegro::TIMER_PTR(al_create_timer(1.0 / 30.0), al_destroy_timer);
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
 
         initialize_colors();
 
-        ALLEGRO_FONT* font = al_load_font("./Stuff/font.ttf", 18, 0);
+        auto font = gamelib::allegro::FONT_PTR(al_load_font("./Stuff/font.ttf", 18, 0), al_destroy_font);
         if (font == nullptr)
             tools::throw_allegro_error("could not load font");
 
-        ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
+        auto event_queue = gamelib::allegro::EVENT_QUEUE_PTR(al_create_event_queue(), al_destroy_event_queue);
         if (event_queue == nullptr)
             tools::throw_allegro_error("could not create event queue");
 
-        al_register_event_source(event_queue, al_get_keyboard_event_source());
-        al_register_event_source(event_queue, al_get_display_event_source(display));
-        al_register_event_source(event_queue, al_get_timer_event_source(timer));
+        al_register_event_source(event_queue.get(), al_get_keyboard_event_source());
+        al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
+        al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
 
-        al_start_timer(timer);
+        al_start_timer(timer.get());
         if (type == "car") {
             using gamelib::allegro::bmp::createCarMapper;
             using gamelib::allegro::bmp::CarMapper;
             using gamelib::allegro::bmp::CarSource;
             const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
             const auto mapper = createCarMapper(file_name, car_type);
-            show(mapper, font, event_queue);
+            show(mapper, font.get(), event_queue.get());
         } else if (type == "fuel") {
             using gamelib::allegro::bmp::createFuelMapper;
             using gamelib::allegro::bmp::FuelMapper;
             const auto mapper = createFuelMapper(file_name);
-            show(mapper, font, event_queue);
+            show(mapper, font.get(), event_queue.get());
         } else if (type == "minimap") {
             using gamelib::allegro::bmp::createMiniMapMapper;
             using gamelib::allegro::bmp::MiniMapMapper;
             const auto mapper = createMiniMapMapper(file_name);
-            show(mapper, font, event_queue);
+            show(mapper, font.get(), event_queue.get());
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;
             const ActionMapper mapper(file_name, 32, 32, 1);
-            show(mapper, font, event_queue);
+            show(mapper, font.get(), event_queue.get());
         } else if (type == "tile") {
             using gamelib::allegro::bmp::createTileMapper;
             using gamelib::allegro::bmp::TileMapper;
             using gamelib::allegro::bmp::TileSource;
             const auto tile_type = util::to_Enum<TileSource>(std::stoi(number));
             const auto mapper = createTileMapper(file_name, tile_type);
-            show(mapper, font, event_queue);
+            show(mapper, font.get(), event_queue.get());
         }
 
-        al_stop_timer(timer);
-
-        al_destroy_event_queue(event_queue);
-        al_destroy_font(font);
-        al_destroy_timer(timer);
-        al_destroy_display(display);
+        al_stop_timer(timer.get());
 
         return 0;
     } catch (std::exception& e) {
