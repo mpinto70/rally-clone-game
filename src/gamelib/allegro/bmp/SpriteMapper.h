@@ -14,8 +14,6 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-constexpr unsigned SIZE_MULTIPLIER = 3;
-
 template <typename ENUM>
 class SpriteMapper {
 public:

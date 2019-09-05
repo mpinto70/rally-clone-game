@@ -11,6 +11,8 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
+constexpr unsigned SIZE_MULTIPLIER = 3;
+
 class SpriteReader {
 public:
     using sprites_t = std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>>;
@@ -58,7 +60,21 @@ public:
           unsigned leftFirst,
           unsigned topFirst,
           unsigned numColumns,
-          unsigned numRows);
+          unsigned numRows,
+          unsigned gapX = 0,
+          unsigned gapY = 0);
+
+    static BITMAP_PTR readFullImage(const std::string& fileName);
+
+    static std::vector<BITMAP_PTR> readImages(BITMAP_PTR& fullImage,
+          unsigned spriteWidth,
+          unsigned spriteHeight,
+          unsigned leftFirst,
+          unsigned topFirst,
+          unsigned numColumns,
+          unsigned numRows,
+          unsigned gapX = 0,
+          unsigned gapY = 0);
 };
 }
 }
