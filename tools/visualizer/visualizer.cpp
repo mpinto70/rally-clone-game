@@ -1,11 +1,11 @@
 #include "../tools/util/helpers.h"
 
+#include "gamelib/allegro/AllegroUtil.h"
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/FuelMapper.h"
 #include "gamelib/allegro/bmp/MiniMapMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
-#include "gamelib/allegro/AllegroUtil.h"
 #include "util/Util.h"
 
 #include <allegro5/allegro.h>
@@ -27,6 +27,7 @@ constexpr unsigned IMAGES_X = 30;  ///< images left position
 constexpr unsigned IMAGES_Y = 60;  ///< images top position
 constexpr unsigned IMAGES_DY = 30; ///< vertical distance of images that don't feet the window
 constexpr unsigned TITLE_Y = 30;   ///< title text top position
+constexpr unsigned IMAGE_GAP = 1;  ///< distance between images
 
 ALLEGRO_COLOR ARROW_FG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
@@ -40,20 +41,37 @@ enum KEY {
 
 bool keys[NUM_KEYS] = {};
 
-struct tile_set_t {
-    ALLEGRO_BITMAP* full_image;
-    std::vector<ALLEGRO_BITMAP*> tiles;
-    tile_set_t(ALLEGRO_BITMAP* img, std::vector<ALLEGRO_BITMAP*> tls)
-          : full_image(img), tiles(std::move(tls)) {}
+struct ImagePosition {
+    unsigned x, y, maxY;
 };
 
 template <typename MAPPER>
-void draw_arrow(const MAPPER& mapper, const unsigned cur_tile) {
-    const auto tiles_per_line = (WINDOW_W - 2 * IMAGES_X) / (mapper.imageWidth() + 1);
-    const auto line = cur_tile / tiles_per_line;
-    const auto column = cur_tile % tiles_per_line;
-    auto y = IMAGES_Y + line * (mapper.imageHeight() + IMAGES_DY) + mapper.imageHeight() + 2;
-    auto x = IMAGES_X + column * (mapper.imageWidth() + 1) + mapper.imageWidth() / 2;
+ImagePosition position(const MAPPER& mapper, unsigned cur_tile) {
+    auto x = IMAGES_X;
+    auto y = IMAGES_Y;
+    unsigned max_y = mapper.imageHeight(0);
+    using enum_type = typename MAPPER::enum_type;
+    for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i <= cur_tile; ++i) {
+        if (x + mapper.imageWidth(i) + IMAGES_X + IMAGE_GAP > WINDOW_W) {
+            x = IMAGES_X;
+            y += max_y + IMAGES_DY;
+            max_y = mapper.imageHeight(i);
+        }
+        if (i == cur_tile)
+            break;
+
+        x += mapper.imageWidth(i) + IMAGE_GAP;
+        max_y = std::max(max_y, mapper.imageHeight(i));
+    }
+
+    return ImagePosition{ x, y, max_y };
+}
+
+template <typename MAPPER>
+void draw_arrow(const MAPPER& mapper, unsigned cur_tile) {
+    auto pos = position(mapper, cur_tile);
+    auto x = pos.x + mapper.imageWidth(cur_tile) / 2;
+    auto y = pos.y + mapper.imageHeight(cur_tile) + 2;
 
     al_draw_filled_triangle(x, y, x - 5, y + 5, x + 5, y + 5, ARROW_FG);
 }
@@ -62,29 +80,25 @@ template <typename MAPPER>
 void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
     al_draw_textf(font, TEXT_FG, IMAGES_X, TITLE_Y, 0, "number of tiles: %lu", mapper.numImages());
 
-    auto x = IMAGES_X;
-    auto y = IMAGES_Y;
     using enum_type = typename MAPPER::enum_type;
     for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
-        if (x + mapper.imageWidth() + IMAGES_X > WINDOW_W) {
-            x = IMAGES_X;
-            y += mapper.imageHeight() + IMAGES_DY;
-        }
-        al_draw_rectangle(x, y, x + mapper.imageWidth() + 1, y + mapper.imageHeight() + 1, FRAME_FG, 1);
+        const auto pos = position(mapper, i);
+        const auto x = pos.x;
+        const auto y = pos.y;
+
+        al_draw_rectangle(x, y, x + mapper.imageWidth(i) + 1, y + mapper.imageHeight(i) + 1, FRAME_FG, 1);
         al_draw_bitmap(mapper[i], x, y, 0);
-        x += al_get_bitmap_width(mapper[i]) + 1;
     }
 }
 
 template <typename MAPPER>
 void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur_tile) {
-    const auto tiles_per_line = (WINDOW_W - 2 * IMAGES_X) / (mapper.imageWidth() + 1);
-    const auto num_tile_lines = mapper.numImages() / tiles_per_line + (mapper.numImages() % tiles_per_line == 0 ? 0 : 1);
-    auto y = IMAGES_Y + num_tile_lines * (mapper.imageHeight() + IMAGES_DY);
+    const auto pos = position(mapper, mapper.numImages() - 1);
+    auto y = pos.y + pos.maxY + IMAGES_DY;
 
     al_draw_bitmap(mapper[cur_tile], IMAGES_X, y, 0);
 
-    y += mapper.imageHeight() + IMAGES_DY;
+    y += pos.maxY + IMAGES_DY;
 
     const auto type = util::to_Enum<typename MAPPER::enum_type>(cur_tile);
     al_draw_textf(font,
@@ -92,11 +106,11 @@ void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur
           IMAGES_X,
           y,
           0,
-          "current tile: %2u / type: %-30s / tile size: (%2d x %2d)",
+          "current tile: %2u / tile size: (%u x %u) / type: %s",
           cur_tile,
-          to_string(type).c_str(),
-          al_get_bitmap_width(mapper[cur_tile]),
-          al_get_bitmap_width(mapper[cur_tile]));
+          mapper.imageWidth(cur_tile),
+          mapper.imageHeight(cur_tile),
+          to_string(type).c_str());
 
     draw_arrow(mapper, cur_tile);
 }
@@ -239,9 +253,9 @@ int main(int argc, char* argv[]) {
 
         al_start_timer(timer.get());
         if (type == "car") {
-            using gamelib::allegro::bmp::createCarMapper;
             using gamelib::allegro::bmp::CarMapper;
             using gamelib::allegro::bmp::CarSource;
+            using gamelib::allegro::bmp::createCarMapper;
             const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
             const auto mapper = createCarMapper(file_name, car_type);
             show(mapper, font.get(), event_queue.get());
@@ -256,8 +270,8 @@ int main(int argc, char* argv[]) {
             const auto mapper = createMiniMapMapper(file_name);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "action") {
-            using gamelib::allegro::bmp::createActionMapper;
             using gamelib::allegro::bmp::ActionMapper;
+            using gamelib::allegro::bmp::createActionMapper;
             const auto mapper = createActionMapper(file_name);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "tile") {

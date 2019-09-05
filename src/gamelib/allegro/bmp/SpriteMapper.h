@@ -86,8 +86,8 @@ public:
     }
 
     template <typename T>
-    ALLEGRO_BITMAP* image(T bmpId) const {
-        auto tl = util::to_Enum<ENUM, T>(bmpId);
+    ALLEGRO_BITMAP* image(T imgId) const {
+        auto tl = util::to_Enum<ENUM, T>(imgId);
         return image(tl);
     }
 
@@ -95,11 +95,11 @@ public:
         return spriteMap_.size();
     }
 
-    [[nodiscard]] unsigned imageWidth() const {
+    [[nodiscard]] unsigned imageWidth(size_t /*imgId*/) const {
         return imageHeight_;
     }
 
-    [[nodiscard]] unsigned imageHeight() const {
+    [[nodiscard]] unsigned imageHeight(size_t /*imgId*/) const {
         return imageWidth_;
     }
 
