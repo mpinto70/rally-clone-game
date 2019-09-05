@@ -63,10 +63,6 @@ public:
     SpriteMapper(SpriteMapper&& rhs) noexcept = default;
     SpriteMapper& operator=(SpriteMapper&& rhs) noexcept = default;
 
-    [[nodiscard]] ALLEGRO_BITMAP* fullImage() const {
-        return fullImage_.get();
-    }
-
     ALLEGRO_BITMAP* operator[](ENUM spriteId) const {
         return image(spriteId);
     }

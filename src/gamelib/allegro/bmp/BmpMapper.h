@@ -58,10 +58,6 @@ public:
     BmpMapper(BmpMapper&& rhs) noexcept = default;
     BmpMapper& operator=(BmpMapper&& rhs) noexcept = default;
 
-    [[nodiscard]] ALLEGRO_BITMAP* fullImage() const {
-        return fullBitmap_.get();
-    }
-
     ALLEGRO_BITMAP* operator[](ENUM bmpId) const {
         return image(bmpId);
     }
