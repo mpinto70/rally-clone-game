@@ -256,8 +256,9 @@ int main(int argc, char* argv[]) {
             const auto mapper = createMiniMapMapper(file_name);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "action") {
+            using gamelib::allegro::bmp::createActionMapper;
             using gamelib::allegro::bmp::ActionMapper;
-            const ActionMapper mapper(file_name, 32, 32, 1);
+            const auto mapper = createActionMapper(file_name);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "tile") {
             using gamelib::allegro::bmp::createTileMapper;

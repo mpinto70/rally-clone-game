@@ -11,9 +11,6 @@ namespace gamelib {
 namespace allegro {
 
 static constexpr unsigned TILE_SIZE = 32;    ///< tile size in pixels
-static constexpr unsigned TILE_GAP = 2;      ///< gap between tiles
-static constexpr unsigned ACTION_SIZE = 32;  ///< action size in pixels
-static constexpr unsigned ACTION_GAP = 1;    ///< gap between actions
 static constexpr unsigned SIDE_BAR_W = 200;  ///< width of the side bar
 static constexpr unsigned BOTTOM_BAR_H = 50; ///< width of the side bar
 
@@ -43,7 +40,7 @@ Graphic::Graphic(const std::string& common_path, unsigned width, unsigned height
         fontSystem_(nullptr, al_destroy_font),
         fontMenu_(nullptr, al_destroy_font),
         tileMapper_(bmp::createTileMapper(common_path + "/tileset.bmp", bmp::TileSource::GREEN)),
-        actionMapper_(common_path + "/actions.bmp", ACTION_SIZE, ACTION_SIZE, ACTION_GAP) {
+        actionMapper_(bmp::createActionMapper(common_path + "/actions.bmp")) {
     using util::Exception;
     // creates the buffer of the entire screen
     buffer_.reset(al_create_bitmap(width, height));
