@@ -19,8 +19,7 @@ void MapIO::write(const std::string& fileName, const Map& map) {
 }
 
 template <typename T>
-static T readField(std::istream& is,
-      const std::string& fieldName) {
+static T readField(std::istream& is, const std::string& fieldName) {
     T t;
     char* buffer = reinterpret_cast<char*>(&t);
     is.read(buffer, sizeof(T));
@@ -63,8 +62,7 @@ static void writeField(std::ostream& os,
     }
 }
 
-void MapIO::write(std::ostream& os,
-      const Map& map) {
+void MapIO::write(std::ostream& os, const Map& map) {
     writeField(os, map.width(), "width");
     writeField(os, map.height(), "height");
     const auto qttyTiles = map.width() * map.height();

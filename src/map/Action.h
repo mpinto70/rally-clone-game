@@ -14,6 +14,7 @@ using action_t = std::uint8_t;
 /** Types of actions. */
 enum class Action : action_t {
     NONE,
+    PLAYER,
     ENEMY_NORTH,
     ENEMY_EAST,
     ENEMY_SOUTH,

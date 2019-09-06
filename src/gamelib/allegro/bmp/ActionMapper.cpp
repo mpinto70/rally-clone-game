@@ -11,6 +11,11 @@ ActionMapper::ActionMapper(const std::string& fileName)
     constexpr unsigned ROAD_SIZE = SIZE_MULTIPLIER * 24;
     auto road = SpriteReader::readImages(fullImage_, ROAD_SIZE, ROAD_SIZE, ROAD_X, ROAD_Y, 1, 1);
 
+    constexpr unsigned PLAYER_X = 0;
+    constexpr unsigned PLAYER_Y = 0;
+    constexpr unsigned PLAYER_SIZE = SIZE_MULTIPLIER * 16;
+    auto player = SpriteReader::readImages(fullImage_, PLAYER_SIZE, PLAYER_SIZE, PLAYER_X, PLAYER_Y, 1, 1);
+
     constexpr unsigned BANG_X = 0;
     constexpr unsigned BANG_Y = SIZE_MULTIPLIER * 16 * 5; // 5 = 4 cars + 1 fuel
     constexpr unsigned BANG_SIZE = SIZE_MULTIPLIER * 24;
@@ -29,7 +34,7 @@ ActionMapper::ActionMapper(const std::string& fileName)
 
     using enum_t = typename std::underlying_type<enum_type>::type;
 
-    const auto qttyRead = road.size() + bang_rocks_smoke.size() + cars.size() + fuels.size();
+    const auto qttyRead = road.size() + player.size() + bang_rocks_smoke.size() + cars.size() + fuels.size();
     const auto qttyExpected = static_cast<enum_t>(enum_type::LAST);
     if (qttyRead != qttyExpected) {
         throw util::Exception("ActionMapper - number of sprites read ("
@@ -47,6 +52,8 @@ ActionMapper::ActionMapper(const std::string& fileName)
 
     spriteMap_.insert(std::make_pair(enum_type::NONE, std::move(road[0])));
 
+    spriteMap_.insert(std::make_pair(enum_type::PLAYER, std::move(player[0])));
+
     spriteMap_.insert(std::make_pair(enum_type::BANG, std::move(bang_rocks_smoke[0])));
     spriteMap_.insert(std::make_pair(enum_type::STONE_1, std::move(bang_rocks_smoke[1])));
     spriteMap_.insert(std::make_pair(enum_type::STONE_2, std::move(bang_rocks_smoke[2])));
@@ -62,6 +69,8 @@ ActionMapper::ActionMapper(const std::string& fileName)
     spriteMap_.insert(std::make_pair(enum_type::FUEL_L, std::move(fuels[2])));
 
     sizes_[enum_type::NONE] = ROAD_SIZE;
+
+    sizes_[enum_type::PLAYER] = PLAYER_SIZE;
 
     sizes_[enum_type::BANG] = BANG_SIZE;
     sizes_[enum_type::STONE_1] = BANG_SIZE;

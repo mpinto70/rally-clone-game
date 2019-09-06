@@ -7,6 +7,7 @@ namespace map {
 std::string to_string(Action enum_value) {
     switch (enum_value) {
         CASE_ENUM_TO_STRING(Action::NONE);
+        CASE_ENUM_TO_STRING(Action::PLAYER);
         CASE_ENUM_TO_STRING(Action::ENEMY_NORTH);
         CASE_ENUM_TO_STRING(Action::ENEMY_EAST);
         CASE_ENUM_TO_STRING(Action::ENEMY_SOUTH);
