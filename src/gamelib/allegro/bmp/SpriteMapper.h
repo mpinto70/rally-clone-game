@@ -93,6 +93,14 @@ public:
         return spriteMap_.size();
     }
 
+    [[nodiscard]] unsigned imageWidth(enum_type /*spriteId*/) const {
+        return imageHeight_;
+    }
+
+    [[nodiscard]] unsigned imageHeight(enum_type /*spriteId*/) const {
+        return imageWidth_;
+    }
+
     [[nodiscard]] unsigned imageWidth(size_t /*imgId*/) const {
         return imageHeight_;
     }

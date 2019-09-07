@@ -64,8 +64,7 @@ public:
         return spriteMap_.size();
     }
 
-    [[nodiscard]] unsigned imageWidth(size_t imgId) const {
-        const auto spriteId = map::to_EAction(imgId);
+    [[nodiscard]] unsigned imageWidth(enum_type spriteId) const {
         const auto it = sizes_.find(spriteId);
         if (it == sizes_.end())
             throw util::Exception("ActionMapper - size not found ("
@@ -76,6 +75,15 @@ public:
         else {
             return it->second;
         }
+    }
+
+    [[nodiscard]] unsigned imageHeight(enum_type spriteId) const {
+        return imageWidth(spriteId);
+    }
+
+    [[nodiscard]] unsigned imageWidth(size_t imgId) const {
+        const auto spriteId = map::to_EAction(imgId);
+        return imageWidth(spriteId);
     }
 
     [[nodiscard]] unsigned imageHeight(size_t imgId) const {
