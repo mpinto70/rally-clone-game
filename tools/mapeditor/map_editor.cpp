@@ -100,28 +100,54 @@ map::Map createOrLoadMap(const std::string& stagePath) {
     }
 }
 
+void drawGrid(const map::Map& gameMap,
+      const int& x0,
+      const int& y0) {
+    for (map::map_dimension_t i = 0; i < gameMap.height(); ++i) {
+        const int Y = i * TILE_SIZE - y0;
+        if (Y > int(MAP_HEIGHT))
+            break;
+        if (Y < 0)
+            continue;
+        al_draw_line(0, Y, MAP_WIDTH, Y, MAP_FG, 1);
+    }
+    for (map::map_dimension_t x = 0; x < gameMap.width(); ++x) {
+        const int X = x * TILE_SIZE - x0;
+        if (X > int(MAP_WIDTH))
+            break;
+        if (X < 0)
+            continue;
+
+        al_draw_line(X, 0, X, MAP_HEIGHT, MAP_FG, 1);
+    }
+}
+
 void drawMap(const map::Map& gameMap,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
       const gamelib::allegro::bmp::ActionMapper&,
       const gamelib::allegro::bmp::CarMapper&,
-      const gamelib::allegro::bmp::CarMapper&) {
+      const gamelib::allegro::bmp::CarMapper&,
+      const int& x0,
+      const int& y0) {
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
-    const auto tileWidth = tileMapper.imageWidth(map::TileType::ROAD);
-    const auto tileHeight = tileMapper.imageHeight(map::TileType::ROAD);
-    for (map::map_dimension_t y = 0; y < gameMap.height(); ++y) {
-        const auto Y = y * tileHeight;
-        if (Y > MAP_HEIGHT)
+    const unsigned begin_j = x0 < 0 ? 0 : x0 / (TILE_SIZE);
+    const unsigned begin_i = y0 < 0 ? 0 : y0 / (TILE_SIZE);
+    for (map::map_dimension_t i = begin_i; i < gameMap.height(); ++i) {
+        const int Y = i * TILE_SIZE - y0;
+        if (Y > int(MAP_HEIGHT))
             break;
-        for (map::map_dimension_t x = 0; x < gameMap.width(); ++x) {
-            const auto X = x * tileWidth;
-            if (X > MAP_WIDTH)
+        for (map::map_dimension_t x = begin_j; x < gameMap.width(); ++x) {
+            const int X = x * TILE_SIZE - x0;
+            if (X > int(MAP_WIDTH))
                 break;
-            const auto& tile = gameMap(x, y);
+            const auto& tile = gameMap(x, i);
             const auto bmp = tileMapper[tile.type()];
             al_draw_bitmap(bmp, X, Y, 0);
         }
     }
+
+    drawGrid(gameMap, x0, y0);
 }
 
 void drawMiniMap(const map::Map& gameMap) {
@@ -205,6 +231,7 @@ void loop(map::Map& gameMap,
 
     bool done = false;
     bool shouldDraw = true;
+    int x0 = 20, y0 = 10;
     ALLEGRO_EVENT ev;
     while (not done) {
         al_wait_for_event(&event_queue, &ev);
@@ -227,7 +254,7 @@ void loop(map::Map& gameMap,
 
         if (shouldDraw) {
             shouldDraw = false;
-            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper);
+            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*actionsCanvas, drawActions, actionMapper);
             drawCanvas(*tilesCanvas, drawTiles, tileMapper);
