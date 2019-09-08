@@ -128,7 +128,7 @@ void drawGrid(const map::Map& gameMap,
 
 void drawMap(const map::Map& gameMap,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
-      const gamelib::allegro::bmp::ActionMapper&,
+      const gamelib::allegro::bmp::ActionMapper& actionMapper,
       const gamelib::allegro::bmp::CarMapper&,
       const gamelib::allegro::bmp::CarMapper&,
       const int& x0,
@@ -141,13 +141,19 @@ void drawMap(const map::Map& gameMap,
         const int Y = i * TILE_SIZE - y0;
         if (Y > int(MAP_HEIGHT))
             break;
-        for (map::map_dimension_t x = begin_j; x < gameMap.width(); ++x) {
-            const int X = x * TILE_SIZE - x0;
+        for (map::map_dimension_t j = begin_j; j < gameMap.width(); ++j) {
+            const int X = j * TILE_SIZE - x0;
             if (X > int(MAP_WIDTH))
                 break;
-            const auto& tile = gameMap(x, i);
+            const auto& tile = gameMap(j, i);
             const auto bmp = tileMapper[tile.type()];
             al_draw_bitmap(bmp, X, Y, 0);
+            if (tile.action() != map::Action::NONE) {
+                auto actionImg = actionMapper[tile.action()];
+                const int XA = X + (TILE_SIZE - actionMapper.imageWidth(tile.action())) / 2;
+                const int YA = Y + (TILE_SIZE - actionMapper.imageHeight(tile.action())) / 2;
+                al_draw_bitmap(actionImg, XA, YA, 0);
+            }
         }
     }
 
