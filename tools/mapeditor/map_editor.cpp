@@ -100,17 +100,16 @@ map::Map createOrLoadMap(const std::string& stagePath) {
     }
 }
 
-void draw(const gamelib::allegro::bmp::ActionMapper&) {
-    al_draw_filled_rectangle(ACTIONS_X, ACTIONS_Y, ACTIONS_X + ACTIONS_WIDTH, ACTIONS_Y + ACTIONS_HEIGHT, ACTION_BG);
+void drawActions(const gamelib::allegro::bmp::ActionMapper&) {
+    al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTION_BG);
 }
 
-void draw(const gamelib::allegro::bmp::TileMapper&) {
-    al_draw_filled_rectangle(TILES_X, TILES_Y, TILES_X + TILES_WIDTH, TILES_Y + TILES_HEIGHT, TILES_BG);
+void drawTiles(const gamelib::allegro::bmp::TileMapper&) {
+    al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
 }
 
 void drawHelp(const ALLEGRO_FONT& font) {
-    constexpr int STEP_Y = 22;
-    al_draw_filled_rectangle(HELP_X, HELP_Y, HELP_X + HELP_WIDTH, HELP_Y + HELP_HEIGHT, HELP_BG);
+    al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
 
     const std::vector<std::string> manual = {
         "ESC - closes the editor",
@@ -128,23 +127,20 @@ void drawHelp(const ALLEGRO_FONT& font) {
         "Ctrl+V + left click - paste copied region to point",
         "X - cancel region selected"
     };
-    for (size_t i = 0; i < manual.size(); ++i) {
-        const unsigned x = HELP_X + 20;
-        const unsigned y = (i + 1) * STEP_Y + HELP_Y;
 
-        al_draw_textf(&font, HELP_FG, x, y, 0, "%s", manual[i].c_str());
+    constexpr int STEP_Y = 22;
+    for (size_t i = 0; i < manual.size(); ++i) {
+        const unsigned y = (i + 1) * STEP_Y;
+
+        al_draw_textf(&font, HELP_FG, 20, y, 0, "%s", manual[i].c_str());
     }
 }
 
-void draw(const map::Map& gameMap,
+void drawMap(const map::Map& gameMap,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
       const gamelib::allegro::bmp::ActionMapper&,
       const gamelib::allegro::bmp::CarMapper&,
-      const gamelib::allegro::bmp::CarMapper&,
-      ALLEGRO_DISPLAY& display) {
-    auto canvas = gamelib::allegro::BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
-    al_set_target_bitmap(canvas.get());
-
+      const gamelib::allegro::bmp::CarMapper&) {
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
     const auto tileWidth = tileMapper.imageWidth(map::TileType::ROAD);
@@ -162,20 +158,16 @@ void draw(const map::Map& gameMap,
             al_draw_bitmap(bmp, X, Y, 0);
         }
     }
-
-    al_set_target_bitmap(al_get_backbuffer(&display));
-
-    al_draw_bitmap(canvas.get(), MAP_X, MAP_Y, 0);
 }
 
 void drawMiniMap(const map::Map& gameMap) {
-    al_draw_filled_rectangle(MINIMAP_X, MINIMAP_Y, MINIMAP_X + MINIMAP_WIDTH, MINIMAP_Y + MINIMAP_HEIGHT, MINIMAP_BG);
+    al_draw_filled_rectangle(0, 0, MINIMAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_BG);
     for (map::map_dimension_t y = 0; y < gameMap.height(); ++y) {
         for (map::map_dimension_t x = 0; x < gameMap.width(); ++x) {
             const auto& tile = gameMap(x, y);
             if (tile.type() == map::TileType::ROAD) {
-                const auto X = x * MINIMAP_TILE_SIZE + MINIMAP_X + 5;
-                const auto Y = y * MINIMAP_TILE_SIZE + MINIMAP_Y + 5;
+                const auto X = x * MINIMAP_TILE_SIZE + 5;
+                const auto Y = y * MINIMAP_TILE_SIZE + 5;
 
                 al_draw_filled_rectangle(X, Y, X + MINIMAP_TILE_SIZE - 1, Y + MINIMAP_TILE_SIZE - 1, MINIMAP_FG);
             }
@@ -184,7 +176,13 @@ void drawMiniMap(const map::Map& gameMap) {
 }
 
 void drawStatus() {
-    al_draw_filled_rectangle(STATUS_X, STATUS_Y, STATUS_X + STATUS_WIDTH, STATUS_Y + STATUS_HEIGHT, STATUS_FG);
+    al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_FG);
+}
+
+template <typename F, typename... ARGS>
+void drawCanvas(ALLEGRO_BITMAP& canvas, F f, ARGS&... args) {
+    al_set_target_bitmap(&canvas);
+    f(std::forward<ARGS>(args)...);
 }
 
 void loop(map::Map& gameMap,
@@ -195,6 +193,16 @@ void loop(map::Map& gameMap,
       const ALLEGRO_FONT& font,
       ALLEGRO_EVENT_QUEUE& event_queue,
       ALLEGRO_DISPLAY& display) {
+    using gamelib::allegro::BITMAP_PTR;
+    auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
+    auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), al_destroy_bitmap);
+    auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), al_destroy_bitmap);
+    auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), al_destroy_bitmap);
+    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
+    auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), al_destroy_bitmap);
+
+    drawCanvas(*helpCanvas, drawHelp, font); // this is cached, because it does not change
+
     bool done = false;
     bool shouldDraw = true;
     ALLEGRO_EVENT ev;
@@ -219,12 +227,20 @@ void loop(map::Map& gameMap,
 
         if (shouldDraw) {
             shouldDraw = false;
-            draw(actionMapper);
-            draw(tileMapper);
-            drawHelp(font);
-            drawMiniMap(gameMap);
-            drawStatus();
-            draw(gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, display);
+            drawCanvas(*actionsCanvas, drawActions, actionMapper);
+            drawCanvas(*tilesCanvas, drawTiles, tileMapper);
+            drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
+            drawCanvas(*statusCanvas, drawStatus);
+            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper);
+
+            al_set_target_bitmap(al_get_backbuffer(&display));
+
+            al_draw_bitmap(actionsCanvas.get(), ACTIONS_X, ACTIONS_Y, 0);
+            al_draw_bitmap(tilesCanvas.get(), TILES_X, TILES_Y, 0);
+            al_draw_bitmap(helpCanvas.get(), HELP_X, HELP_Y, 0);
+            al_draw_bitmap(minimapCanvas.get(), MINIMAP_X, MINIMAP_Y, 0);
+            al_draw_bitmap(statusCanvas.get(), STATUS_X, STATUS_Y, 0);
+            al_draw_bitmap(mapCanvas.get(), MAP_X, MAP_Y, 0);
 
             al_flip_display();
             al_clear_to_color(WINDOW_BG);
