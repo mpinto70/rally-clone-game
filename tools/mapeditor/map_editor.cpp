@@ -45,7 +45,7 @@ constexpr unsigned MINIMAP_HEIGHT = FULL_MAP_ROWS * MINIMAP_TILE_SIZE + 10;   //
 constexpr unsigned TILES_X = MINIMAP_X;                                       ///< tiles view left side
 constexpr unsigned TILES_Y = MINIMAP_Y + MINIMAP_HEIGHT + 5;                  ///< tiles view top side
 constexpr unsigned TILES_WIDTH = MINIMAP_WIDTH;                               ///< map view width in pixels
-constexpr unsigned TILES_HEIGHT = 7 * TILE_SIZE;                              ///< map view height in pixels
+constexpr unsigned TILES_HEIGHT = 8 * TILE_SIZE;                              ///< map view height in pixels
 constexpr unsigned ACTIONS_X = MAP_X;                                         ///< actions view left side
 constexpr unsigned ACTIONS_Y = MAP_Y + MAP_HEIGHT + 5;                        ///< actions view top side
 constexpr unsigned ACTIONS_ROWS = 4;                                          ///< actions view height in columns
@@ -189,8 +189,21 @@ void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const 
     }
 }
 
-void drawTiles(const gamelib::allegro::bmp::TileMapper&) {
+void drawTiles(const gamelib::allegro::bmp::TileMapper& tilesMapper) {
     al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
+
+    unsigned x = 5;
+    unsigned y = 5;
+    for (auto e : util::EnumIterator<map::TileType>()) {
+        const auto tile = tilesMapper[e];
+        if (x + TILE_SIZE + 5 > TILES_WIDTH) {
+            x = 5;
+            y += TILE_SIZE + 5;
+        }
+        al_draw_bitmap(tile, x, y, 0);
+
+        x += TILE_SIZE + 5;
+    }
 }
 
 void drawStatus() {
