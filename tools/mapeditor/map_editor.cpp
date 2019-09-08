@@ -53,9 +53,9 @@ constexpr unsigned TILES_WIDTH = MAP_WIDTH;                                   //
 constexpr unsigned TILES_HEIGHT = TILES_ROWS * TILE_SIZE;                     ///< actions view height in pixels
 constexpr unsigned HELP_X = MAP_X;                                            ///< help view left side
 constexpr unsigned HELP_Y = TILES_Y + TILES_HEIGHT + 5;                       ///< help view top side
-constexpr unsigned HELP_LINES = 16;                                             ///< help view height in columns
+constexpr unsigned HELP_LINES = 16;                                           ///< help view height in columns
 constexpr unsigned HELP_WIDTH = MAP_WIDTH + MINIMAP_WIDTH + 5;                ///< help view width in pixels
-constexpr unsigned HELP_HEIGHT = HELP_LINES * 22;                       ///< help view height in pixels
+constexpr unsigned HELP_HEIGHT = HELP_LINES * 22;                             ///< help view height in pixels
 constexpr unsigned STATUS_X = ACTIONS_X;                                      ///< status view left side
 constexpr unsigned STATUS_Y = ACTIONS_Y + ACTIONS_HEIGHT + 5;                 ///< status view top side
 constexpr unsigned STATUS_WIDTH = ACTIONS_WIDTH;                              ///< status view width in pixels
@@ -458,6 +458,11 @@ void loop(map::Map& gameMap,
                 }
                 if (ev.mouse.button & 2) {
                     handleRightClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
+                }
+                break;
+            case ALLEGRO_EVENT_MOUSE_AXES:
+                if (ev.mouse.dz != 0) {
+                    y0 -= ev.mouse.dz * int(TILE_SIZE / 3);
                 }
                 break;
         }
