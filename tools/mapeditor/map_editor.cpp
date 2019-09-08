@@ -206,8 +206,11 @@ void drawTiles(const gamelib::allegro::bmp::TileMapper& tilesMapper) {
     }
 }
 
-void drawStatus() {
+void drawStatus(const ALLEGRO_FONT& font, const int& x0, const int& y0) {
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
+
+    al_draw_textf(&font, STATUS_FG, 10, 10, 0, "x0: %d", x0);
+    al_draw_textf(&font, STATUS_FG, 10, 30, 0, "y0: %d", y0);
 }
 
 void drawHelp(const ALLEGRO_FONT& font) {
@@ -215,8 +218,8 @@ void drawHelp(const ALLEGRO_FONT& font) {
 
     const std::vector<std::string> manual = {
         "ESC - closes the editor",
-        "Arrows - move map one tile at a time",
-        "W A S D - move map one page at a time",
+        "Arrows - move map one tile at a time while pressed",
+        "W A S D - move map one tile at a time",
         "Left click - select tile or put tile in map",
         "Right click - select action or put action in map",
         "Space - hide tiles and show only actios",
@@ -262,9 +265,22 @@ void loop(map::Map& gameMap,
 
     drawCanvas(*helpCanvas, drawHelp, font); // this is cached, because it does not change
 
+    enum Keys {
+        K_UP,
+        K_DOWN,
+        K_RIGHT,
+        K_LEFT,
+        NUMBER_OF_KEYS
+    };
+    bool keys[NUMBER_OF_KEYS] = {};
     bool done = false;
     bool shouldDraw = true;
-    int x0 = 20, y0 = 10;
+    constexpr int MIN_X0 = -10;
+    constexpr int MIN_Y0 = -10;
+    constexpr int MAX_X0 = (FULL_MAP_COLUMNS - MAP_COLUMNS) * TILE_SIZE + 10;
+    constexpr int MAX_Y0 = (FULL_MAP_ROWS - MAP_ROWS) * TILE_SIZE + 10;
+    int x0 = MIN_X0, y0 = MIN_Y0;
+
     ALLEGRO_EVENT ev;
     while (not done) {
         al_wait_for_event(&event_queue, &ev);
@@ -281,17 +297,76 @@ void loop(map::Map& gameMap,
                     case ALLEGRO_KEY_ESCAPE:
                         done = true;
                         break;
+                    case ALLEGRO_KEY_RIGHT:
+                        keys[K_RIGHT] = true;
+                        break;
+                    case ALLEGRO_KEY_LEFT:
+                        keys[K_LEFT] = true;
+                        break;
+                    case ALLEGRO_KEY_DOWN:
+                        keys[K_DOWN] = true;
+                        break;
+                    case ALLEGRO_KEY_UP:
+                        keys[K_UP] = true;
+                        break;
+                    case ALLEGRO_KEY_D:
+                        x0 += TILE_SIZE;
+                        break;
+                    case ALLEGRO_KEY_A:
+                        x0 -= TILE_SIZE;
+                        break;
+                    case ALLEGRO_KEY_S:
+                        y0 += TILE_SIZE;
+                        break;
+                    case ALLEGRO_KEY_W:
+                        y0 -= TILE_SIZE;
+                        break;
+                }
+                break;
+            case ALLEGRO_EVENT_KEY_UP:
+                switch (ev.keyboard.keycode) {
+                    case ALLEGRO_KEY_RIGHT:
+                        keys[K_RIGHT] = false;
+                        break;
+                    case ALLEGRO_KEY_LEFT:
+                        keys[K_LEFT] = false;
+                        break;
+                    case ALLEGRO_KEY_DOWN:
+                        keys[K_DOWN] = false;
+                        break;
+                    case ALLEGRO_KEY_UP:
+                        keys[K_UP] = false;
+                        break;
                 }
                 break;
         }
 
         if (shouldDraw) {
             shouldDraw = false;
+
+            if (keys[K_RIGHT])
+                x0 += TILE_SIZE;
+            if (keys[K_LEFT])
+                x0 -= TILE_SIZE;
+            if (keys[K_DOWN])
+                y0 += TILE_SIZE;
+            if (keys[K_UP])
+                y0 -= TILE_SIZE;
+
+            if (x0 > MAX_X0)
+                x0 = MAX_X0;
+            if (x0 < MIN_X0)
+                x0 = MIN_X0;
+            if (y0 > MAX_Y0)
+                y0 = MAX_Y0;
+            if (y0 < MIN_Y0)
+                y0 = MIN_Y0;
+
             drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*actionsCanvas, drawActions, actionMapper, font);
             drawCanvas(*tilesCanvas, drawTiles, tileMapper);
-            drawCanvas(*statusCanvas, drawStatus);
+            drawCanvas(*statusCanvas, drawStatus, font, x0, y0);
 
             al_set_target_bitmap(al_get_backbuffer(&display));
 
