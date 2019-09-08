@@ -19,7 +19,7 @@ enum class FileTileType {
     TOP_LEFT_BOTTOM,
     NW_SW_SE_NE,
     BOTTOM_RIGHT_TOP,
-    IGNORED_2,
+    TOP_LEFT_RIGHT_BOTTOM,
     LEFT_BOTTOM,
     BOTTOM,
     BOTTOM_RIGHT,
@@ -27,12 +27,26 @@ enum class FileTileType {
     LEFT_BOTTOM_RIGHT,
     BOTTOM_RIGHT_NW,
     BUSH,
-    IGNORED_3,
-    IGNORED_4,
+    LEFT_RIGHT,
+    TOP_BOTTOM,
     TOP_SW_SE,
     LEFT_SE_NE,
     BOTTOM_NE_NW,
     RIGHT_NW_SW,
+    POINTS_01,
+    POINTS_02,
+    POINTS_03,
+    POINTS_04,
+    POINTS_05,
+    POINTS_06,
+    POINTS_07,
+    POINTS_08,
+    POINTS_09,
+    POINTS_10,
+    POINTS_11,
+    POINTS_12,
+    POINTS_13,
+    POINTS_14,
     LAST,
     FIRST = ROAD
 };
@@ -43,12 +57,9 @@ TileMapper::TileMapper(const std::string& fileName,
       const unsigned topFirst)
       : fullImage_(nullptr, al_destroy_bitmap) {
     const auto tile_size = imageHeight(0);
-    auto sprites = SpriteReader::readImages(fileName, tile_size, tile_size, leftFirst, topFirst, 7, 4);
+    auto sprites = SpriteReader::readImages(fileName, tile_size, tile_size, leftFirst, topFirst, 7, 6);
     fullImage_.swap(sprites.first);
     auto& images = sprites.second;
-    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_4));
-    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_3));
-    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_2));
     images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_1));
     for (auto e : util::EnumIterator<map::TileType>()) {
         const auto idx = map::from_ETileType<size_t>(e);
@@ -59,7 +70,7 @@ TileMapper::TileMapper(const std::string& fileName,
 TileMapper createTileMapper(const std::string& file_name, TileSource type) {
     constexpr unsigned TILE_SIZE = 24 * SIZE_MULTIPLIER;
     constexpr unsigned NUM_COLUMNS = 7;
-    constexpr unsigned NUM_LINES = 4;
+    constexpr unsigned NUM_LINES = 6;
     constexpr unsigned FIRST_LINE_Y = 112 * SIZE_MULTIPLIER;
 
     const auto idx = util::from_Enum<unsigned>(type);

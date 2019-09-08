@@ -159,7 +159,7 @@ void show(const MAPPER& mapper,
                         keys[RIGHT] = true;
                         break;
                     case ALLEGRO_KEY_LEFT:
-                        keys[RIGHT] = true;
+                        keys[LEFT] = true;
                         break;
                     case ALLEGRO_KEY_D:
                         move_right(cur_tile, mapper.numImages());
@@ -175,7 +175,7 @@ void show(const MAPPER& mapper,
                         keys[RIGHT] = false;
                         break;
                     case ALLEGRO_KEY_LEFT:
-                        keys[RIGHT] = false;
+                        keys[LEFT] = false;
                         break;
                 }
                 break;

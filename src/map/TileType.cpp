@@ -4,6 +4,8 @@
 
 namespace map {
 
+
+
 std::string to_string(TileType enum_value) {
     switch (enum_value) {
         CASE_ENUM_TO_STRING(TileType::ROAD);
@@ -19,6 +21,7 @@ std::string to_string(TileType enum_value) {
         CASE_ENUM_TO_STRING(TileType::TOP_LEFT_BOTTOM);
         CASE_ENUM_TO_STRING(TileType::NW_SW_SE_NE);
         CASE_ENUM_TO_STRING(TileType::BOTTOM_RIGHT_TOP);
+        CASE_ENUM_TO_STRING(TileType::TOP_LEFT_RIGHT_BOTTOM);
         CASE_ENUM_TO_STRING(TileType::LEFT_BOTTOM);
         CASE_ENUM_TO_STRING(TileType::BOTTOM);
         CASE_ENUM_TO_STRING(TileType::BOTTOM_RIGHT);
@@ -26,10 +29,26 @@ std::string to_string(TileType enum_value) {
         CASE_ENUM_TO_STRING(TileType::LEFT_BOTTOM_RIGHT);
         CASE_ENUM_TO_STRING(TileType::BOTTOM_RIGHT_NW);
         CASE_ENUM_TO_STRING(TileType::BUSH);
+        CASE_ENUM_TO_STRING(TileType::LEFT_RIGHT);
+        CASE_ENUM_TO_STRING(TileType::TOP_BOTTOM);
         CASE_ENUM_TO_STRING(TileType::TOP_SW_SE);
         CASE_ENUM_TO_STRING(TileType::LEFT_SE_NE);
         CASE_ENUM_TO_STRING(TileType::BOTTOM_NE_NW);
         CASE_ENUM_TO_STRING(TileType::RIGHT_NW_SW);
+        CASE_ENUM_TO_STRING(TileType::NE_NW);
+        CASE_ENUM_TO_STRING(TileType::NW_SW);
+        CASE_ENUM_TO_STRING(TileType::SW_SE);
+        CASE_ENUM_TO_STRING(TileType::SE_NE);
+        CASE_ENUM_TO_STRING(TileType::NE);
+        CASE_ENUM_TO_STRING(TileType::NW);
+        CASE_ENUM_TO_STRING(TileType::SW);
+        CASE_ENUM_TO_STRING(TileType::SE);
+        CASE_ENUM_TO_STRING(TileType::NE_NW_SW);
+        CASE_ENUM_TO_STRING(TileType::SE_NE_NW);
+        CASE_ENUM_TO_STRING(TileType::SW_SE_NE);
+        CASE_ENUM_TO_STRING(TileType::NW_SW_SE);
+        CASE_ENUM_TO_STRING(TileType::NW_SE);
+        CASE_ENUM_TO_STRING(TileType::NE_SW);
         case TileType::LAST:
             break;
     }

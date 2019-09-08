@@ -42,25 +42,25 @@ constexpr unsigned MINIMAP_Y = MAP_Y;                                         //
 constexpr unsigned MINIMAP_TILE_SIZE = 10;                                    ///< mini map tile size
 constexpr unsigned MINIMAP_WIDTH = FULL_MAP_COLUMNS * MINIMAP_TILE_SIZE + 10; ///< mini map view width
 constexpr unsigned MINIMAP_HEIGHT = FULL_MAP_ROWS * MINIMAP_TILE_SIZE + 10;   ///< mini map view height
-constexpr unsigned TILES_X = MINIMAP_X;                                       ///< tiles view left side
-constexpr unsigned TILES_Y = MINIMAP_Y + MINIMAP_HEIGHT + 5;                  ///< tiles view top side
-constexpr unsigned TILES_WIDTH = MINIMAP_WIDTH;                               ///< map view width in pixels
-constexpr unsigned TILES_HEIGHT = 7 * TILE_SIZE;                              ///< map view height in pixels
-constexpr unsigned ACTIONS_X = MAP_X;                                         ///< actions view left side
-constexpr unsigned ACTIONS_Y = MAP_Y + MAP_HEIGHT + 5;                        ///< actions view top side
-constexpr unsigned ACTIONS_ROWS = 4;                                          ///< actions view height in columns
-constexpr unsigned ACTIONS_WIDTH = MAP_WIDTH;                                 ///< actions view width in pixels
-constexpr unsigned ACTIONS_HEIGHT = ACTIONS_ROWS * TILE_SIZE;                 ///< actions view height in pixels
+constexpr unsigned ACTIONS_X = MINIMAP_X;                                     ///< tiles view left side
+constexpr unsigned ACTIONS_Y = MINIMAP_Y + MINIMAP_HEIGHT + 5;                ///< tiles view top side
+constexpr unsigned ACTIONS_WIDTH = MINIMAP_WIDTH;                             ///< map view width in pixels
+constexpr unsigned ACTIONS_HEIGHT = 4 * TILE_SIZE;                            ///< map view height in pixels
+constexpr unsigned TILES_X = MAP_X;                                           ///< actions view left side
+constexpr unsigned TILES_Y = MAP_Y + MAP_HEIGHT + 5;                          ///< actions view top side
+constexpr unsigned TILES_ROWS = 6;                                            ///< actions view height in columns
+constexpr unsigned TILES_WIDTH = MAP_WIDTH;                                   ///< actions view width in pixels
+constexpr unsigned TILES_HEIGHT = TILES_ROWS * TILE_SIZE;                     ///< actions view height in pixels
 constexpr unsigned HELP_X = MAP_X;                                            ///< help view left side
-constexpr unsigned HELP_Y = ACTIONS_Y + ACTIONS_HEIGHT + 5;                   ///< help view top side
-constexpr unsigned HELP_ROWS = 6;                                             ///< help view height in columns
-constexpr unsigned HELP_WIDTH = MAP_WIDTH;                                    ///< help view width in pixels
-constexpr unsigned HELP_HEIGHT = HELP_ROWS * TILE_SIZE;                       ///< help view height in pixels
-constexpr unsigned STATUS_X = TILES_X;                                        ///< status view left side
-constexpr unsigned STATUS_Y = TILES_Y + TILES_HEIGHT + 5;                     ///< status view top side
-constexpr unsigned STATUS_WIDTH = TILES_WIDTH;                                ///< status view width in pixels
-constexpr unsigned STATUS_HEIGHT = HELP_Y + HELP_HEIGHT - STATUS_Y;           ///< status view height in pixels
-constexpr unsigned WINDOW_W = TILES_X + TILES_WIDTH + 10;                     ///< window width
+constexpr unsigned HELP_Y = TILES_Y + TILES_HEIGHT + 5;                       ///< help view top side
+constexpr unsigned HELP_LINES = 16;                                             ///< help view height in columns
+constexpr unsigned HELP_WIDTH = MAP_WIDTH + MINIMAP_WIDTH + 5;                ///< help view width in pixels
+constexpr unsigned HELP_HEIGHT = HELP_LINES * 22;                       ///< help view height in pixels
+constexpr unsigned STATUS_X = ACTIONS_X;                                      ///< status view left side
+constexpr unsigned STATUS_Y = ACTIONS_Y + ACTIONS_HEIGHT + 5;                 ///< status view top side
+constexpr unsigned STATUS_WIDTH = ACTIONS_WIDTH;                              ///< status view width in pixels
+constexpr unsigned STATUS_HEIGHT = HELP_Y - STATUS_Y - 5;                     ///< status view height in pixels
+constexpr unsigned WINDOW_W = ACTIONS_X + ACTIONS_WIDTH + 10;                 ///< window width
 constexpr unsigned WINDOW_H = HELP_Y + HELP_HEIGHT + 10;                      ///< window height
 
 ALLEGRO_COLOR MAP_FG = {};
@@ -68,8 +68,8 @@ ALLEGRO_COLOR TILES_BG = {};
 ALLEGRO_COLOR TILES_FG = {};
 ALLEGRO_COLOR STATUS_BG = {};
 ALLEGRO_COLOR STATUS_FG = {};
-ALLEGRO_COLOR ACTION_BG = {};
-ALLEGRO_COLOR ACTION_FG = {};
+ALLEGRO_COLOR ACTIONS_BG = {};
+ALLEGRO_COLOR ACTIONS_FG = {};
 ALLEGRO_COLOR HELP_FG = {};
 ALLEGRO_COLOR HELP_BG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
@@ -176,7 +176,7 @@ void drawMiniMap(const map::Map& gameMap) {
 }
 
 void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const ALLEGRO_FONT& font) {
-    al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTION_BG);
+    al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTIONS_BG);
 
     unsigned x = 5;
     unsigned y = 5;
@@ -191,7 +191,7 @@ void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const 
         }
         al_draw_bitmap(action, x, y, 0);
         if (e == map::Action::NONE) {
-            al_draw_text(&font, ACTION_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
+            al_draw_text(&font, ACTIONS_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
         }
 
         if (e == selectedAction) {
@@ -485,6 +485,8 @@ void loop(map::Map& gameMap,
 
             status_lines.push_back("x0: " + std::to_string(x0));
             status_lines.push_back("y0: " + std::to_string(y0));
+            status_lines.push_back("Selected tile: " + map::to_string(selectedTile));
+            status_lines.push_back("Selected action: " + map::to_string(selectedAction));
 
             drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
@@ -513,8 +515,8 @@ void initialize_colors() {
     TILES_FG = al_map_rgb(0xe7, 0xf6, 0xf8);
     STATUS_BG = al_map_rgb(0xf8, 0xdf, 0xe2);
     STATUS_FG = al_map_rgb(0x8b, 0x13, 0x03);
-    ACTION_BG = al_map_rgb(0x4d, 0x80, 0x55);
-    ACTION_FG = al_map_rgb(0xec, 0xf3, 0xec);
+    ACTIONS_BG = al_map_rgb(0x4d, 0x80, 0x55);
+    ACTIONS_FG = al_map_rgb(0xec, 0xf3, 0xec);
     HELP_FG = al_map_rgb(0x1a, 0x44, 0x80);
     HELP_BG = al_map_rgb(0xd9, 0xe8, 0xf6);
     MINIMAP_BG = al_map_rgb(0x16, 0x2e, 0x51);
