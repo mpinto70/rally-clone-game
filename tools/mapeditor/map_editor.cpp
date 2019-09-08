@@ -176,7 +176,7 @@ void drawMiniMap(const map::Map& gameMap) {
 }
 
 void drawStatus() {
-    al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_FG);
+    al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
 }
 
 template <typename F, typename... ARGS>
