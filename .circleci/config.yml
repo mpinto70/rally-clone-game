@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Install tools
-          command: sudo apt install -y g++ cmake libboost-all-dev cppcheck liballegro4-dev
+          command: sudo apt install -y g++ cmake libboost-all-dev cppcheck liballegro5-dev
       - run:
           name: Build system
           command: ./runbuild

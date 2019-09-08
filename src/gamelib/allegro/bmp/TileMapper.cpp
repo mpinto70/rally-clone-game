@@ -3,6 +3,58 @@
 namespace gamelib {
 namespace allegro {
 namespace bmp {
+namespace {
+enum class FileTileType {
+    ROAD,
+    TOP_LEFT,
+    TOP,
+    RIGHT_TOP,
+    TOP_LEFT_SE,
+    RIGHT_TOP_LEFT,
+    RIGHT_TOP_SW,
+    IGNORED_1,
+    LEFT,
+    GRASS,
+    RIGHT,
+    TOP_LEFT_BOTTOM,
+    NW_SW_SE_NE,
+    BOTTOM_RIGHT_TOP,
+    IGNORED_2,
+    LEFT_BOTTOM,
+    BOTTOM,
+    BOTTOM_RIGHT,
+    LEFT_BOTTOM_NE,
+    LEFT_BOTTOM_RIGHT,
+    BOTTOM_RIGHT_NW,
+    BUSH,
+    IGNORED_3,
+    IGNORED_4,
+    TOP_SW_SE,
+    LEFT_SE_NE,
+    BOTTOM_NE_NW,
+    RIGHT_NW_SW,
+    LAST,
+    FIRST = ROAD
+};
+}
+
+TileMapper::TileMapper(const std::string& fileName,
+      const unsigned leftFirst,
+      const unsigned topFirst)
+      : fullImage_(nullptr, al_destroy_bitmap) {
+    const auto tile_size = imageHeight(0);
+    auto sprites = SpriteReader::readImages(fileName, tile_size, tile_size, leftFirst, topFirst, 7, 4);
+    fullImage_.swap(sprites.first);
+    auto& images = sprites.second;
+    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_4));
+    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_3));
+    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_2));
+    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_1));
+    for (auto e : util::EnumIterator<map::TileType>()) {
+        const auto idx = map::from_ETileType<size_t>(e);
+        spriteMap_.insert({ e, std::move(images[idx]) });
+    }
+}
 
 TileMapper createTileMapper(const std::string& file_name, TileSource type) {
     constexpr unsigned TILE_SIZE = 24 * SIZE_MULTIPLIER;
@@ -13,7 +65,7 @@ TileMapper createTileMapper(const std::string& file_name, TileSource type) {
     const auto idx = util::from_Enum<unsigned>(type);
     const auto x0 = (idx % 2) * TILE_SIZE * NUM_COLUMNS;
     const auto y0 = (idx / 2) * TILE_SIZE * NUM_LINES + FIRST_LINE_Y;
-    return TileMapper(file_name, TILE_SIZE, TILE_SIZE, x0, y0, NUM_COLUMNS, NUM_LINES);
+    return TileMapper(file_name, x0, y0);
 }
 
 std::string to_string(TileSource enum_value) {
@@ -31,7 +83,6 @@ std::string to_string(TileSource enum_value) {
     }
     throw util::Exception("to_string(TileSource) - invalid argument", util::from_Enum<int>(enum_value));
 }
-
 }
 }
 }
