@@ -75,6 +75,10 @@ ALLEGRO_COLOR HELP_BG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
 ALLEGRO_COLOR MINIMAP_BG = {};
 ALLEGRO_COLOR MINIMAP_FG = {};
+ALLEGRO_COLOR SELECTION_FG = {};
+
+map::Action selectedAction = map::Action::NONE;
+map::TileType selectedTile = map::TileType::ROAD;
 
 //void save(const std::string& file_name, const map::Map& stageMap) {
 //    map::MapIO::write(file_name, stageMap);
@@ -159,7 +163,7 @@ void drawMiniMap(const map::Map& gameMap) {
                 const auto X = x * MINIMAP_TILE_SIZE + 5;
                 const auto Y = y * MINIMAP_TILE_SIZE + 5;
 
-                al_draw_filled_rectangle(X, Y, X + MINIMAP_TILE_SIZE - 1, Y + MINIMAP_TILE_SIZE - 1, MINIMAP_FG);
+                al_draw_filled_rectangle(X, Y, X + MINIMAP_TILE_SIZE, Y + MINIMAP_TILE_SIZE, MINIMAP_FG);
             }
         }
     }
@@ -184,6 +188,10 @@ void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const 
             al_draw_text(&font, ACTION_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
         }
 
+        if (e == selectedAction) {
+            al_draw_rectangle(x - 1, y - 1, x + width + 1, y + height + 1, SELECTION_FG, 2);
+        }
+
         x += width + 5;
         max_y = std::max(max_y, height);
     }
@@ -202,15 +210,21 @@ void drawTiles(const gamelib::allegro::bmp::TileMapper& tilesMapper) {
         }
         al_draw_bitmap(tile, x, y, 0);
 
+        if (e == selectedTile) {
+            al_draw_rectangle(x - 1, y - 1, x + TILE_SIZE + 1, y + TILE_SIZE + 1, SELECTION_FG, 2);
+        }
         x += TILE_SIZE + 5;
     }
 }
 
-void drawStatus(const ALLEGRO_FONT& font, const int& x0, const int& y0) {
+void drawStatus(const ALLEGRO_FONT& font, const std::vector<std::string>& lines) {
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
 
-    al_draw_textf(&font, STATUS_FG, 10, 10, 0, "x0: %d", x0);
-    al_draw_textf(&font, STATUS_FG, 10, 30, 0, "y0: %d", y0);
+    int y = 10;
+    for (const auto& line : lines) {
+        al_draw_textf(&font, STATUS_FG, 10, y, 0, "%s", line.c_str());
+        y += 20;
+    }
 }
 
 void drawHelp(const ALLEGRO_FONT& font) {
@@ -247,6 +261,97 @@ void drawCanvas(ALLEGRO_BITMAP& canvas, F f, ARGS&... args) {
     f(std::forward<ARGS>(args)...);
 }
 
+constexpr bool inRectangle(int x, int y, int x0, int y0, int x1, int y1) {
+    return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+}
+
+void handleLeftClickInTiles(const int X, const int Y) {
+    int x = 5;
+    int y = 5;
+    for (auto e : util::EnumIterator<map::TileType>()) {
+        if (x + TILE_SIZE + 5 > TILES_WIDTH) {
+            x = 5;
+            y += TILE_SIZE + 5;
+        }
+        if (inRectangle(X, Y, x, y, x + TILE_SIZE, y + TILE_SIZE)) {
+            selectedTile = e;
+            return;
+        }
+
+        x += TILE_SIZE + 5;
+    }
+}
+
+void handleLeftClickInActions(const gamelib::allegro::bmp::ActionMapper& actionMapper,
+      const int X,
+      const int Y) {
+    unsigned x = 5;
+    unsigned y = 5;
+    unsigned max_y = 0;
+    for (auto e : util::EnumIterator<map::Action>()) {
+        const auto width = actionMapper.imageWidth(e);
+        const auto height = actionMapper.imageHeight(e);
+        if (x + width + 5 > ACTIONS_WIDTH) {
+            x = 5;
+            y += max_y + 5;
+        }
+        if (inRectangle(X, Y, x, y, x + width, y + height)) {
+            selectedAction = e;
+            return;
+        }
+
+        x += width + 5;
+        max_y = std::max(max_y, height);
+    }
+}
+
+void handleLeftClickInMap(map::Map& gameMap, int x, int y) {
+    const int j = x / TILE_SIZE;
+    const int i = y / TILE_SIZE;
+
+    if (j < 0 || i < 0 || j >= int(gameMap.width()) || i >= int(gameMap.height()))
+        return;
+
+    if (gameMap(j, i).type() != selectedTile) {
+        gameMap(j, i) = map::Tile(selectedTile);
+    }
+}
+
+void handleRightClickInMap(map::Map& gameMap, int x, int y) {
+    const int j = x / TILE_SIZE;
+    const int i = y / TILE_SIZE;
+
+    if (j < 0 || i < 0 || j >= int(gameMap.width()) || i >= int(gameMap.height()))
+        return;
+
+    if (gameMap(j, i).type() == map::TileType::ROAD) {
+        gameMap(j, i).action(selectedAction);
+    }
+}
+
+void handleLeftClick(map::Map& gameMap,
+      const gamelib::allegro::bmp::ActionMapper& actionMapper,
+      int x0,
+      int y0,
+      int x,
+      int y) {
+    if (inRectangle(x, y, TILES_X, TILES_Y, TILES_X + TILES_WIDTH, TILES_Y + TILES_HEIGHT))
+        handleLeftClickInTiles(x - TILES_X, y - TILES_Y);
+    else if (inRectangle(x, y, ACTIONS_X, ACTIONS_Y, ACTIONS_X + ACTIONS_WIDTH, ACTIONS_Y + ACTIONS_HEIGHT))
+        handleLeftClickInActions(actionMapper, x - ACTIONS_X, y - ACTIONS_Y);
+    else if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
+        handleLeftClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
+}
+
+void handleRightClick(map::Map& gameMap,
+      int x0,
+      int y0,
+      int x,
+      int y) {
+    if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
+        handleRightClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
+}
+
 void loop(map::Map& gameMap,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
       const gamelib::allegro::bmp::ActionMapper& actionMapper,
@@ -262,6 +367,7 @@ void loop(map::Map& gameMap,
     auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), al_destroy_bitmap);
     auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), al_destroy_bitmap);
     auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
+    std::vector<std::string> status_lines;
 
     drawCanvas(*helpCanvas, drawHelp, font); // this is cached, because it does not change
 
@@ -283,6 +389,7 @@ void loop(map::Map& gameMap,
 
     ALLEGRO_EVENT ev;
     while (not done) {
+        status_lines.clear();
         al_wait_for_event(&event_queue, &ev);
 
         switch (ev.type) {
@@ -339,6 +446,14 @@ void loop(map::Map& gameMap,
                         break;
                 }
                 break;
+            case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+                if (ev.mouse.button & 1) {
+                    handleLeftClick(gameMap, actionMapper, x0, y0, ev.mouse.x, ev.mouse.y);
+                }
+                if (ev.mouse.button & 2) {
+                    handleRightClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
+                }
+                break;
         }
 
         if (shouldDraw) {
@@ -362,11 +477,14 @@ void loop(map::Map& gameMap,
             if (y0 < MIN_Y0)
                 y0 = MIN_Y0;
 
+            status_lines.push_back("x0: " + std::to_string(x0));
+            status_lines.push_back("y0: " + std::to_string(y0));
+
             drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*actionsCanvas, drawActions, actionMapper, font);
             drawCanvas(*tilesCanvas, drawTiles, tileMapper);
-            drawCanvas(*statusCanvas, drawStatus, font, x0, y0);
+            drawCanvas(*statusCanvas, drawStatus, font, status_lines);
 
             al_set_target_bitmap(al_get_backbuffer(&display));
 
@@ -396,6 +514,7 @@ void initialize_colors() {
     MINIMAP_BG = al_map_rgb(0x16, 0x2e, 0x51);
     MINIMAP_FG = al_map_rgb(0xff, 0xbf, 0x00);
     WINDOW_BG = al_map_rgb(0x3d, 0x45, 0x51);
+    SELECTION_FG = al_map_rgb(0xff, 0x00, 0xff);
 }
 }
 
@@ -417,6 +536,7 @@ int main(int argc, char* argv[]) {
         al_init_primitives_addon();
         al_init_image_addon();
         al_install_keyboard();
+        al_install_mouse();
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
@@ -460,6 +580,7 @@ int main(int argc, char* argv[]) {
             tools::throw_allegro_error("could not create event queue");
 
         al_register_event_source(event_queue.get(), al_get_keyboard_event_source());
+        al_register_event_source(event_queue.get(), al_get_mouse_event_source());
         al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
         al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
 
