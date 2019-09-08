@@ -100,42 +100,6 @@ map::Map createOrLoadMap(const std::string& stagePath) {
     }
 }
 
-void drawActions(const gamelib::allegro::bmp::ActionMapper&) {
-    al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTION_BG);
-}
-
-void drawTiles(const gamelib::allegro::bmp::TileMapper&) {
-    al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
-}
-
-void drawHelp(const ALLEGRO_FONT& font) {
-    al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
-
-    const std::vector<std::string> manual = {
-        "ESC - closes the editor",
-        "Arrows - move map one tile at a time",
-        "W A S D - move map one page at a time",
-        "Left click - select tile or put tile in map",
-        "Right click - select action or put action in map",
-        "Space - hide tiles and show only actios",
-        "I - shows action position interactively (tied to tile)",
-        "I+O - shows action position interactively (free positioning)",
-        "F - hide action number from tile",
-        "G - hide grid",
-        "Left Shift - save",
-        "Ctrl+C + left click - mark region for copy",
-        "Ctrl+V + left click - paste copied region to point",
-        "X - cancel region selected"
-    };
-
-    constexpr int STEP_Y = 22;
-    for (size_t i = 0; i < manual.size(); ++i) {
-        const unsigned y = (i + 1) * STEP_Y;
-
-        al_draw_textf(&font, HELP_FG, 20, y, 0, "%s", manual[i].c_str());
-    }
-}
-
 void drawMap(const map::Map& gameMap,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
       const gamelib::allegro::bmp::ActionMapper&,
@@ -175,8 +139,44 @@ void drawMiniMap(const map::Map& gameMap) {
     }
 }
 
+void drawActions(const gamelib::allegro::bmp::ActionMapper&) {
+    al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTION_BG);
+}
+
+void drawTiles(const gamelib::allegro::bmp::TileMapper&) {
+    al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
+}
+
 void drawStatus() {
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
+}
+
+void drawHelp(const ALLEGRO_FONT& font) {
+    al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
+
+    const std::vector<std::string> manual = {
+        "ESC - closes the editor",
+        "Arrows - move map one tile at a time",
+        "W A S D - move map one page at a time",
+        "Left click - select tile or put tile in map",
+        "Right click - select action or put action in map",
+        "Space - hide tiles and show only actios",
+        "I - shows action position interactively (tied to tile)",
+        "I+O - shows action position interactively (free positioning)",
+        "F - hide action number from tile",
+        "G - hide grid",
+        "Left Shift - save",
+        "Ctrl+C + left click - mark region for copy",
+        "Ctrl+V + left click - paste copied region to point",
+        "X - cancel region selected"
+    };
+
+    constexpr int STEP_Y = 22;
+    for (size_t i = 0; i < manual.size(); ++i) {
+        const unsigned y = (i + 1) * STEP_Y;
+
+        al_draw_textf(&font, HELP_FG, 20, y, 0, "%s", manual[i].c_str());
+    }
 }
 
 template <typename F, typename... ARGS>
@@ -198,8 +198,8 @@ void loop(map::Map& gameMap,
     auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), al_destroy_bitmap);
     auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), al_destroy_bitmap);
     auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), al_destroy_bitmap);
-    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
     auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), al_destroy_bitmap);
+    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
 
     drawCanvas(*helpCanvas, drawHelp, font); // this is cached, because it does not change
 
@@ -227,20 +227,20 @@ void loop(map::Map& gameMap,
 
         if (shouldDraw) {
             shouldDraw = false;
+            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper);
+            drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*actionsCanvas, drawActions, actionMapper);
             drawCanvas(*tilesCanvas, drawTiles, tileMapper);
-            drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*statusCanvas, drawStatus);
-            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper);
 
             al_set_target_bitmap(al_get_backbuffer(&display));
 
+            al_draw_bitmap(mapCanvas.get(), MAP_X, MAP_Y, 0);
+            al_draw_bitmap(minimapCanvas.get(), MINIMAP_X, MINIMAP_Y, 0);
             al_draw_bitmap(actionsCanvas.get(), ACTIONS_X, ACTIONS_Y, 0);
             al_draw_bitmap(tilesCanvas.get(), TILES_X, TILES_Y, 0);
-            al_draw_bitmap(helpCanvas.get(), HELP_X, HELP_Y, 0);
-            al_draw_bitmap(minimapCanvas.get(), MINIMAP_X, MINIMAP_Y, 0);
             al_draw_bitmap(statusCanvas.get(), STATUS_X, STATUS_Y, 0);
-            al_draw_bitmap(mapCanvas.get(), MAP_X, MAP_Y, 0);
+            al_draw_bitmap(helpCanvas.get(), HELP_X, HELP_Y, 0);
 
             al_flip_display();
             al_clear_to_color(WINDOW_BG);
