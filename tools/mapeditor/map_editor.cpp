@@ -165,8 +165,28 @@ void drawMiniMap(const map::Map& gameMap) {
     }
 }
 
-void drawActions(const gamelib::allegro::bmp::ActionMapper&) {
+void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const ALLEGRO_FONT& font) {
     al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTION_BG);
+
+    unsigned x = 5;
+    unsigned y = 5;
+    unsigned max_y = 0;
+    for (auto e : util::EnumIterator<map::Action>()) {
+        const auto action = actionMapper[e];
+        const auto width = actionMapper.imageWidth(e);
+        const auto height = actionMapper.imageHeight(e);
+        if (x + width + 5 > ACTIONS_WIDTH) {
+            x = 5;
+            y += max_y + 5;
+        }
+        al_draw_bitmap(action, x, y, 0);
+        if (e == map::Action::NONE) {
+            al_draw_text(&font, ACTION_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
+        }
+
+        x += width + 5;
+        max_y = std::max(max_y, height);
+    }
 }
 
 void drawTiles(const gamelib::allegro::bmp::TileMapper&) {
@@ -256,7 +276,7 @@ void loop(map::Map& gameMap,
             shouldDraw = false;
             drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
-            drawCanvas(*actionsCanvas, drawActions, actionMapper);
+            drawCanvas(*actionsCanvas, drawActions, actionMapper, font);
             drawCanvas(*tilesCanvas, drawTiles, tileMapper);
             drawCanvas(*statusCanvas, drawStatus);
 
