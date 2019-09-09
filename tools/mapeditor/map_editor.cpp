@@ -94,11 +94,10 @@ map::Map createCleanMap() {
     return map::Map(FULL_MAP_COLUMNS, FULL_MAP_ROWS, tiles);
 }
 
-map::Map createOrLoadMap(const std::string& stagePath) {
-    const std::string tmp = stagePath + "/stage.dat";
-    boost::filesystem::path path_to_file(tmp);
+map::Map createOrLoadMap(const std::string& mapPath) {
+    boost::filesystem::path path_to_file(mapPath);
     if (boost::filesystem::exists(path_to_file)) {
-        return loadMap(tmp);
+        return loadMap(mapPath);
     } else {
         return createCleanMap();
     }
@@ -242,12 +241,9 @@ void drawHelp(const ALLEGRO_FONT& font) {
         "W A S D - move map one tile at a time",
         "Left click - select tile or put tile in map",
         "Right click - select action or put action in map",
-        "Space - hide tiles and show only actios",
-        "I - shows action position interactively (tied to tile)",
-        "I+O - shows action position interactively (free positioning)",
-        "F - hide action number from tile",
+        "Space - hide tiles and show only actions",
         "G - hide grid",
-        "Left Shift - save",
+        "R - save",
         "Ctrl+C + left click - mark region for copy",
         "Ctrl+V + left click - paste copied region to point",
         "X - cancel region selected"
@@ -288,9 +284,9 @@ void handleLeftClickInTiles(const int X, const int Y) {
     }
 }
 
-void handleLeftClickInActions(const gamelib::allegro::bmp::ActionMapper& actionMapper,
-      const int X,
-      const int Y) {
+void handleRightClickInActions(const gamelib::allegro::bmp::ActionMapper& actionMapper,
+                               const int X,
+                               const int Y) {
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
@@ -336,29 +332,30 @@ void handleRightClickInMap(map::Map& gameMap, int x, int y) {
 }
 
 void handleLeftClick(map::Map& gameMap,
-      const gamelib::allegro::bmp::ActionMapper& actionMapper,
       int x0,
       int y0,
       int x,
       int y) {
     if (inRectangle(x, y, TILES_X, TILES_Y, TILES_X + TILES_WIDTH, TILES_Y + TILES_HEIGHT))
         handleLeftClickInTiles(x - TILES_X, y - TILES_Y);
-    else if (inRectangle(x, y, ACTIONS_X, ACTIONS_Y, ACTIONS_X + ACTIONS_WIDTH, ACTIONS_Y + ACTIONS_HEIGHT))
-        handleLeftClickInActions(actionMapper, x - ACTIONS_X, y - ACTIONS_Y);
     else if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
         handleLeftClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
 }
 
 void handleRightClick(map::Map& gameMap,
+      const gamelib::allegro::bmp::ActionMapper& actionMapper,
       int x0,
       int y0,
       int x,
       int y) {
-    if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
+    if (inRectangle(x, y, ACTIONS_X, ACTIONS_Y, ACTIONS_X + ACTIONS_WIDTH, ACTIONS_Y + ACTIONS_HEIGHT))
+        handleRightClickInActions(actionMapper, x - ACTIONS_X, y - ACTIONS_Y);
+    else if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
         handleRightClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
 }
 
 void loop(map::Map& gameMap,
+      const std::string& stagePath,
       const gamelib::allegro::bmp::TileMapper& tileMapper,
       const gamelib::allegro::bmp::ActionMapper& actionMapper,
       const gamelib::allegro::bmp::CarMapper& playerMapper,
@@ -434,6 +431,9 @@ void loop(map::Map& gameMap,
                     case ALLEGRO_KEY_W:
                         y0 -= TILE_SIZE;
                         break;
+                    case ALLEGRO_KEY_R:
+                        map::MapIO::write(stagePath, gameMap);
+                        break;
                 }
                 break;
             case ALLEGRO_EVENT_KEY_UP:
@@ -454,10 +454,10 @@ void loop(map::Map& gameMap,
                 break;
             case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
                 if (ev.mouse.button & 1) {
-                    handleLeftClick(gameMap, actionMapper, x0, y0, ev.mouse.x, ev.mouse.y);
+                    handleLeftClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
                 }
                 if (ev.mouse.button & 2) {
-                    handleRightClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
+                    handleRightClick(gameMap, actionMapper, x0, y0, ev.mouse.x, ev.mouse.y);
                 }
                 break;
             case ALLEGRO_EVENT_MOUSE_AXES:
@@ -537,7 +537,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    const std::string stagePath = argv[1];
+    const std::string stagePath = argv[1] + std::string("/stage.dat");
     const std::string spritePath = argv[2];
 
     try {
@@ -599,7 +599,7 @@ int main(int argc, char* argv[]) {
 
         al_start_timer(timer.get());
 
-        loop(gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, *font, *event_queue, *display);
+        loop(gameMap, stagePath, tileMapper, actionMapper, playerMapper, enemyMapper, *font, *event_queue, *display);
     } catch (std::exception& e) {
         fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;
