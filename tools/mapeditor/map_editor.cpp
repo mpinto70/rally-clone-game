@@ -19,15 +19,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <gamelib/allegro/bmp/CarMapper.h>
-#include <gamelib/allegro/bmp/FuelMapper.h>
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <typeinfo>
 #include <vector>
 
 namespace {
-constexpr unsigned TILE_SIZE = 72;                          ///< tile size in pixels
+constexpr unsigned TILE_SIZE = 72;                                            ///< tile size in pixels
 constexpr unsigned FULL_MAP_COLUMNS = 32;                                     ///< full map number of columns
 constexpr unsigned FULL_MAP_ROWS = 56;                                        ///< full map number of rows
 constexpr unsigned MAP_X = 10;                                                ///< map view left side
@@ -284,8 +282,8 @@ void handleLeftClickInTiles(const int X, const int Y) {
 }
 
 void handleRightClickInActions(const gamelib::allegro::bmp::ActionMapper& actionMapper,
-                               const int X,
-                               const int Y) {
+      const int X,
+      const int Y) {
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
