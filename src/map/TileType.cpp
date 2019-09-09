@@ -4,8 +4,6 @@
 
 namespace map {
 
-
-
 std::string to_string(TileType enum_value) {
     switch (enum_value) {
         CASE_ENUM_TO_STRING(TileType::ROAD);
