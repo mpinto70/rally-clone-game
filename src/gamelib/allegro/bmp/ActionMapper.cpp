@@ -7,29 +7,29 @@ namespace bmp {
 ActionMapper::ActionMapper(const std::string& fileName)
       : fullImage_(SpriteReader::readFullImage(fileName)) {
     constexpr unsigned ROAD_X = 0;
-    constexpr unsigned ROAD_Y = 112 * SIZE_MULTIPLIER; // height of first road
-    constexpr unsigned ROAD_SIZE = SIZE_MULTIPLIER * 24;
+    constexpr unsigned ROAD_Y = 336; // height of first road
+    constexpr unsigned ROAD_SIZE = 72;
     auto road = SpriteReader::readImages(fullImage_, ROAD_SIZE, ROAD_SIZE, ROAD_X, ROAD_Y, 1, 1);
 
     constexpr unsigned PLAYER_X = 0;
     constexpr unsigned PLAYER_Y = 0;
-    constexpr unsigned PLAYER_SIZE = SIZE_MULTIPLIER * 16;
+    constexpr unsigned PLAYER_SIZE = 48;
     auto player = SpriteReader::readImages(fullImage_, PLAYER_SIZE, PLAYER_SIZE, PLAYER_X, PLAYER_Y, 1, 1);
 
     constexpr unsigned BANG_X = 0;
-    constexpr unsigned BANG_Y = SIZE_MULTIPLIER * 16 * 5; // 5 = 4 cars + 1 fuel
-    constexpr unsigned BANG_SIZE = SIZE_MULTIPLIER * 24;
+    constexpr unsigned BANG_Y = 48 * 5; // 5 = 4 cars + 1 fuel
+    constexpr unsigned BANG_SIZE = 72;
     auto bang_rocks_smoke = SpriteReader::readImages(fullImage_, BANG_SIZE, BANG_SIZE, BANG_X, BANG_Y, 4, 1);
 
     constexpr unsigned CAR_X = 0;
-    constexpr unsigned CAR_Y = SIZE_MULTIPLIER * 16 * 1; // 1 = second row of cars
-    constexpr unsigned CAR_SIZE = SIZE_MULTIPLIER * 16;
-    constexpr unsigned CAR_GAP = SIZE_MULTIPLIER * 16 * 2; // 2 cars in each gap
+    constexpr unsigned CAR_Y = 48 * 1; // 1 = second row of cars
+    constexpr unsigned CAR_SIZE = 48;
+    constexpr unsigned CAR_GAP = 48 * 2; // 2 cars in each gap
     auto cars = SpriteReader::readImages(fullImage_, CAR_SIZE, CAR_SIZE, CAR_X, CAR_Y, 4, 1, CAR_GAP);
 
     constexpr unsigned FUEL_X = 0;
-    constexpr unsigned FUEL_Y = SIZE_MULTIPLIER * 16 * 4; // 4 = cars
-    constexpr unsigned FUEL_SIZE = SIZE_MULTIPLIER * 16;
+    constexpr unsigned FUEL_Y = 48 * 4; // 4 = cars
+    constexpr unsigned FUEL_SIZE = 48;
     auto fuels = SpriteReader::readImages(fullImage_, FUEL_SIZE, FUEL_SIZE, FUEL_X, FUEL_Y, 3, 1);
 
     using enum_t = typename std::underlying_type<enum_type>::type;

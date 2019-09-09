@@ -5,7 +5,7 @@ namespace allegro {
 namespace bmp {
 
 CarMapper createCarMapper(const std::string& file_name, CarSource type) {
-    constexpr unsigned TILE_SIZE = 16 * SIZE_MULTIPLIER;
+    constexpr unsigned TILE_SIZE = 48;
 
     const auto y0 = util::from_Enum<unsigned>(type) * TILE_SIZE;
     const auto number_of_cars = util::from_Enum<unsigned>(car::Orientation::LAST);

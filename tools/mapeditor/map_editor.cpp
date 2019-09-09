@@ -27,8 +27,7 @@
 #include <vector>
 
 namespace {
-using gamelib::allegro::bmp::SIZE_MULTIPLIER;
-constexpr unsigned TILE_SIZE = 24 * SIZE_MULTIPLIER;                          ///< tile size in pixels
+constexpr unsigned TILE_SIZE = 72;                          ///< tile size in pixels
 constexpr unsigned FULL_MAP_COLUMNS = 32;                                     ///< full map number of columns
 constexpr unsigned FULL_MAP_ROWS = 56;                                        ///< full map number of rows
 constexpr unsigned MAP_X = 10;                                                ///< map view left side

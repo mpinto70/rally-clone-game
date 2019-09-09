@@ -68,23 +68,23 @@ public:
     }
 
     [[nodiscard]] unsigned imageWidth(enum_type) const {
-        return BASE_TILE_SIZE * SIZE_MULTIPLIER;
+        return BASE_TILE_SIZE;
     }
 
     [[nodiscard]] unsigned imageHeight(enum_type) const {
-        return BASE_TILE_SIZE * SIZE_MULTIPLIER;
+        return BASE_TILE_SIZE;
     }
 
     [[nodiscard]] unsigned imageWidth(size_t) const {
-        return BASE_TILE_SIZE * SIZE_MULTIPLIER;
+        return BASE_TILE_SIZE;
     }
 
     [[nodiscard]] unsigned imageHeight(size_t) const {
-        return BASE_TILE_SIZE * SIZE_MULTIPLIER;
+        return BASE_TILE_SIZE;
     }
 
 private:
-    static constexpr unsigned BASE_TILE_SIZE = 24;
+    static constexpr unsigned BASE_TILE_SIZE = 72;
 
     std::map<enum_type, BITMAP_PTR> spriteMap_;
     BITMAP_PTR fullImage_;

@@ -68,10 +68,10 @@ TileMapper::TileMapper(const std::string& fileName,
 }
 
 TileMapper createTileMapper(const std::string& file_name, TileSource type) {
-    constexpr unsigned TILE_SIZE = 24 * SIZE_MULTIPLIER;
+    constexpr unsigned TILE_SIZE = 72;
     constexpr unsigned NUM_COLUMNS = 7;
     constexpr unsigned NUM_LINES = 6;
-    constexpr unsigned FIRST_LINE_Y = 112 * SIZE_MULTIPLIER;
+    constexpr unsigned FIRST_LINE_Y = 336;
 
     const auto idx = util::from_Enum<unsigned>(type);
     const auto x0 = (idx % 2) * TILE_SIZE * NUM_COLUMNS;

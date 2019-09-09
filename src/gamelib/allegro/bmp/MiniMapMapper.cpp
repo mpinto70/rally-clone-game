@@ -5,9 +5,9 @@ namespace allegro {
 namespace bmp {
 
 MiniMapMapper createMiniMapMapper(const std::string& file_name) {
-    constexpr unsigned TILE_SIZE = 16 * SIZE_MULTIPLIER;
-    constexpr unsigned X = 192 * SIZE_MULTIPLIER;
-    constexpr unsigned Y = 48 * SIZE_MULTIPLIER;
+    constexpr unsigned TILE_SIZE = 48;
+    constexpr unsigned X = 576;
+    constexpr unsigned Y = 144;
 
     return MiniMapMapper(file_name, TILE_SIZE, TILE_SIZE, X, Y, 4, 1);
 }

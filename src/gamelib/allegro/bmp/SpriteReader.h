@@ -11,8 +11,6 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-constexpr unsigned SIZE_MULTIPLIER = 3;
-
 class SpriteReader {
 public:
     using sprites_t = std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>>;
