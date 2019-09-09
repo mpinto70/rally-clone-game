@@ -5,17 +5,15 @@
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
 
-#include <allegro.h>
-
 namespace gamelib {
 namespace allegro {
 
 class Graphic : public ::game::Graphic {
 public:
-    explicit Graphic(const std::string& common_path);
+    explicit Graphic(const std::string& common_path, unsigned width, unsigned height);
     ~Graphic() override;
-    [[nodiscard]] unsigned width() const override { return SCREEN_W; }
-    [[nodiscard]] unsigned height() const override { return SCREEN_H; }
+    [[nodiscard]] unsigned width() const override { return width_; }
+    [[nodiscard]] unsigned height() const override { return height_; }
     void printText(const std::string& text,
           game::GFONT gfont,
           unsigned x,
@@ -30,6 +28,8 @@ public:
     void flip() override;
 
 private:
+    unsigned width_;
+    unsigned height_;
     BITMAP_PTR buffer_;
     BITMAP_PTR bufferMap_;
     FONT_PTR fontSystem_;

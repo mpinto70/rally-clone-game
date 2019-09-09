@@ -12,7 +12,11 @@ target_link_libraries(
     car
     map
     util
-    alleg
+    allegro
+    allegro_font
+    allegro_ttf
+    allegro_primitives
+    allegro_image
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_FILESYSTEM_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}

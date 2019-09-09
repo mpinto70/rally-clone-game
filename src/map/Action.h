@@ -14,12 +14,18 @@ using action_t = std::uint8_t;
 /** Types of actions. */
 enum class Action : action_t {
     NONE,
+    PLAYER,
     ENEMY_NORTH,
-    ENEMY_WEST,
-    ENEMY_SOUTH,
     ENEMY_EAST,
-    STONE,
+    ENEMY_SOUTH,
+    ENEMY_WEST,
+    BANG,
+    STONE_1,
+    STONE_2,
+    SMOKE,
     FUEL,
+    FUEL_S,
+    FUEL_L,
     LAST,
     FIRST = NONE
 };

@@ -5,8 +5,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <iostream>
-#include <random>
+#include <sstream>
 
 namespace map {
 
@@ -19,60 +18,31 @@ void MapIOTest::TearDown() {
     }
 }
 
-TEST_F(MapIOTest, Read) {
-    const Map map = MapIO::read(RALLY_ROOT "/test/map/files/map_12_10.map");
-    EXPECT_EQ(map.width(), 12u);
-    EXPECT_EQ(map.height(), 10u);
-    // the first tiles are in sequence
-    auto max = static_cast<size_t>(TileType::LAST);
-    const auto& tiles = map.tiles();
-    Action action = Action::FIRST;
-    for (size_t i = 0; i < tiles.size(); ++i) {
-        TileType t = to_ETileType(i % max);
-        EXPECT_EQ(tiles[i].type(), t) << i;
-        if (tiles[i].type() == TileType::ROAD) {
-            EXPECT_EQ(tiles[i].action(), action) << i;
-            const int next_act = from_EAction<int>(action) + 1;
-            if (next_act == from_EAction<int>(Action::LAST))
-                action = Action::FIRST;
-            else
-                action = to_EAction(next_act);
-        } else {
-            EXPECT_EQ(tiles[i].action(), Action::NONE) << i;
-        }
-    }
-}
-
-constexpr auto maxType = static_cast<size_t>(TileType::LAST) - 1;
-constexpr auto maxAction = static_cast<size_t>(Action::LAST) - 1;
-static void verifyWrite(const map_dimension_t width,
-      const map_dimension_t height) {
-    std::default_random_engine re;
-    std::uniform_int_distribution<map_dimension_t> distType{ 0, maxType };
-    std::uniform_int_distribution<map_dimension_t> distAction{ 0, maxAction };
-    auto diceType = std::bind(distType, re);
-    auto diceAction = std::bind(distAction, re);
-    const map_dimension_t fullsize = width * height;
+namespace {
+Map create_map(const uint32_t width, const uint32_t height) {
     std::vector<Tile> tiles;
-    tiles.reserve(fullsize);
-    for (size_t i = 0; i < fullsize; ++i) {
-        const TileType type = to_ETileType(diceType());
-        const Action action = (type == TileType::ROAD) ? to_EAction(diceAction()) : Action::NONE;
-        tiles.emplace_back(type, action);
+    tiles.reserve(width * height);
+    uint32_t j = 0;
+    const auto max_type = from_ETileType<uint32_t>(TileType::LAST);
+    const auto max_action = from_EAction<uint32_t>(Action::LAST);
+    for (size_t i = 0; i < width * height; ++i) {
+        const TileType tileType = to_ETileType(i % max_type);
+        const Action action = (tileType == TileType::ROAD) ? to_EAction(++j % max_action) : Action::NONE;
+        tiles.emplace_back(tileType, action);
     }
-
-    const Map map1(width, height, tiles);
-    MapIO::write(tmpFileName, map1);
-
-    const Map map2 = MapIO::read(tmpFileName);
-
-    EXPECT_EQ(map1.width(), map2.width());
-    EXPECT_EQ(map1.height(), map2.height());
-    EXPECT_EQ(map1.tiles(), map2.tiles());
+    return Map(width, height, tiles);
+}
 }
 
-TEST_F(MapIOTest, Write) {
-    verifyWrite(10, 20);
-    verifyWrite(200, 100);
+TEST_F(MapIOTest, WriteRead) {
+    const Map map = create_map(120, 157);
+    std::ostringstream out;
+    MapIO::write(out, map);
+    std::istringstream in(out.str());
+    const Map readMap = MapIO::read(in);
+
+    EXPECT_EQ(map.width(), readMap.width());
+    EXPECT_EQ(map.height(), readMap.height());
+    EXPECT_EQ(map.tiles(), readMap.tiles());
 }
 }

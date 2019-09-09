@@ -2,8 +2,6 @@
 
 #include "gamelib/allegro/AllegroUtil.h"
 
-#include <allegro.h>
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -60,7 +58,21 @@ public:
           unsigned leftFirst,
           unsigned topFirst,
           unsigned numColumns,
-          unsigned numRows);
+          unsigned numRows,
+          unsigned gapX = 0,
+          unsigned gapY = 0);
+
+    static BITMAP_PTR readFullImage(const std::string& fileName);
+
+    static std::vector<BITMAP_PTR> readImages(BITMAP_PTR& fullImage,
+          unsigned spriteWidth,
+          unsigned spriteHeight,
+          unsigned leftFirst,
+          unsigned topFirst,
+          unsigned numColumns,
+          unsigned numRows,
+          unsigned gapX = 0,
+          unsigned gapY = 0);
 };
 }
 }

@@ -19,9 +19,9 @@ TEST(TileTest, Creation) {
     EXPECT_EQ(tile3.type(), TileType::ROAD);
     EXPECT_EQ(tile3.action(), Action::ENEMY_NORTH);
 
-    const Tile tile4(TileType::ROAD, Action::STONE);
+    const Tile tile4(TileType::ROAD, Action::STONE_1);
     EXPECT_EQ(tile4.type(), TileType::ROAD);
-    EXPECT_EQ(tile4.action(), Action::STONE);
+    EXPECT_EQ(tile4.action(), Action::STONE_1);
 
     for (const auto type : util::EnumIterator<TileType>()) {
         Tile tileA(type);

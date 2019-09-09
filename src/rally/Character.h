@@ -2,7 +2,7 @@
 
 #include "gamelib/AnimationSequence.h"
 
-#include <allegro.h>
+#include <allegro5/allegro.h>
 
 class Character {
 public:
