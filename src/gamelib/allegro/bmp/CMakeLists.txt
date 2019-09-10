@@ -3,7 +3,6 @@ add_library(
     gamelib_allegro_bmp
     SpriteReader.cpp
     CarMapper.cpp
-    FuelMapper.cpp
     TileMapper.cpp
     MiniMapMapper.cpp
     ActionMapper.cpp

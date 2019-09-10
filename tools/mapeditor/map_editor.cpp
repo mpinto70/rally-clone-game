@@ -255,7 +255,7 @@ void drawHelp(const ALLEGRO_FONT& font) {
 }
 
 template <typename F, typename... ARGS>
-void drawCanvas(ALLEGRO_BITMAP& canvas, F f, ARGS&... args) {
+void drawCanvas(ALLEGRO_BITMAP& canvas, F f, ARGS&&... args) {
     al_set_target_bitmap(&canvas);
     f(std::forward<ARGS>(args)...);
 }
