@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
                             "    for tile <number> in [0..7]");
         }
 
-        const std::string file_name = argv[1];
+        const std::string fileName = argv[1];
         const std::string type = argv[2];
         if ((type == "car" || type == "tile") && argc != 4) {
             exit_visualizer("for car and tile you have to inform the number");
@@ -250,30 +250,32 @@ int main(int argc, char* argv[]) {
         al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
         al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
 
+        auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(fileName);
+
         al_start_timer(timer.get());
         if (type == "car") {
             using gamelib::allegro::bmp::CarMapper;
             using gamelib::allegro::bmp::CarSource;
             using gamelib::allegro::bmp::createCarMapper;
             const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
-            const auto mapper = createCarMapper(file_name, car_type);
+            const auto mapper = createCarMapper(fullImage, car_type);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "minimap") {
             using gamelib::allegro::bmp::createMiniMapMapper;
             using gamelib::allegro::bmp::MiniMapMapper;
-            const auto mapper = createMiniMapMapper(file_name);
+            const auto mapper = createMiniMapMapper(fullImage);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "action") {
             using gamelib::allegro::bmp::ActionMapper;
             using gamelib::allegro::bmp::createActionMapper;
-            const auto mapper = createActionMapper(file_name);
+            const auto mapper = createActionMapper(fullImage);
             show(mapper, font.get(), event_queue.get());
         } else if (type == "tile") {
             using gamelib::allegro::bmp::createTileMapper;
             using gamelib::allegro::bmp::TileMapper;
             using gamelib::allegro::bmp::TileSource;
             const auto tile_type = util::to_Enum<TileSource>(std::stoi(number));
-            const auto mapper = createTileMapper(file_name, tile_type);
+            const auto mapper = createTileMapper(fullImage, tile_type);
             show(mapper, font.get(), event_queue.get());
         }
 

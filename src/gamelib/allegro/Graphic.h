@@ -34,6 +34,7 @@ private:
     BITMAP_PTR bufferMap_;
     FONT_PTR fontSystem_;
     FONT_PTR fontMenu_;
+    BITMAP_PTR fullImage_;
     bmp::TileMapper tileMapper_;
     bmp::ActionMapper actionMapper_;
 };

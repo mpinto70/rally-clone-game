@@ -39,8 +39,9 @@ Graphic::Graphic(const std::string& common_path, unsigned width, unsigned height
         bufferMap_(nullptr, al_destroy_bitmap),
         fontSystem_(nullptr, al_destroy_font),
         fontMenu_(nullptr, al_destroy_font),
-        tileMapper_(bmp::createTileMapper(common_path + "/tileset.bmp", bmp::TileSource::GREEN)),
-        actionMapper_(bmp::createActionMapper(common_path + "/actions.bmp")) {
+        fullImage_(bmp::SpriteReader::readFullImage(common_path + "/Rally-general-sprites.png")),
+        tileMapper_(bmp::createTileMapper(fullImage_, bmp::TileSource::GREEN)),
+        actionMapper_(bmp::createActionMapper(fullImage_)) {
     using util::Exception;
     // creates the buffer of the entire screen
     buffer_.reset(al_create_bitmap(width, height));

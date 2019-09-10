@@ -15,44 +15,36 @@ namespace allegro {
 namespace bmp {
 
 template <typename ENUM>
-class SpriteMapper {
+class SpriteMapper final {
 public:
     using enum_type = ENUM;
 
-    SpriteMapper(const std::string& fileName,
+    SpriteMapper(BITMAP_PTR& fullImage,
           const unsigned spriteWidth,
           const unsigned spriteHeight,
           const unsigned leftFirst,
           const unsigned topFirst,
           const unsigned numColumns,
           const unsigned numRows)
-          : fullImage_(nullptr, al_destroy_bitmap), imageWidth_(spriteWidth), imageHeight_(spriteHeight) {
-        auto sprites = SpriteReader::readImages(fileName, spriteWidth, spriteHeight, leftFirst, topFirst, numColumns, numRows);
-        fullImage_.swap(sprites.first);
+          : imageWidth_(spriteWidth), imageHeight_(spriteHeight) {
+        auto sprites = SpriteReader::readImages(fullImage, spriteWidth, spriteHeight, leftFirst, topFirst, numColumns, numRows);
         using enum_t = typename std::underlying_type<ENUM>::type;
 
-        const auto qttyRead = sprites.second.size();
+        const auto qttyRead = sprites.size();
         const auto qttyExpected = static_cast<enum_t>(ENUM::LAST);
         if (qttyRead != qttyExpected) {
             throw util::Exception("SpriteMapper - number of sprites read ("
                                         + std::to_string(qttyRead)
                                         + ") differs from the expected ("
                                         + std::to_string(qttyExpected)
-                                        + ") in "
-                                        + fileName
-                                        + " for "
+                                        + ") for "
                                         + typeid(ENUM).name(),
                   1);
         }
         for (auto spriteId : util::EnumIterator<ENUM>()) {
             const auto index = static_cast<enum_t>(spriteId);
-            spriteMap_.insert(std::make_pair(spriteId, std::move(sprites.second.at(index))));
+            spriteMap_.insert(std::make_pair(spriteId, std::move(sprites.at(index))));
         }
-    }
-
-    virtual ~SpriteMapper() {
-        spriteMap_.clear();
-        fullImage_.reset();
     }
 
     SpriteMapper(const SpriteMapper&) = delete;
@@ -111,7 +103,6 @@ public:
 
 private:
     std::map<ENUM, BITMAP_PTR> spriteMap_;
-    BITMAP_PTR fullImage_;
     unsigned imageWidth_;
     unsigned imageHeight_;
 };

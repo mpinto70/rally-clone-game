@@ -55,16 +55,6 @@ public:
 
      \endverbatim
      */
-    static sprites_t readImages(const std::string& fileName,
-          unsigned spriteWidth,
-          unsigned spriteHeight,
-          unsigned leftFirst,
-          unsigned topFirst,
-          unsigned numColumns,
-          unsigned numRows,
-          unsigned gapX = 0,
-          unsigned gapY = 0);
-
     static std::vector<BITMAP_PTR> readImages(BITMAP_PTR& fullImage,
           unsigned spriteWidth,
           unsigned spriteHeight,

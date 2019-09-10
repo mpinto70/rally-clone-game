@@ -20,7 +20,7 @@ enum class CarSource {
 
 std::string to_string(CarSource);
 
-CarMapper createCarMapper(const std::string& file_name, CarSource);
+CarMapper createCarMapper(BITMAP_PTR& fullImage, CarSource);
 
 }
 }

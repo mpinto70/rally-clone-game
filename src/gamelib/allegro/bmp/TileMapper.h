@@ -16,18 +16,13 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-class TileMapper {
+class TileMapper final {
 public:
     using enum_type = map::TileType;
 
-    TileMapper(const std::string& fileName,
+    TileMapper(BITMAP_PTR& fullImage,
           const unsigned leftFirst,
           const unsigned topFirst);
-
-    virtual ~TileMapper() {
-        spriteMap_.clear();
-        fullImage_.reset();
-    }
 
     TileMapper(const TileMapper&) = delete;
     TileMapper& operator=(const TileMapper&) = delete;
@@ -87,7 +82,6 @@ private:
     static constexpr unsigned BASE_TILE_SIZE = 72;
 
     std::map<enum_type, BITMAP_PTR> spriteMap_;
-    BITMAP_PTR fullImage_;
 };
 
 enum class TileSource {
@@ -105,7 +99,7 @@ enum class TileSource {
 
 std::string to_string(TileSource);
 
-TileMapper createTileMapper(const std::string& file_name, TileSource);
+TileMapper createTileMapper(BITMAP_PTR& fullImage, TileSource);
 }
 }
 }

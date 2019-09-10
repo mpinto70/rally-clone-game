@@ -15,16 +15,11 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-class ActionMapper {
+class ActionMapper final {
 public:
     using enum_type = map::Action;
 
-    explicit ActionMapper(const std::string& fileName);
-
-    virtual ~ActionMapper() {
-        spriteMap_.clear();
-        fullImage_.reset();
-    }
+    explicit ActionMapper(BITMAP_PTR& fullImage);
 
     ActionMapper(const ActionMapper&) = delete;
     ActionMapper& operator=(const ActionMapper&) = delete;
@@ -93,10 +88,9 @@ public:
 private:
     std::map<enum_type, BITMAP_PTR> spriteMap_;
     std::map<enum_type, unsigned> sizes_;
-    BITMAP_PTR fullImage_;
 };
 
-ActionMapper createActionMapper(const std::string& file_name);
+ActionMapper createActionMapper(BITMAP_PTR& fullImage);
 }
 }
 }

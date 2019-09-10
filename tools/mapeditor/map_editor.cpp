@@ -550,23 +550,25 @@ int main(int argc, char* argv[]) {
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
-        const auto tileMapper = [=]() {
+        auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritePath);
+
+        const auto tileMapper = [&]() {
             using gamelib::allegro::bmp::createTileMapper;
             using gamelib::allegro::bmp::TileMapper;
             using gamelib::allegro::bmp::TileSource;
-            return createTileMapper(spritePath, TileSource::BROWN);
+            return createTileMapper(fullImage, TileSource::BROWN);
         }();
 
-        const auto actionMapper = [=]() {
+        const auto actionMapper = [&]() {
             using gamelib::allegro::bmp::ActionMapper;
             using gamelib::allegro::bmp::createActionMapper;
-            return createActionMapper(spritePath);
+            return createActionMapper(fullImage);
         }();
 
-        auto createCarMapper = [=](gamelib::allegro::bmp::CarSource carSource) {
+        auto createCarMapper = [&](gamelib::allegro::bmp::CarSource carSource) {
             using gamelib::allegro::bmp::CarMapper;
             using gamelib::allegro::bmp::CarSource;
-            return gamelib::allegro::bmp::createCarMapper(spritePath, carSource);
+            return gamelib::allegro::bmp::createCarMapper(fullImage, carSource);
         };
         const auto playerMapper = createCarMapper(gamelib::allegro::bmp::CarSource::PLAYER_1);
         const auto enemyMapper = createCarMapper(gamelib::allegro::bmp::CarSource::ENEMY_1);

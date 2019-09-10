@@ -16,20 +16,6 @@ BITMAP_PTR SpriteReader::readFullImage(const std::string& fileName) {
     return fullBitmap;
 }
 
-SpriteReader::sprites_t SpriteReader::readImages(const std::string& fileName,
-      unsigned spriteWidth,
-      unsigned spriteHeight,
-      unsigned leftFirst,
-      unsigned topFirst,
-      unsigned numColumns,
-      unsigned numRows,
-      unsigned gapX,
-      unsigned gapY) {
-    auto fullBitmap = readFullImage(fileName);
-    auto sprites = readImages(fullBitmap, spriteWidth, spriteHeight, leftFirst, topFirst, numColumns, numRows, gapX, gapY);
-    return std::make_pair(std::move(fullBitmap), std::move(sprites));
-}
-
 std::vector<BITMAP_PTR> SpriteReader::readImages(BITMAP_PTR& fullBitmap,
       unsigned spriteWidth,
       unsigned spriteHeight,

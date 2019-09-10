@@ -52,22 +52,19 @@ enum class FileTileType {
 };
 }
 
-TileMapper::TileMapper(const std::string& fileName,
+TileMapper::TileMapper(BITMAP_PTR& fullImage,
       const unsigned leftFirst,
-      const unsigned topFirst)
-      : fullImage_(nullptr, al_destroy_bitmap) {
+      const unsigned topFirst) {
     const auto tile_size = imageHeight(0);
-    auto sprites = SpriteReader::readImages(fileName, tile_size, tile_size, leftFirst, topFirst, 7, 6);
-    fullImage_.swap(sprites.first);
-    auto& images = sprites.second;
-    images.erase(images.begin() + static_cast<size_t>(FileTileType::IGNORED_1));
+    auto sprites = SpriteReader::readImages(fullImage, tile_size, tile_size, leftFirst, topFirst, 7, 6);
+    sprites.erase(sprites.begin() + static_cast<size_t>(FileTileType::IGNORED_1));
     for (auto e : util::EnumIterator<map::TileType>()) {
         const auto idx = map::from_ETileType<size_t>(e);
-        spriteMap_.insert({ e, std::move(images[idx]) });
+        spriteMap_.insert({ e, std::move(sprites[idx]) });
     }
 }
 
-TileMapper createTileMapper(const std::string& file_name, TileSource type) {
+TileMapper createTileMapper(BITMAP_PTR& fullImage, TileSource type) {
     constexpr unsigned TILE_SIZE = 72;
     constexpr unsigned NUM_COLUMNS = 7;
     constexpr unsigned NUM_LINES = 6;
@@ -76,7 +73,7 @@ TileMapper createTileMapper(const std::string& file_name, TileSource type) {
     const auto idx = util::from_Enum<unsigned>(type);
     const auto x0 = (idx % 2) * TILE_SIZE * NUM_COLUMNS;
     const auto y0 = (idx / 2) * TILE_SIZE * NUM_LINES + FIRST_LINE_Y;
-    return TileMapper(file_name, x0, y0);
+    return TileMapper(fullImage, x0, y0);
 }
 
 std::string to_string(TileSource enum_value) {

@@ -4,33 +4,32 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-ActionMapper::ActionMapper(const std::string& fileName)
-      : fullImage_(SpriteReader::readFullImage(fileName)) {
+ActionMapper::ActionMapper(BITMAP_PTR& fullImage) {
     constexpr unsigned ROAD_X = 0;
     constexpr unsigned ROAD_Y = 336; // height of first road
     constexpr unsigned ROAD_SIZE = 72;
-    auto road = SpriteReader::readImages(fullImage_, ROAD_SIZE, ROAD_SIZE, ROAD_X, ROAD_Y, 1, 1);
+    auto road = SpriteReader::readImages(fullImage, ROAD_SIZE, ROAD_SIZE, ROAD_X, ROAD_Y, 1, 1);
 
     constexpr unsigned PLAYER_X = 0;
     constexpr unsigned PLAYER_Y = 0;
     constexpr unsigned PLAYER_SIZE = 48;
-    auto player = SpriteReader::readImages(fullImage_, PLAYER_SIZE, PLAYER_SIZE, PLAYER_X, PLAYER_Y, 1, 1);
+    auto player = SpriteReader::readImages(fullImage, PLAYER_SIZE, PLAYER_SIZE, PLAYER_X, PLAYER_Y, 1, 1);
 
     constexpr unsigned BANG_X = 0;
     constexpr unsigned BANG_Y = 48 * 5; // 5 = 4 cars + 1 fuel
     constexpr unsigned BANG_SIZE = 72;
-    auto bang_rocks_smoke = SpriteReader::readImages(fullImage_, BANG_SIZE, BANG_SIZE, BANG_X, BANG_Y, 4, 1);
+    auto bang_rocks_smoke = SpriteReader::readImages(fullImage, BANG_SIZE, BANG_SIZE, BANG_X, BANG_Y, 4, 1);
 
     constexpr unsigned CAR_X = 0;
     constexpr unsigned CAR_Y = 48 * 1; // 1 = second row of cars
     constexpr unsigned CAR_SIZE = 48;
     constexpr unsigned CAR_GAP = 48 * 2; // 2 cars in each gap
-    auto cars = SpriteReader::readImages(fullImage_, CAR_SIZE, CAR_SIZE, CAR_X, CAR_Y, 4, 1, CAR_GAP);
+    auto cars = SpriteReader::readImages(fullImage, CAR_SIZE, CAR_SIZE, CAR_X, CAR_Y, 4, 1, CAR_GAP);
 
     constexpr unsigned FUEL_X = 0;
     constexpr unsigned FUEL_Y = 48 * 4; // 4 = cars
     constexpr unsigned FUEL_SIZE = 48;
-    auto fuels = SpriteReader::readImages(fullImage_, FUEL_SIZE, FUEL_SIZE, FUEL_X, FUEL_Y, 3, 1);
+    auto fuels = SpriteReader::readImages(fullImage, FUEL_SIZE, FUEL_SIZE, FUEL_X, FUEL_Y, 3, 1);
 
     using enum_t = typename std::underlying_type<enum_type>::type;
 
@@ -41,9 +40,7 @@ ActionMapper::ActionMapper(const std::string& fileName)
                                     + std::to_string(qttyRead)
                                     + ") differs from the expected ("
                                     + std::to_string(qttyExpected)
-                                    + ") in "
-                                    + fileName
-                                    + " for "
+                                    + ") for "
                                     + typeid(enum_type).name(),
               1);
     }
@@ -87,8 +84,8 @@ ActionMapper::ActionMapper(const std::string& fileName)
     sizes_[enum_type::FUEL_L] = FUEL_SIZE;
 }
 
-ActionMapper createActionMapper(const std::string& file_name) {
-    return ActionMapper(file_name);
+ActionMapper createActionMapper(BITMAP_PTR& fullImage) {
+    return ActionMapper(fullImage);
 }
 }
 }
