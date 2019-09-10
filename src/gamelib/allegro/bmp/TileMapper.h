@@ -20,7 +20,7 @@ class TileMapper final {
 public:
     using enum_type = map::TileType;
 
-    TileMapper(BITMAP_PTR& fullImage,
+    TileMapper(const BITMAP_PTR& fullImage,
           const unsigned leftFirst,
           const unsigned topFirst);
 
@@ -99,7 +99,7 @@ enum class TileSource {
 
 std::string to_string(TileSource);
 
-TileMapper createTileMapper(BITMAP_PTR& fullImage, TileSource);
+TileMapper createTileMapper(const BITMAP_PTR& fullImage, TileSource);
 }
 }
 }

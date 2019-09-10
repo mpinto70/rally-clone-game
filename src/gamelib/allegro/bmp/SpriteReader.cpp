@@ -16,7 +16,7 @@ BITMAP_PTR SpriteReader::readFullImage(const std::string& fileName) {
     return fullBitmap;
 }
 
-std::vector<BITMAP_PTR> SpriteReader::readImages(BITMAP_PTR& fullBitmap,
+std::vector<BITMAP_PTR> SpriteReader::readImages(const BITMAP_PTR& fullBitmap,
       unsigned spriteWidth,
       unsigned spriteHeight,
       unsigned leftFirst,

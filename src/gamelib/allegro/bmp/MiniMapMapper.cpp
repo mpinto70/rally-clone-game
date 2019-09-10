@@ -4,7 +4,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-MiniMapMapper createMiniMapMapper(BITMAP_PTR& fullImage) {
+MiniMapMapper createMiniMapMapper(const BITMAP_PTR& fullImage) {
     constexpr unsigned TILE_SIZE = 48;
     constexpr unsigned X = 576;
     constexpr unsigned Y = 144;

@@ -550,7 +550,7 @@ int main(int argc, char* argv[]) {
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
-        auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritePath);
+        const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritePath);
 
         const auto tileMapper = [&]() {
             using gamelib::allegro::bmp::createTileMapper;

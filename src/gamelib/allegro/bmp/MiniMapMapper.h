@@ -9,7 +9,7 @@ namespace bmp {
 
 using MiniMapMapper = SpriteMapper<minimap::Type>;
 
-MiniMapMapper createMiniMapMapper(BITMAP_PTR& fullImage);
+MiniMapMapper createMiniMapMapper(const BITMAP_PTR& fullImage);
 }
 }
 }

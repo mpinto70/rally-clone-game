@@ -52,7 +52,7 @@ enum class FileTileType {
 };
 }
 
-TileMapper::TileMapper(BITMAP_PTR& fullImage,
+TileMapper::TileMapper(const BITMAP_PTR& fullImage,
       const unsigned leftFirst,
       const unsigned topFirst) {
     const auto tile_size = imageHeight(0);
@@ -64,7 +64,7 @@ TileMapper::TileMapper(BITMAP_PTR& fullImage,
     }
 }
 
-TileMapper createTileMapper(BITMAP_PTR& fullImage, TileSource type) {
+TileMapper createTileMapper(const BITMAP_PTR& fullImage, TileSource type) {
     constexpr unsigned TILE_SIZE = 72;
     constexpr unsigned NUM_COLUMNS = 7;
     constexpr unsigned NUM_LINES = 6;

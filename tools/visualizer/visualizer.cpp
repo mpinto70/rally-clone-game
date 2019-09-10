@@ -250,7 +250,7 @@ int main(int argc, char* argv[]) {
         al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
         al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
 
-        auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(fileName);
+        const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(fileName);
 
         al_start_timer(timer.get());
         if (type == "car") {

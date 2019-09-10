@@ -4,7 +4,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-CarMapper createCarMapper(BITMAP_PTR& fullImage, CarSource type) {
+CarMapper createCarMapper(const BITMAP_PTR& fullImage, CarSource type) {
     constexpr unsigned TILE_SIZE = 48;
 
     const auto y0 = util::from_Enum<unsigned>(type) * TILE_SIZE;

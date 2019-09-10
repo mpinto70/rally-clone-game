@@ -19,7 +19,7 @@ class ActionMapper final {
 public:
     using enum_type = map::Action;
 
-    explicit ActionMapper(BITMAP_PTR& fullImage);
+    explicit ActionMapper(const BITMAP_PTR& fullImage);
 
     ActionMapper(const ActionMapper&) = delete;
     ActionMapper& operator=(const ActionMapper&) = delete;
@@ -90,7 +90,7 @@ private:
     std::map<enum_type, unsigned> sizes_;
 };
 
-ActionMapper createActionMapper(BITMAP_PTR& fullImage);
+ActionMapper createActionMapper(const BITMAP_PTR& fullImage);
 }
 }
 }

@@ -19,7 +19,7 @@ class SpriteMapper final {
 public:
     using enum_type = ENUM;
 
-    SpriteMapper(BITMAP_PTR& fullImage,
+    SpriteMapper(const BITMAP_PTR& fullImage,
           const unsigned spriteWidth,
           const unsigned spriteHeight,
           const unsigned leftFirst,

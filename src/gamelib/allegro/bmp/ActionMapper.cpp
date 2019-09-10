@@ -4,7 +4,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-ActionMapper::ActionMapper(BITMAP_PTR& fullImage) {
+ActionMapper::ActionMapper(const BITMAP_PTR& fullImage) {
     constexpr unsigned ROAD_X = 0;
     constexpr unsigned ROAD_Y = 336; // height of first road
     constexpr unsigned ROAD_SIZE = 72;
@@ -84,7 +84,7 @@ ActionMapper::ActionMapper(BITMAP_PTR& fullImage) {
     sizes_[enum_type::FUEL_L] = FUEL_SIZE;
 }
 
-ActionMapper createActionMapper(BITMAP_PTR& fullImage) {
+ActionMapper createActionMapper(const BITMAP_PTR& fullImage) {
     return ActionMapper(fullImage);
 }
 }
