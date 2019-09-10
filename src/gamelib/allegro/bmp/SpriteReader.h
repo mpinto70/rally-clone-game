@@ -14,6 +14,9 @@ namespace bmp {
 class SpriteReader {
 public:
     using sprites_t = std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>>;
+
+    static BITMAP_PTR readFullImage(const std::string& fileName);
+
     /** Reads the sprites from a bitmap image file
      * @param fileName      name of the file with the image
      * @param spriteWidth   size of each sprite
@@ -61,8 +64,6 @@ public:
           unsigned numRows,
           unsigned gapX = 0,
           unsigned gapY = 0);
-
-    static BITMAP_PTR readFullImage(const std::string& fileName);
 
     static std::vector<BITMAP_PTR> readImages(BITMAP_PTR& fullImage,
           unsigned spriteWidth,
