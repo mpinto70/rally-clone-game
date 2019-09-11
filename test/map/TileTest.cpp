@@ -7,12 +7,12 @@
 namespace map {
 
 TEST(TileTest, Creation) {
-    const Tile tile1(TileType::RIGHT);
-    EXPECT_EQ(tile1.type(), TileType::RIGHT);
+    const Tile tile1(TileType::E);
+    EXPECT_EQ(tile1.type(), TileType::E);
     EXPECT_EQ(tile1.action(), Action::NONE);
 
-    const Tile tile2(TileType::BOTTOM);
-    EXPECT_EQ(tile2.type(), TileType::BOTTOM);
+    const Tile tile2(TileType::S);
+    EXPECT_EQ(tile2.type(), TileType::S);
     EXPECT_EQ(tile2.action(), Action::NONE);
 
     const Tile tile3(TileType::ROAD, Action::ENEMY_NORTH);
@@ -40,8 +40,8 @@ TEST(TileTest, Creation) {
 }
 
 TEST(TileTest, Modification) {
-    Tile tile(TileType::RIGHT);
-    EXPECT_EQ(tile.type(), TileType::RIGHT);
+    Tile tile(TileType::E);
+    EXPECT_EQ(tile.type(), TileType::E);
     EXPECT_EQ(tile.action(), Action::NONE);
 
     tile.type(TileType::GRASS);

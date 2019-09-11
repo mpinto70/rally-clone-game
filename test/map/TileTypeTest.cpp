@@ -7,17 +7,17 @@
 namespace map {
 
 TEST(TileTypeTest, ToString) {
-    EXPECT_EQ(to_string(TileType::TOP_LEFT), "TileType::TOP_LEFT");
-    EXPECT_EQ(to_string(TileType::RIGHT_TOP), "TileType::RIGHT_TOP");
-    EXPECT_EQ(to_string(TileType::LEFT_BOTTOM), "TileType::LEFT_BOTTOM");
-    EXPECT_EQ(to_string(TileType::BOTTOM_RIGHT), "TileType::BOTTOM_RIGHT");
+    EXPECT_EQ(to_string(TileType::N_W), "TileType::N_W");
+    EXPECT_EQ(to_string(TileType::N_E), "TileType::N_E");
+    EXPECT_EQ(to_string(TileType::W_S), "TileType::W_S");
+    EXPECT_EQ(to_string(TileType::S_E), "TileType::S_E");
     EXPECT_EQ(to_string(TileType::GRASS), "TileType::GRASS");
     EXPECT_EQ(to_string(TileType::BUSH), "TileType::BUSH");
     EXPECT_EQ(to_string(TileType::ROAD), "TileType::ROAD");
-    EXPECT_EQ(to_string(TileType::LEFT), "TileType::LEFT");
-    EXPECT_EQ(to_string(TileType::RIGHT), "TileType::RIGHT");
-    EXPECT_EQ(to_string(TileType::BOTTOM), "TileType::BOTTOM");
-    EXPECT_EQ(to_string(TileType::TOP), "TileType::TOP");
+    EXPECT_EQ(to_string(TileType::W), "TileType::W");
+    EXPECT_EQ(to_string(TileType::E), "TileType::E");
+    EXPECT_EQ(to_string(TileType::S), "TileType::S");
+    EXPECT_EQ(to_string(TileType::N), "TileType::N");
 
     EXPECT_THROW(to_string(TileType::LAST), util::Exception);
 

@@ -20,10 +20,10 @@ TEST(MapTest, Creation) {
     tiles = {
         Tile{ TileType::ROAD, Action::ENEMY_NORTH },
         Tile{ TileType::BUSH, Action::NONE },
-        Tile{ TileType::BOTTOM, Action::NONE },
+        Tile{TileType::S, Action::NONE },
         Tile{ TileType::GRASS, Action::NONE },
-        Tile{ TileType::LEFT, Action::NONE },
-        Tile{ TileType::RIGHT, Action::NONE }
+        Tile{TileType::W, Action::NONE },
+        Tile{TileType::E, Action::NONE }
     };
 
     const Map m2(2, 3, tiles);
@@ -66,19 +66,19 @@ TEST(MapTest, Indexing) {
     tiles = {
         Tile{ TileType::ROAD, Action::ENEMY_NORTH },
         Tile{ TileType::BUSH, Action::NONE },
-        Tile{ TileType::BOTTOM, Action::NONE },
+        Tile{TileType::S, Action::NONE },
         Tile{ TileType::GRASS, Action::NONE },
-        Tile{ TileType::LEFT, Action::NONE },
-        Tile{ TileType::RIGHT, Action::NONE }
+        Tile{TileType::W, Action::NONE },
+        Tile{TileType::E, Action::NONE }
     };
 
     const Map m3(2, 3, tiles);
     EXPECT_EQ(m3(0, 0), Tile(TileType::ROAD, Action::ENEMY_NORTH));
     EXPECT_EQ(m3(1, 0), Tile(TileType::BUSH, Action::NONE));
-    EXPECT_EQ(m3(0, 1), Tile(TileType::BOTTOM, Action::NONE));
+    EXPECT_EQ(m3(0, 1), Tile(TileType::S, Action::NONE));
     EXPECT_EQ(m3(1, 1), Tile(TileType::GRASS, Action::NONE));
-    EXPECT_EQ(m3(0, 2), Tile(TileType::LEFT, Action::NONE));
-    EXPECT_EQ(m3(1, 2), Tile(TileType::RIGHT, Action::NONE));
+    EXPECT_EQ(m3(0, 2), Tile(TileType::W, Action::NONE));
+    EXPECT_EQ(m3(1, 2), Tile(TileType::E, Action::NONE));
 
     EXPECT_THROW(m3(2, 0), util::Exception);
     EXPECT_THROW(m3(0, 3), util::Exception);
@@ -86,10 +86,10 @@ TEST(MapTest, Indexing) {
     const Map m4(3, 2, tiles);
     EXPECT_EQ(m4(0, 0), Tile(TileType::ROAD, Action::ENEMY_NORTH));
     EXPECT_EQ(m4(1, 0), Tile(TileType::BUSH, Action::NONE));
-    EXPECT_EQ(m4(2, 0), Tile(TileType::BOTTOM, Action::NONE));
+    EXPECT_EQ(m4(2, 0), Tile(TileType::S, Action::NONE));
     EXPECT_EQ(m4(0, 1), Tile(TileType::GRASS, Action::NONE));
-    EXPECT_EQ(m4(1, 1), Tile(TileType::LEFT, Action::NONE));
-    EXPECT_EQ(m4(2, 1), Tile(TileType::RIGHT, Action::NONE));
+    EXPECT_EQ(m4(1, 1), Tile(TileType::W, Action::NONE));
+    EXPECT_EQ(m4(2, 1), Tile(TileType::E, Action::NONE));
 
     EXPECT_THROW(m4(3, 0), util::Exception);
     EXPECT_THROW(m4(0, 2), util::Exception);
