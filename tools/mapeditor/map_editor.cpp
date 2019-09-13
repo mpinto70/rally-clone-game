@@ -121,11 +121,7 @@ void drawGrid(const map::Map& gameMap,
     }
 }
 
-void drawMap(const map::Map& gameMap,
-      const gamelib::allegro::bmp::CarMapper&,
-      const gamelib::allegro::bmp::CarMapper&,
-      const int& x0,
-      const int& y0) {
+void drawMap(const map::Map& gameMap, const int& x0, const int& y0) {
     auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
@@ -352,9 +348,7 @@ void handleRightClick(map::Map& gameMap,
 }
 
 void loop(map::Map& gameMap,
-      const std::string& stagePath,
-      const gamelib::allegro::bmp::CarMapper& playerMapper,
-      const gamelib::allegro::bmp::CarMapper& enemyMapper) {
+      const std::string& stagePath) {
     using gamelib::allegro::BITMAP_PTR;
     auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
@@ -486,7 +480,7 @@ void loop(map::Map& gameMap,
             status_lines.push_back("Selected tile: " + map::to_string(selectedTile));
             status_lines.push_back("Selected action: " + map::to_string(selectedAction));
 
-            drawCanvas(*mapCanvas, drawMap, gameMap, playerMapper, enemyMapper, x0, y0);
+            drawCanvas(*mapCanvas, drawMap, gameMap, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
             drawCanvas(*actionsCanvas, drawActions);
             drawCanvas(*tilesCanvas, drawTiles);
@@ -536,20 +530,17 @@ int main(int argc, char* argv[]) {
 
     try {
         using gamelib::allegro::Graphic;
-        util::Singleton<Graphic>::create(std::make_unique<Graphic>(spritePath, WINDOW_W, WINDOW_H));
+        util::Singleton<Graphic>::create(std::make_unique<Graphic>(spritePath,
+              WINDOW_W,
+              WINDOW_H,
+              gamelib::allegro::bmp::TileSource::GREEN,
+              gamelib::allegro::bmp::CarSource::PLAYER_1,
+              gamelib::allegro::bmp::CarSource::ENEMY_1));
         auto& graphic = util::Singleton<Graphic>::instance();
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
         const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritesFile);
-
-        auto createCarMapper = [&](gamelib::allegro::bmp::CarSource carSource) {
-            using gamelib::allegro::bmp::CarMapper;
-            using gamelib::allegro::bmp::CarSource;
-            return gamelib::allegro::bmp::createCarMapper(fullImage, carSource);
-        };
-        const auto playerMapper = createCarMapper(gamelib::allegro::bmp::CarSource::PLAYER_1);
-        const auto enemyMapper = createCarMapper(gamelib::allegro::bmp::CarSource::ENEMY_1);
 
         initialize_colors();
 
@@ -559,7 +550,7 @@ int main(int argc, char* argv[]) {
         al_register_event_source(graphic.eventQueue().get(), al_get_timer_event_source(timer.get()));
         al_start_timer(timer.get());
 
-        loop(gameMap, stagePath, playerMapper, enemyMapper);
+        loop(gameMap, stagePath);
     } catch (std::exception& e) {
         fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;
