@@ -11,11 +11,11 @@ namespace allegro {
 class Graphic : public ::game::Graphic {
 public:
     explicit Graphic(const std::string& common_path,
-            unsigned width,
-            unsigned height,
-            bmp::TileSource tileSource = bmp::TileSource::GREEN,
-            bmp::CarSource carSource = bmp::CarSource::PLAYER_1,
-            bmp::CarSource enemySource = bmp::CarSource::ENEMY_1);
+          unsigned width,
+          unsigned height,
+          bmp::TileSource tileSource = bmp::TileSource::GREEN,
+          bmp::CarSource carSource = bmp::CarSource::PLAYER_1,
+          bmp::CarSource enemySource = bmp::CarSource::ENEMY_1);
     ~Graphic() override;
 
     [[nodiscard]] unsigned width() const override { return width_; }

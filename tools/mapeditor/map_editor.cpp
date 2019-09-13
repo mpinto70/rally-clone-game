@@ -6,8 +6,8 @@
 #include "map/Map.h"
 #include "map/MapIO.h"
 #include "map/TileType.h"
-#include "util/Util.h"
 #include "util/Singleton.h"
+#include "util/Util.h"
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -16,12 +16,12 @@
 #include <boost/filesystem.hpp>
 
 #include <cstdio>
+#include <gamelib/allegro/Graphic.h>
 #include <gamelib/allegro/bmp/CarMapper.h>
 #include <iostream>
 #include <string>
 #include <typeinfo>
 #include <vector>
-#include <gamelib/allegro/Graphic.h>
 
 namespace {
 using gamelib::allegro::bmp::TILE_SIZE;
@@ -126,7 +126,7 @@ void drawMap(const map::Map& gameMap,
       const gamelib::allegro::bmp::CarMapper&,
       const int& x0,
       const int& y0) {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
     const unsigned begin_j = x0 < 0 ? 0 : x0 / (TILE_SIZE);
@@ -170,7 +170,7 @@ void drawMiniMap(const map::Map& gameMap) {
 }
 
 void drawActions() {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTIONS_BG);
 
     unsigned x = 5;
@@ -199,7 +199,7 @@ void drawActions() {
 }
 
 void drawTiles() {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
 
     unsigned x = 5;
@@ -220,7 +220,7 @@ void drawTiles() {
 }
 
 void drawStatus(const std::vector<std::string>& lines) {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
 
     int y = 10;
@@ -231,7 +231,7 @@ void drawStatus(const std::vector<std::string>& lines) {
 }
 
 void drawHelp() {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
 
     const std::vector<std::string> manual = {
@@ -284,7 +284,7 @@ void handleLeftClickInTiles(const int X, const int Y) {
 }
 
 void handleRightClickInActions(const int X, const int Y) {
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
@@ -356,7 +356,7 @@ void loop(map::Map& gameMap,
       const gamelib::allegro::bmp::CarMapper& playerMapper,
       const gamelib::allegro::bmp::CarMapper& enemyMapper) {
     using gamelib::allegro::BITMAP_PTR;
-    auto &graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
     auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), al_destroy_bitmap);
     auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), al_destroy_bitmap);
@@ -537,7 +537,7 @@ int main(int argc, char* argv[]) {
     try {
         using gamelib::allegro::Graphic;
         util::Singleton<Graphic>::create(std::make_unique<Graphic>(spritePath, WINDOW_W, WINDOW_H));
-        auto &graphic = util::Singleton<Graphic>::instance();
+        auto& graphic = util::Singleton<Graphic>::instance();
 
         map::Map gameMap = createOrLoadMap(stagePath);
 

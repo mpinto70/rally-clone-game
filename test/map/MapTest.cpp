@@ -20,10 +20,10 @@ TEST(MapTest, Creation) {
     tiles = {
         Tile{ TileType::ROAD, Action::ENEMY_NORTH },
         Tile{ TileType::BUSH, Action::NONE },
-        Tile{TileType::S, Action::NONE },
+        Tile{ TileType::S, Action::NONE },
         Tile{ TileType::GRASS, Action::NONE },
-        Tile{TileType::W, Action::NONE },
-        Tile{TileType::E, Action::NONE }
+        Tile{ TileType::W, Action::NONE },
+        Tile{ TileType::E, Action::NONE }
     };
 
     const Map m2(2, 3, tiles);
@@ -66,10 +66,10 @@ TEST(MapTest, Indexing) {
     tiles = {
         Tile{ TileType::ROAD, Action::ENEMY_NORTH },
         Tile{ TileType::BUSH, Action::NONE },
-        Tile{TileType::S, Action::NONE },
+        Tile{ TileType::S, Action::NONE },
         Tile{ TileType::GRASS, Action::NONE },
-        Tile{TileType::W, Action::NONE },
-        Tile{TileType::E, Action::NONE }
+        Tile{ TileType::W, Action::NONE },
+        Tile{ TileType::E, Action::NONE }
     };
 
     const Map m3(2, 3, tiles);

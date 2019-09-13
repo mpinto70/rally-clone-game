@@ -15,11 +15,11 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <gamelib/allegro/Graphic.h>
 #include <iostream>
 #include <string>
-#include <vector>
 #include <util/Singleton.h>
-#include <gamelib/allegro/Graphic.h>
+#include <vector>
 
 namespace {
 constexpr unsigned WINDOW_W = 800; ///< map window width
@@ -217,14 +217,13 @@ int main(int argc, char* argv[]) {
 
         using gamelib::allegro::Graphic;
         util::Singleton<Graphic>::create(std::make_unique<Graphic>(filePath, WINDOW_W, WINDOW_H));
-        auto &graphic = util::Singleton<Graphic>::instance();
+        auto& graphic = util::Singleton<Graphic>::instance();
 
         initialize_colors();
 
         auto timer = gamelib::allegro::TIMER_PTR(al_create_timer(1.0 / 30.0), al_destroy_timer);
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
-
 
         al_register_event_source(graphic.eventQueue().get(), al_get_timer_event_source(timer.get()));
 
