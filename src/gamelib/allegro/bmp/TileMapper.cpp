@@ -1,9 +1,15 @@
 #include "TileMapper.h"
 
+#include <allegro5/allegro_primitives.h>
+
+#include <set>
+
 namespace gamelib {
 namespace allegro {
 namespace bmp {
 namespace {
+constexpr unsigned EDGE_SIZE = 6;
+
 enum class FileTileType {
     ROAD,
     N_W,
@@ -50,6 +56,53 @@ enum class FileTileType {
     LAST,
     FIRST = ROAD
 };
+
+}
+/** Types of tiles.
+ * TOP, LEFT, RIGHT and BOTTOM refer to the sides
+ * NW, SW, SE and NE refer to the corners
+ \verbatim
+             1
+      2 ,----------, 0
+        |          |
+      3 |   tile   | 7
+        |          |
+      4 `----------' 6
+             5
+ \endverbatim
+ */
+void fillSides(const std::set<int>& sides) {
+    auto color = al_map_rgb(0, 0, 0);
+    for (auto side : sides) {
+        switch (side) {
+            case 0:
+                al_draw_filled_rectangle(TILE_SIZE - EDGE_SIZE + 1, 0, TILE_SIZE, EDGE_SIZE - 1, color);
+                break;
+            case 1:
+                al_draw_filled_rectangle(0, 0, TILE_SIZE, EDGE_SIZE - 1, color);
+                break;
+            case 2:
+                al_draw_filled_rectangle(0, 0, EDGE_SIZE - 1, EDGE_SIZE - 1, color);
+                break;
+            case 3:
+                al_draw_filled_rectangle(0, 0, EDGE_SIZE - 1, TILE_SIZE, color);
+                break;
+            case 4:
+                al_draw_filled_rectangle(0, TILE_SIZE - EDGE_SIZE + 1, EDGE_SIZE - 1, TILE_SIZE, color);
+                break;
+            case 5:
+                al_draw_filled_rectangle(0, TILE_SIZE - EDGE_SIZE + 1, TILE_SIZE, TILE_SIZE, color);
+                break;
+            case 6:
+                al_draw_filled_rectangle(TILE_SIZE - EDGE_SIZE + 1, TILE_SIZE - EDGE_SIZE + 1, TILE_SIZE, TILE_SIZE, color);
+                break;
+            case 7:
+                al_draw_filled_rectangle(TILE_SIZE - EDGE_SIZE + 1, 0, TILE_SIZE, TILE_SIZE, color);
+                break;
+            default:
+                throw std::logic_error("Unknown side " + std::to_string(side));
+        }
+    }
 }
 
 TileMapper::TileMapper(const BITMAP_PTR& fullImage,
@@ -65,7 +118,6 @@ TileMapper::TileMapper(const BITMAP_PTR& fullImage,
 }
 
 TileMapper createTileMapper(const BITMAP_PTR& fullImage, TileSource type) {
-    constexpr unsigned TILE_SIZE = 72;
     constexpr unsigned NUM_COLUMNS = 7;
     constexpr unsigned NUM_LINES = 6;
     constexpr unsigned FIRST_LINE_Y = 336;

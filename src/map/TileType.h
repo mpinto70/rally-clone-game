@@ -14,17 +14,13 @@ using tile_type_t = std::uint8_t;
  * TOP, LEFT, RIGHT and BOTTOM refer to the sides
  * NW, SW, SE and NE refer to the corners
  \verbatim
-             top
-     NW ,-----------, NE
-        |           |
-      l |           | r
-      e |           | i
-      f |   tile    | g
-      t |           | h
-        |           | t
-        |           |
-     SW `-----------' SE
-            bottom
+             N
+     NW ,----------, NE
+        |          |
+      W |   tile   | E
+        |          |
+     SW `----------' SE
+             S
  \endverbatim
  */
 enum class TileType : tile_type_t {

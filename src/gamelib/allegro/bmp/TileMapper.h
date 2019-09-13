@@ -16,6 +16,8 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
+constexpr unsigned TILE_SIZE = 72; ///< tile size in pixels
+
 class TileMapper final {
 public:
     using enum_type = map::TileType;
