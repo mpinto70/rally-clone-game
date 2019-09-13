@@ -58,9 +58,7 @@ enum class FileTileType {
 };
 
 }
-/** Types of tiles.
- * TOP, LEFT, RIGHT and BOTTOM refer to the sides
- * NW, SW, SE and NE refer to the corners
+/**
  \verbatim
              1
       2 ,----------, 0
