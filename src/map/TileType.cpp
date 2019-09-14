@@ -13,12 +13,13 @@ std::string to_string(TileType enum_value) {
         CASE_ENUM_TO_STRING(TileType::N_W_SE);
         CASE_ENUM_TO_STRING(TileType::N_W_E);
         CASE_ENUM_TO_STRING(TileType::N_E_SW);
+        CASE_ENUM_TO_STRING(TileType::N_SW);
         CASE_ENUM_TO_STRING(TileType::W);
         CASE_ENUM_TO_STRING(TileType::GRASS);
         CASE_ENUM_TO_STRING(TileType::E);
-        CASE_ENUM_TO_STRING(TileType::N_W_BOTTOM);
+        CASE_ENUM_TO_STRING(TileType::N_W_S);
         CASE_ENUM_TO_STRING(TileType::NE_NW_SW_SE);
-        CASE_ENUM_TO_STRING(TileType::S_E_TOP);
+        CASE_ENUM_TO_STRING(TileType::N_S_E);
         CASE_ENUM_TO_STRING(TileType::N_W_S_E);
         CASE_ENUM_TO_STRING(TileType::W_S);
         CASE_ENUM_TO_STRING(TileType::S);
@@ -47,6 +48,13 @@ std::string to_string(TileType enum_value) {
         CASE_ENUM_TO_STRING(TileType::NW_SW_SE);
         CASE_ENUM_TO_STRING(TileType::NW_SE);
         CASE_ENUM_TO_STRING(TileType::NE_SW);
+        CASE_ENUM_TO_STRING(TileType::N_SE);
+        CASE_ENUM_TO_STRING(TileType::W_NE);
+        CASE_ENUM_TO_STRING(TileType::W_SE);
+        CASE_ENUM_TO_STRING(TileType::S_NE);
+        CASE_ENUM_TO_STRING(TileType::S_NW);
+        CASE_ENUM_TO_STRING(TileType::E_NW);
+        CASE_ENUM_TO_STRING(TileType::E_SW);
         case TileType::LAST:
             break;
     }

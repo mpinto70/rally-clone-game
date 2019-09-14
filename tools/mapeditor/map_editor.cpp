@@ -44,7 +44,7 @@ constexpr unsigned ACTIONS_WIDTH = MINIMAP_WIDTH;                             //
 constexpr unsigned ACTIONS_HEIGHT = 4 * TILE_SIZE;                            ///< map view height in pixels
 constexpr unsigned TILES_X = MAP_X;                                           ///< actions view left side
 constexpr unsigned TILES_Y = MAP_Y + MAP_HEIGHT + 5;                          ///< actions view top side
-constexpr unsigned TILES_ROWS = 6;                                            ///< actions view height in columns
+constexpr unsigned TILES_ROWS = 7;                                            ///< actions view height in columns
 constexpr unsigned TILES_WIDTH = MAP_WIDTH;                                   ///< actions view width in pixels
 constexpr unsigned TILES_HEIGHT = TILES_ROWS * TILE_SIZE;                     ///< actions view height in pixels
 constexpr unsigned HELP_X = MAP_X;                                            ///< help view left side
@@ -239,6 +239,7 @@ void drawHelp() {
         "Space - hide tiles and show only actions",
         "G - hide grid",
         "R - save",
+        "T - adjust tiles",
         "Ctrl+C + left click - mark region for copy",
         "Ctrl+V + left click - paste copied region to point",
         "X - cancel region selected"
@@ -420,6 +421,9 @@ void loop(map::Map& gameMap,
                         break;
                     case ALLEGRO_KEY_R:
                         map::MapIO::write(stagePath, gameMap);
+                        break;
+                    case ALLEGRO_KEY_T:
+                        gameMap.adjustTiles();
                         break;
                 }
                 break;
