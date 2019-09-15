@@ -19,7 +19,7 @@ class SpriteMapper final {
 public:
     using enum_type = ENUM;
 
-    SpriteMapper(const BITMAP_PTR& fullImage,
+    SpriteMapper(ALLEGRO_BITMAP& fullImage,
           const unsigned spriteWidth,
           const unsigned spriteHeight,
           const unsigned leftFirst,
@@ -71,7 +71,7 @@ public:
                                         + typeid(ENUM).name(),
                   1);
         else {
-            return it->second.get();
+            return it->second;
         }
     }
 
@@ -102,7 +102,7 @@ public:
     }
 
 private:
-    std::map<ENUM, BITMAP_PTR> spriteMap_;
+    std::map<ENUM, ALLEGRO_BITMAP*> spriteMap_;
     unsigned imageWidth_;
     unsigned imageHeight_;
 };

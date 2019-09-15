@@ -182,7 +182,7 @@ void drawActions() {
         }
         al_draw_bitmap(action, x, y, 0);
         if (e == map::Action::NONE) {
-            al_draw_text(graphic.fontSystem().get(), ACTIONS_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
+            al_draw_text(&graphic.fontSystem(), ACTIONS_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
         }
 
         if (e == selectedAction) {
@@ -221,7 +221,7 @@ void drawStatus(const std::vector<std::string>& lines) {
 
     int y = 10;
     for (const auto& line : lines) {
-        al_draw_textf(graphic.fontSystem().get(), STATUS_FG, 10, y, 0, "%s", line.c_str());
+        al_draw_textf(&graphic.fontSystem(), STATUS_FG, 10, y, 0, "%s", line.c_str());
         y += 20;
     }
 }
@@ -249,7 +249,7 @@ void drawHelp() {
     for (size_t i = 0; i < manual.size(); ++i) {
         const unsigned y = (i + 1) * STEP_Y;
 
-        al_draw_textf(graphic.fontSystem().get(), HELP_FG, 20, y, 0, "%s", manual[i].c_str());
+        al_draw_textf(&graphic.fontSystem(), HELP_FG, 20, y, 0, "%s", manual[i].c_str());
     }
 }
 
@@ -351,13 +351,14 @@ void handleRightClick(map::Map& gameMap,
 void loop(map::Map& gameMap,
       const std::string& stagePath) {
     using gamelib::allegro::BITMAP_PTR;
+    using gamelib::allegro::make_destroyer;
     auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
-    auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
-    auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), al_destroy_bitmap);
-    auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), al_destroy_bitmap);
-    auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), al_destroy_bitmap);
-    auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), al_destroy_bitmap);
-    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
+    auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), make_destroyer(al_destroy_bitmap));
     std::vector<std::string> status_lines;
 
     drawCanvas(*helpCanvas, drawHelp); // this is cached, because it does not change
@@ -381,7 +382,7 @@ void loop(map::Map& gameMap,
     ALLEGRO_EVENT ev;
     while (not done) {
         status_lines.clear();
-        al_wait_for_event(graphic.eventQueue().get(), &ev);
+        al_wait_for_event(&graphic.eventQueue(), &ev);
 
         switch (ev.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -490,7 +491,7 @@ void loop(map::Map& gameMap,
             drawCanvas(*tilesCanvas, drawTiles);
             drawCanvas(*statusCanvas, drawStatus, status_lines);
 
-            al_set_target_bitmap(al_get_backbuffer(graphic.display().get()));
+            al_set_target_bitmap(al_get_backbuffer(&graphic.display()));
 
             al_draw_bitmap(mapCanvas.get(), MAP_X, MAP_Y, 0);
             al_draw_bitmap(minimapCanvas.get(), MINIMAP_X, MINIMAP_Y, 0);
@@ -548,10 +549,12 @@ int main(int argc, char* argv[]) {
 
         initialize_colors();
 
-        auto timer = gamelib::allegro::TIMER_PTR(al_create_timer(1.0 / 30.0), al_destroy_timer);
+        using gamelib::allegro::make_destroyer;
+        using gamelib::allegro::TIMER_PTR;
+        auto timer = TIMER_PTR(al_create_timer(1.0 / 30.0), make_destroyer(al_destroy_timer));
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
-        al_register_event_source(graphic.eventQueue().get(), al_get_timer_event_source(timer.get()));
+        al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
         al_start_timer(timer.get());
 
         loop(gameMap, stagePath);

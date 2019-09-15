@@ -22,7 +22,7 @@ class TileMapper final {
 public:
     using enum_type = map::TileType;
 
-    TileMapper(const BITMAP_PTR& fullImage,
+    TileMapper(ALLEGRO_BITMAP& fullImage,
           const unsigned leftFirst,
           const unsigned topFirst);
 
@@ -50,7 +50,7 @@ public:
                                         + typeid(enum_type).name(),
                   1);
         else {
-            return it->second.get();
+            return it->second;
         }
     }
 
@@ -83,7 +83,7 @@ public:
 private:
     static constexpr unsigned BASE_TILE_SIZE = 72;
 
-    std::map<enum_type, BITMAP_PTR> spriteMap_;
+    std::map<enum_type, ALLEGRO_BITMAP*> spriteMap_;
 };
 
 enum class TileSource {
@@ -101,7 +101,7 @@ enum class TileSource {
 
 std::string to_string(TileSource);
 
-TileMapper createTileMapper(const BITMAP_PTR& fullImage, TileSource);
+TileMapper createTileMapper(ALLEGRO_BITMAP& fullImage, TileSource);
 }
 }
 }

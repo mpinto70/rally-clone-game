@@ -7,7 +7,7 @@
 namespace gamelib {
 namespace allegro {
 namespace bmp {
-TileMapper::TileMapper(const BITMAP_PTR& fullImage,
+TileMapper::TileMapper(ALLEGRO_BITMAP& fullImage,
       const unsigned leftFirst,
       const unsigned topFirst) {
     const auto tile_size = imageHeight(0);
@@ -18,7 +18,7 @@ TileMapper::TileMapper(const BITMAP_PTR& fullImage,
     }
 }
 
-TileMapper createTileMapper(const BITMAP_PTR& fullImage, TileSource type) {
+TileMapper createTileMapper(ALLEGRO_BITMAP& fullImage, TileSource type) {
     constexpr unsigned NUM_COLUMNS = 7;
     constexpr unsigned NUM_LINES = 6;
     constexpr unsigned FIRST_LINE_Y = 336;

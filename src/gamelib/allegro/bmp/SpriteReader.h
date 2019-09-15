@@ -55,7 +55,7 @@ public:
 
      \endverbatim
      */
-    static std::vector<BITMAP_PTR> readImages(const BITMAP_PTR& fullImage,
+    static std::vector<ALLEGRO_BITMAP*> readImages(ALLEGRO_BITMAP& fullImage,
           unsigned spriteWidth,
           unsigned spriteHeight,
           unsigned leftFirst,

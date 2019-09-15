@@ -336,16 +336,24 @@ void Map::adjustTiles() {
                 continue;
             unsigned bits = 0;
             if (y > 0) {
-                if (x < width_ - 1 && operator()(x + 1, y - 1).type() == TileType::ROAD) bits += MASK_NE;
-                if (operator()(x, y - 1).type() == TileType::ROAD) bits += MASK_N;
-                if (x > 0 && operator()(x - 1, y - 1).type() == TileType::ROAD) bits += MASK_NW;
+                if (x < width_ - 1 && operator()(x + 1, y - 1).type() == TileType::ROAD)
+                    bits += MASK_NE;
+                if (operator()(x, y - 1).type() == TileType::ROAD)
+                    bits += MASK_N;
+                if (x > 0 && operator()(x - 1, y - 1).type() == TileType::ROAD)
+                    bits += MASK_NW;
             }
-            if (x < width_ - 1 && operator()(x + 1, y).type() == TileType::ROAD) bits += MASK_E;
-            if (x > 0 && operator()(x - 1, y).type() == TileType::ROAD) bits += MASK_W;
+            if (x < width_ - 1 && operator()(x + 1, y).type() == TileType::ROAD)
+                bits += MASK_E;
+            if (x > 0 && operator()(x - 1, y).type() == TileType::ROAD)
+                bits += MASK_W;
             if (y < height_ - 1) {
-                if (x < width_ - 1 && operator()(x + 1, y + 1).type() == TileType::ROAD) bits += MASK_SE;
-                if (operator()(x, y + 1).type() == TileType::ROAD) bits += MASK_S;
-                if (x > 0 && operator()(x - 1, y + 1).type() == TileType::ROAD) bits += MASK_SW;
+                if (x < width_ - 1 && operator()(x + 1, y + 1).type() == TileType::ROAD)
+                    bits += MASK_SE;
+                if (operator()(x, y + 1).type() == TileType::ROAD)
+                    bits += MASK_S;
+                if (x > 0 && operator()(x - 1, y + 1).type() == TileType::ROAD)
+                    bits += MASK_SW;
             }
             tile.type(getType(bits));
         }

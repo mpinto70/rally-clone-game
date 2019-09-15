@@ -27,17 +27,10 @@
 *.out
 *.app
 
-.settings
-.cproject
-.project
-
-depend.*
+core
 
 bin/
 build/
 lib/
 gtest/
 
-#remove after cmake migration
-unit_test_main
-unit_test_main.cpp

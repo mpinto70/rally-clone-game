@@ -35,24 +35,24 @@ public:
 
     void flip() override;
 
-    DISPLAY_PTR& display() {
-        return display_;
+    ALLEGRO_DISPLAY& display() {
+        return *display_;
     }
 
-    EVENT_QUEUE_PTR& eventQueue() {
-        return eventQueue_;
+    ALLEGRO_EVENT_QUEUE& eventQueue() {
+        return *eventQueue_;
     }
 
-    BITMAP_PTR& mapCanvas() {
-        return mapCanvas_;
+    ALLEGRO_BITMAP& mapCanvas() {
+        return *mapCanvas_;
     }
 
-    [[nodiscard]] const BITMAP_PTR& fullImage() const {
-        return fullImage_;
+    ALLEGRO_BITMAP& fullImage() {
+        return *fullImage_;
     }
 
-    FONT_PTR& fontSystem() {
-        return fontSystem_;
+    [[nodiscard]] const ALLEGRO_FONT& fontSystem() const {
+        return *fontSystem_;
     }
 
     [[nodiscard]] const bmp::TileMapper& tileMapper() const {
@@ -75,11 +75,11 @@ private:
     unsigned width_;
     unsigned height_;
     DISPLAY_PTR display_;
+    BITMAP_PTR fullImage_;
     EVENT_QUEUE_PTR eventQueue_;
     BITMAP_PTR mapCanvas_;
     FONT_PTR fontSystem_;
     FONT_PTR fontMenu_;
-    BITMAP_PTR fullImage_;
     bmp::TileMapper tileMapper_;
     bmp::ActionMapper actionMapper_;
     bmp::CarMapper carMapper_;

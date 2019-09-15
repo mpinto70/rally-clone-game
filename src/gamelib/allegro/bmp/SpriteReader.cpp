@@ -7,7 +7,7 @@ namespace allegro {
 namespace bmp {
 
 BITMAP_PTR SpriteReader::readFullImage(const std::string& fileName) {
-    BITMAP_PTR fullBitmap(al_load_bitmap(fileName.c_str()), al_destroy_bitmap);
+    BITMAP_PTR fullBitmap(al_load_bitmap(fileName.c_str()), make_destroyer(al_destroy_bitmap));
 
     if (fullBitmap == nullptr) {
         throw util::Exception("SpriteReader - it was not possible to read the sprites from " + fileName, 1);
@@ -16,7 +16,7 @@ BITMAP_PTR SpriteReader::readFullImage(const std::string& fileName) {
     return fullBitmap;
 }
 
-std::vector<BITMAP_PTR> SpriteReader::readImages(const BITMAP_PTR& fullBitmap,
+std::vector<ALLEGRO_BITMAP*> SpriteReader::readImages(ALLEGRO_BITMAP& fullBitmap,
       unsigned spriteWidth,
       unsigned spriteHeight,
       unsigned leftFirst,
@@ -25,8 +25,8 @@ std::vector<BITMAP_PTR> SpriteReader::readImages(const BITMAP_PTR& fullBitmap,
       unsigned numRows,
       unsigned gapX,
       unsigned gapY) {
-    const unsigned w = al_get_bitmap_width(fullBitmap.get());
-    const unsigned h = al_get_bitmap_height(fullBitmap.get());
+    const unsigned w = al_get_bitmap_width(&fullBitmap);
+    const unsigned h = al_get_bitmap_height(&fullBitmap);
 
     if (w < leftFirst + numColumns * (spriteWidth + gapX) - gapX) {
         throw util::Exception("SpriteReader - the image width ("
@@ -53,10 +53,10 @@ std::vector<BITMAP_PTR> SpriteReader::readImages(const BITMAP_PTR& fullBitmap,
               3);
     }
 
-    std::vector<BITMAP_PTR> sprites;
+    std::vector<ALLEGRO_BITMAP*> sprites;
     for (unsigned r = 0, y = topFirst; r < numRows; ++r, y += spriteHeight + gapY) {
         for (unsigned c = 0, x = leftFirst; c < numColumns; ++c, x += spriteWidth + gapX) {
-            ALLEGRO_BITMAP* sub = al_create_sub_bitmap(fullBitmap.get(), x, y, spriteWidth, spriteHeight);
+            ALLEGRO_BITMAP* sub = al_create_sub_bitmap(&fullBitmap, x, y, spriteWidth, spriteHeight);
             if (sub == nullptr) {
                 throw util::Exception("SpriteReader - it was not possible to reference the sub sprite at ["
                                             + std::to_string(x)
@@ -65,7 +65,7 @@ std::vector<BITMAP_PTR> SpriteReader::readImages(const BITMAP_PTR& fullBitmap,
                                             + "]",
                       4);
             }
-            sprites.emplace_back(sub, al_destroy_bitmap);
+            sprites.push_back(sub);
         }
     }
 
