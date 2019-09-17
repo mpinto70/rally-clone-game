@@ -35,7 +35,7 @@ const ALLEGRO_COLOR& translate(game::COLOR color) {
 }
 
 DISPLAY_PTR initDisplay(unsigned width, unsigned height) {
-    if (not al_init())
+    if (not al_install_system(ALLEGRO_VERSION_INT, nullptr))
         throw util::Exception("Could not init Allegro", -1);
     al_init_font_addon();
     al_init_ttf_addon();
@@ -44,7 +44,7 @@ DISPLAY_PTR initDisplay(unsigned width, unsigned height) {
     al_install_keyboard();
     al_install_mouse();
 
-    return DISPLAY_PTR(al_create_display(width, height), make_destroyer(al_destroy_display));
+    return createElement(al_create_display, al_destroy_display, width, height);
 }
 }
 
@@ -58,10 +58,10 @@ Graphic::Graphic(const std::string& common_path,
         height_(height),
         display_(initDisplay(width, height)),
         fullImage_(bmp::SpriteReader::readFullImage(common_path + "/Rally-general-sprites.png")),
-        eventQueue_(al_create_event_queue(), make_destroyer(al_destroy_event_queue)),
-        mapCanvas_(al_create_bitmap(TILE_SIZE * 10, TILE_SIZE * 10), make_destroyer(al_destroy_bitmap)),
-        fontSystem_(al_load_font((common_path + "/font.ttf").c_str(), 18, 0), make_destroyer(al_destroy_font)),
-        fontMenu_(al_load_font((common_path + "/font.ttf").c_str(), 24, 0), make_destroyer(al_destroy_font)),
+        eventQueue_(createElement(al_create_event_queue, al_destroy_event_queue)),
+        mapCanvas_(createBitmap(TILE_SIZE * 10, TILE_SIZE * 10)),
+        fontSystem_(al_load_font((common_path + "/font.ttf").c_str(), 18, 0)),
+        fontMenu_(al_load_font((common_path + "/font.ttf").c_str(), 24, 0)),
         tileMapper_(bmp::createTileMapper(*fullImage_, tileSource)),
         actionMapper_(bmp::createActionMapper(*fullImage_)),
         carMapper_(bmp::createCarMapper(*fullImage_, carSource)),
@@ -95,7 +95,12 @@ Graphic::Graphic(const std::string& common_path,
     al_register_event_source(eventQueue_.get(), al_get_display_event_source(display_.get()));
 }
 
-Graphic::~Graphic() = default;
+Graphic::~Graphic() {
+    mapCanvas_.reset();
+    eventQueue_.reset();
+    display_.reset();
+    al_uninstall_system();
+}
 
 void Graphic::printText(const std::string& text,
       const game::GFONT gfont,
@@ -111,7 +116,7 @@ void Graphic::printText(const std::string& text,
         return;
     }
 
-    const auto font = gfont == game::GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
+    const auto font = gfont == game::GFONT::MENU_FONT ? fontMenu_ : fontSystem_;
     al_draw_textf(font, translate(foreground), x, y, 0, "%s", text.c_str());
 }
 

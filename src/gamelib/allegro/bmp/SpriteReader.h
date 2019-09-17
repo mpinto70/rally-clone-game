@@ -15,7 +15,7 @@ class SpriteReader {
 public:
     using sprites_t = std::pair<BITMAP_PTR, std::vector<BITMAP_PTR>>;
 
-    static BITMAP_PTR readFullImage(const std::string& fileName);
+    static ALLEGRO_BITMAP* readFullImage(const std::string& fileName);
 
     /** Reads the sprites from a bitmap image file
      * @param fileName      name of the file with the image

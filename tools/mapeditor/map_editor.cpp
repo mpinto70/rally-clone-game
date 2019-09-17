@@ -76,10 +76,6 @@ ALLEGRO_COLOR SELECTION_FG = {};
 map::Action selectedAction = map::Action::NONE;
 map::TileType selectedTile = map::TileType::ROAD;
 
-//void save(const std::string& file_name, const map::Map& stageMap) {
-//    map::MapIO::write(file_name, stageMap);
-//}
-
 map::Map loadMap(const std::string& file_name) {
     const map::Map stage_map = map::MapIO::read(file_name);
     return stage_map;
@@ -353,12 +349,12 @@ void loop(map::Map& gameMap,
     using gamelib::allegro::BITMAP_PTR;
     using gamelib::allegro::make_destroyer;
     auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
-    auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), make_destroyer(al_destroy_bitmap));
-    auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), make_destroyer(al_destroy_bitmap));
-    auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), make_destroyer(al_destroy_bitmap));
-    auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), make_destroyer(al_destroy_bitmap));
-    auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), make_destroyer(al_destroy_bitmap));
-    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), make_destroyer(al_destroy_bitmap));
+    auto mapCanvas = createBitmap(MAP_WIDTH, MAP_HEIGHT);
+    auto minimapCanvas = createBitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+    auto actionsCanvas = createBitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT);
+    auto tilesCanvas = createBitmap(TILES_WIDTH, TILES_HEIGHT);
+    auto statusCanvas = createBitmap(STATUS_WIDTH, STATUS_HEIGHT);
+    auto helpCanvas = createBitmap(HELP_WIDTH, HELP_HEIGHT);
     std::vector<std::string> status_lines;
 
     drawCanvas(*helpCanvas, drawHelp); // this is cached, because it does not change
@@ -544,8 +540,6 @@ int main(int argc, char* argv[]) {
         auto& graphic = util::Singleton<Graphic>::instance();
 
         map::Map gameMap = createOrLoadMap(stagePath);
-
-        const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritesFile);
 
         initialize_colors();
 

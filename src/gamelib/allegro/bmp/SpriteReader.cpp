@@ -6,8 +6,8 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-BITMAP_PTR SpriteReader::readFullImage(const std::string& fileName) {
-    BITMAP_PTR fullBitmap(al_load_bitmap(fileName.c_str()), make_destroyer(al_destroy_bitmap));
+ALLEGRO_BITMAP* SpriteReader::readFullImage(const std::string& fileName) {
+    ALLEGRO_BITMAP* fullBitmap = al_load_bitmap(fileName.c_str());
 
     if (fullBitmap == nullptr) {
         throw util::Exception("SpriteReader - it was not possible to read the sprites from " + fileName, 1);

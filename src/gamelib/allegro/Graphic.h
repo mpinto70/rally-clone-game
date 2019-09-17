@@ -75,11 +75,11 @@ private:
     unsigned width_;
     unsigned height_;
     DISPLAY_PTR display_;
-    BITMAP_PTR fullImage_;
+    ALLEGRO_BITMAP* fullImage_;
     EVENT_QUEUE_PTR eventQueue_;
     BITMAP_PTR mapCanvas_;
-    FONT_PTR fontSystem_;
-    FONT_PTR fontMenu_;
+    ALLEGRO_FONT* fontSystem_;
+    ALLEGRO_FONT* fontMenu_;
     bmp::TileMapper tileMapper_;
     bmp::ActionMapper actionMapper_;
     bmp::CarMapper carMapper_;

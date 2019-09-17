@@ -11,21 +11,14 @@
 namespace gamelib {
 namespace allegro {
 template <typename T>
-using destroyFunction = void (*)(T*);
-
-template <typename T>
 class Destroyer {
 public:
     explicit Destroyer(void (*destroyFunction)(T*))
           : destroyFunction_(destroyFunction) {
-        fprintf(stderr, "MHPA %s (%d) - creating deleter for: type = %s\n", __FILE__, __LINE__, typeid(destroyFunction_).name());
     }
 
     void operator()(T* object) {
-        const auto name = typeid(destroyFunction_).name();
-        fprintf(stderr, "MHPA %s (%d) - deleting: type = %s / address = %p\n", __FILE__, __LINE__, name, (void*) object);
         destroyFunction_(object);
-        fprintf(stderr, "MHPA %s (%d) - deleted: type = %s / address = %p\n", __FILE__, __LINE__, name, (void*) object);
     }
 
 private:
@@ -42,8 +35,17 @@ using ALLEGRO_PTR = std::unique_ptr<TYPE, Destroyer<TYPE>>;
 
 using DISPLAY_PTR = ALLEGRO_PTR<ALLEGRO_DISPLAY>;
 using BITMAP_PTR = ALLEGRO_PTR<ALLEGRO_BITMAP>;
-using FONT_PTR = ALLEGRO_PTR<ALLEGRO_FONT>;
 using TIMER_PTR = ALLEGRO_PTR<ALLEGRO_TIMER>;
 using EVENT_QUEUE_PTR = ALLEGRO_PTR<ALLEGRO_EVENT_QUEUE>;
+
+#define createBitmap(W, H) ::gamelib::allegro::createElement(al_create_bitmap, al_destroy_bitmap, W, H)
+//#define createElement(...) ::gamelib::allegro::createElementFunc(__FILE__, __LINE__, __VA_ARGS__)
+template <typename T, typename F, typename... Args>
+ALLEGRO_PTR<T> createElement(F createFunction,
+      void (*destroyFunction)(T* _),
+      Args&&... createArgs) {
+    T* object = createFunction(std::forward<Args>(createArgs)...);
+    return ALLEGRO_PTR<T>(object, make_destroyer(destroyFunction));
+}
 }
 }
