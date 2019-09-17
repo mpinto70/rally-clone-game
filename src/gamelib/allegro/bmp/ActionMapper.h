@@ -19,7 +19,7 @@ class ActionMapper final {
 public:
     using enum_type = map::Action;
 
-    explicit ActionMapper(const BITMAP_PTR& fullImage);
+    explicit ActionMapper(ALLEGRO_BITMAP& fullImage);
 
     ActionMapper(const ActionMapper&) = delete;
     ActionMapper& operator=(const ActionMapper&) = delete;
@@ -45,7 +45,7 @@ public:
                                         + typeid(enum_type).name(),
                   1);
         else {
-            return it->second.get();
+            return it->second;
         }
     }
 
@@ -86,11 +86,11 @@ public:
     }
 
 private:
-    std::map<enum_type, BITMAP_PTR> spriteMap_;
+    std::map<enum_type, ALLEGRO_BITMAP*> spriteMap_;
     std::map<enum_type, unsigned> sizes_;
 };
 
-ActionMapper createActionMapper(const BITMAP_PTR& fullImage);
+ActionMapper createActionMapper(ALLEGRO_BITMAP& fullImage);
 }
 }
 }

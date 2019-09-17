@@ -6,18 +6,17 @@
 #include "map/Map.h"
 #include "map/MapIO.h"
 #include "map/TileType.h"
+#include "util/Singleton.h"
 #include "util/Util.h"
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_ttf.h>
 
 #include <boost/filesystem.hpp>
 
 #include <cstdio>
-#include <cstdlib>
+#include <gamelib/allegro/Graphic.h>
 #include <gamelib/allegro/bmp/CarMapper.h>
 #include <iostream>
 #include <string>
@@ -25,7 +24,7 @@
 #include <vector>
 
 namespace {
-constexpr unsigned TILE_SIZE = 72;                                            ///< tile size in pixels
+using gamelib::allegro::bmp::TILE_SIZE;
 constexpr unsigned FULL_MAP_COLUMNS = 32;                                     ///< full map number of columns
 constexpr unsigned FULL_MAP_ROWS = 56;                                        ///< full map number of rows
 constexpr unsigned MAP_X = 10;                                                ///< map view left side
@@ -45,7 +44,7 @@ constexpr unsigned ACTIONS_WIDTH = MINIMAP_WIDTH;                             //
 constexpr unsigned ACTIONS_HEIGHT = 4 * TILE_SIZE;                            ///< map view height in pixels
 constexpr unsigned TILES_X = MAP_X;                                           ///< actions view left side
 constexpr unsigned TILES_Y = MAP_Y + MAP_HEIGHT + 5;                          ///< actions view top side
-constexpr unsigned TILES_ROWS = 6;                                            ///< actions view height in columns
+constexpr unsigned TILES_ROWS = 7;                                            ///< actions view height in columns
 constexpr unsigned TILES_WIDTH = MAP_WIDTH;                                   ///< actions view width in pixels
 constexpr unsigned TILES_HEIGHT = TILES_ROWS * TILE_SIZE;                     ///< actions view height in pixels
 constexpr unsigned HELP_X = MAP_X;                                            ///< help view left side
@@ -76,10 +75,6 @@ ALLEGRO_COLOR SELECTION_FG = {};
 
 map::Action selectedAction = map::Action::NONE;
 map::TileType selectedTile = map::TileType::ROAD;
-
-//void save(const std::string& file_name, const map::Map& stageMap) {
-//    map::MapIO::write(file_name, stageMap);
-//}
 
 map::Map loadMap(const std::string& file_name) {
     const map::Map stage_map = map::MapIO::read(file_name);
@@ -122,13 +117,8 @@ void drawGrid(const map::Map& gameMap,
     }
 }
 
-void drawMap(const map::Map& gameMap,
-      const gamelib::allegro::bmp::TileMapper& tileMapper,
-      const gamelib::allegro::bmp::ActionMapper& actionMapper,
-      const gamelib::allegro::bmp::CarMapper&,
-      const gamelib::allegro::bmp::CarMapper&,
-      const int& x0,
-      const int& y0) {
+void drawMap(const map::Map& gameMap, const int& x0, const int& y0) {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
     const unsigned begin_j = x0 < 0 ? 0 : x0 / (TILE_SIZE);
@@ -142,12 +132,12 @@ void drawMap(const map::Map& gameMap,
             if (X > int(MAP_WIDTH))
                 break;
             const auto& tile = gameMap(j, i);
-            const auto bmp = tileMapper[tile.type()];
+            const auto bmp = graphic.tileMapper()[tile.type()];
             al_draw_bitmap(bmp, X, Y, 0);
             if (tile.action() != map::Action::NONE) {
-                auto actionImg = actionMapper[tile.action()];
-                const int XA = X + (TILE_SIZE - actionMapper.imageWidth(tile.action())) / 2;
-                const int YA = Y + (TILE_SIZE - actionMapper.imageHeight(tile.action())) / 2;
+                auto actionImg = graphic.actionMapper()[tile.action()];
+                const int XA = X + (TILE_SIZE - graphic.actionMapper().imageWidth(tile.action())) / 2;
+                const int YA = Y + (TILE_SIZE - graphic.actionMapper().imageHeight(tile.action())) / 2;
                 al_draw_bitmap(actionImg, XA, YA, 0);
             }
         }
@@ -171,23 +161,24 @@ void drawMiniMap(const map::Map& gameMap) {
     }
 }
 
-void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const ALLEGRO_FONT& font) {
+void drawActions() {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTIONS_BG);
 
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
     for (auto e : util::EnumIterator<map::Action>()) {
-        const auto action = actionMapper[e];
-        const auto width = actionMapper.imageWidth(e);
-        const auto height = actionMapper.imageHeight(e);
+        const auto action = graphic.actionMapper()[e];
+        const auto width = graphic.actionMapper().imageWidth(e);
+        const auto height = graphic.actionMapper().imageHeight(e);
         if (x + width + 5 > ACTIONS_WIDTH) {
             x = 5;
             y += max_y + 5;
         }
         al_draw_bitmap(action, x, y, 0);
         if (e == map::Action::NONE) {
-            al_draw_text(&font, ACTIONS_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
+            al_draw_text(&graphic.fontSystem(), ACTIONS_FG, x + width / 2, y + height / 2 - 10, ALLEGRO_ALIGN_CENTER, "None");
         }
 
         if (e == selectedAction) {
@@ -199,13 +190,14 @@ void drawActions(const gamelib::allegro::bmp::ActionMapper& actionMapper, const 
     }
 }
 
-void drawTiles(const gamelib::allegro::bmp::TileMapper& tilesMapper) {
+void drawTiles() {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
 
     unsigned x = 5;
     unsigned y = 5;
     for (auto e : util::EnumIterator<map::TileType>()) {
-        const auto tile = tilesMapper[e];
+        const auto tile = graphic.tileMapper()[e];
         if (x + TILE_SIZE + 5 > TILES_WIDTH) {
             x = 5;
             y += TILE_SIZE + 5;
@@ -219,17 +211,19 @@ void drawTiles(const gamelib::allegro::bmp::TileMapper& tilesMapper) {
     }
 }
 
-void drawStatus(const ALLEGRO_FONT& font, const std::vector<std::string>& lines) {
+void drawStatus(const std::vector<std::string>& lines) {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
 
     int y = 10;
     for (const auto& line : lines) {
-        al_draw_textf(&font, STATUS_FG, 10, y, 0, "%s", line.c_str());
+        al_draw_textf(&graphic.fontSystem(), STATUS_FG, 10, y, 0, "%s", line.c_str());
         y += 20;
     }
 }
 
-void drawHelp(const ALLEGRO_FONT& font) {
+void drawHelp() {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
 
     const std::vector<std::string> manual = {
@@ -241,6 +235,7 @@ void drawHelp(const ALLEGRO_FONT& font) {
         "Space - hide tiles and show only actions",
         "G - hide grid",
         "R - save",
+        "T - adjust tiles",
         "Ctrl+C + left click - mark region for copy",
         "Ctrl+V + left click - paste copied region to point",
         "X - cancel region selected"
@@ -250,7 +245,7 @@ void drawHelp(const ALLEGRO_FONT& font) {
     for (size_t i = 0; i < manual.size(); ++i) {
         const unsigned y = (i + 1) * STEP_Y;
 
-        al_draw_textf(&font, HELP_FG, 20, y, 0, "%s", manual[i].c_str());
+        al_draw_textf(&graphic.fontSystem(), HELP_FG, 20, y, 0, "%s", manual[i].c_str());
     }
 }
 
@@ -281,15 +276,14 @@ void handleLeftClickInTiles(const int X, const int Y) {
     }
 }
 
-void handleRightClickInActions(const gamelib::allegro::bmp::ActionMapper& actionMapper,
-      const int X,
-      const int Y) {
+void handleRightClickInActions(const int X, const int Y) {
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
     for (auto e : util::EnumIterator<map::Action>()) {
-        const auto width = actionMapper.imageWidth(e);
-        const auto height = actionMapper.imageHeight(e);
+        const auto width = graphic.actionMapper().imageWidth(e);
+        const auto height = graphic.actionMapper().imageHeight(e);
         if (x + width + 5 > ACTIONS_WIDTH) {
             x = 5;
             y += max_y + 5;
@@ -340,36 +334,30 @@ void handleLeftClick(map::Map& gameMap,
 }
 
 void handleRightClick(map::Map& gameMap,
-      const gamelib::allegro::bmp::ActionMapper& actionMapper,
       int x0,
       int y0,
       int x,
       int y) {
     if (inRectangle(x, y, ACTIONS_X, ACTIONS_Y, ACTIONS_X + ACTIONS_WIDTH, ACTIONS_Y + ACTIONS_HEIGHT))
-        handleRightClickInActions(actionMapper, x - ACTIONS_X, y - ACTIONS_Y);
+        handleRightClickInActions(x - ACTIONS_X, y - ACTIONS_Y);
     else if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
         handleRightClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
 }
 
 void loop(map::Map& gameMap,
-      const std::string& stagePath,
-      const gamelib::allegro::bmp::TileMapper& tileMapper,
-      const gamelib::allegro::bmp::ActionMapper& actionMapper,
-      const gamelib::allegro::bmp::CarMapper& playerMapper,
-      const gamelib::allegro::bmp::CarMapper& enemyMapper,
-      const ALLEGRO_FONT& font,
-      ALLEGRO_EVENT_QUEUE& event_queue,
-      ALLEGRO_DISPLAY& display) {
+      const std::string& stagePath) {
     using gamelib::allegro::BITMAP_PTR;
-    auto mapCanvas = BITMAP_PTR(al_create_bitmap(MAP_WIDTH, MAP_HEIGHT), al_destroy_bitmap);
-    auto minimapCanvas = BITMAP_PTR(al_create_bitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT), al_destroy_bitmap);
-    auto actionsCanvas = BITMAP_PTR(al_create_bitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT), al_destroy_bitmap);
-    auto tilesCanvas = BITMAP_PTR(al_create_bitmap(TILES_WIDTH, TILES_HEIGHT), al_destroy_bitmap);
-    auto statusCanvas = BITMAP_PTR(al_create_bitmap(STATUS_WIDTH, STATUS_HEIGHT), al_destroy_bitmap);
-    auto helpCanvas = BITMAP_PTR(al_create_bitmap(HELP_WIDTH, HELP_HEIGHT), al_destroy_bitmap);
+    using gamelib::allegro::make_destroyer;
+    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto mapCanvas = createBitmap(MAP_WIDTH, MAP_HEIGHT);
+    auto minimapCanvas = createBitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT);
+    auto actionsCanvas = createBitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT);
+    auto tilesCanvas = createBitmap(TILES_WIDTH, TILES_HEIGHT);
+    auto statusCanvas = createBitmap(STATUS_WIDTH, STATUS_HEIGHT);
+    auto helpCanvas = createBitmap(HELP_WIDTH, HELP_HEIGHT);
     std::vector<std::string> status_lines;
 
-    drawCanvas(*helpCanvas, drawHelp, font); // this is cached, because it does not change
+    drawCanvas(*helpCanvas, drawHelp); // this is cached, because it does not change
 
     enum Keys {
         K_UP,
@@ -390,7 +378,7 @@ void loop(map::Map& gameMap,
     ALLEGRO_EVENT ev;
     while (not done) {
         status_lines.clear();
-        al_wait_for_event(&event_queue, &ev);
+        al_wait_for_event(&graphic.eventQueue(), &ev);
 
         switch (ev.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -431,6 +419,9 @@ void loop(map::Map& gameMap,
                     case ALLEGRO_KEY_R:
                         map::MapIO::write(stagePath, gameMap);
                         break;
+                    case ALLEGRO_KEY_T:
+                        gameMap.adjustTiles();
+                        break;
                 }
                 break;
             case ALLEGRO_EVENT_KEY_UP:
@@ -454,7 +445,7 @@ void loop(map::Map& gameMap,
                     handleLeftClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
                 }
                 if (ev.mouse.button & 2) {
-                    handleRightClick(gameMap, actionMapper, x0, y0, ev.mouse.x, ev.mouse.y);
+                    handleRightClick(gameMap, x0, y0, ev.mouse.x, ev.mouse.y);
                 }
                 break;
             case ALLEGRO_EVENT_MOUSE_AXES:
@@ -490,13 +481,13 @@ void loop(map::Map& gameMap,
             status_lines.push_back("Selected tile: " + map::to_string(selectedTile));
             status_lines.push_back("Selected action: " + map::to_string(selectedAction));
 
-            drawCanvas(*mapCanvas, drawMap, gameMap, tileMapper, actionMapper, playerMapper, enemyMapper, x0, y0);
+            drawCanvas(*mapCanvas, drawMap, gameMap, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
-            drawCanvas(*actionsCanvas, drawActions, actionMapper, font);
-            drawCanvas(*tilesCanvas, drawTiles, tileMapper);
-            drawCanvas(*statusCanvas, drawStatus, font, status_lines);
+            drawCanvas(*actionsCanvas, drawActions);
+            drawCanvas(*tilesCanvas, drawTiles);
+            drawCanvas(*statusCanvas, drawStatus, status_lines);
 
-            al_set_target_bitmap(al_get_backbuffer(&display));
+            al_set_target_bitmap(al_get_backbuffer(&graphic.display()));
 
             al_draw_bitmap(mapCanvas.get(), MAP_X, MAP_Y, 0);
             al_draw_bitmap(minimapCanvas.get(), MINIMAP_X, MINIMAP_Y, 0);
@@ -536,69 +527,31 @@ int main(int argc, char* argv[]) {
 
     const std::string stagePath = argv[1] + std::string("/stage.dat");
     const std::string spritePath = argv[2];
+    const std::string spritesFile = spritePath + "/Rally-general-sprites.png";
 
     try {
-        if (not al_init())
-            tools::throw_allegro_error("could not init Allegro");
-
-        al_init_font_addon();
-        al_init_ttf_addon();
-        al_init_primitives_addon();
-        al_init_image_addon();
-        al_install_keyboard();
-        al_install_mouse();
+        using gamelib::allegro::Graphic;
+        util::Singleton<Graphic>::create(std::make_unique<Graphic>(spritePath,
+              WINDOW_W,
+              WINDOW_H,
+              gamelib::allegro::bmp::TileSource::GREEN,
+              gamelib::allegro::bmp::CarSource::PLAYER_1,
+              gamelib::allegro::bmp::CarSource::ENEMY_1));
+        auto& graphic = util::Singleton<Graphic>::instance();
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
-        const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(spritePath);
-
-        const auto tileMapper = [&]() {
-            using gamelib::allegro::bmp::createTileMapper;
-            using gamelib::allegro::bmp::TileMapper;
-            using gamelib::allegro::bmp::TileSource;
-            return createTileMapper(fullImage, TileSource::BROWN);
-        }();
-
-        const auto actionMapper = [&]() {
-            using gamelib::allegro::bmp::ActionMapper;
-            using gamelib::allegro::bmp::createActionMapper;
-            return createActionMapper(fullImage);
-        }();
-
-        auto createCarMapper = [&](gamelib::allegro::bmp::CarSource carSource) {
-            using gamelib::allegro::bmp::CarMapper;
-            using gamelib::allegro::bmp::CarSource;
-            return gamelib::allegro::bmp::createCarMapper(fullImage, carSource);
-        };
-        const auto playerMapper = createCarMapper(gamelib::allegro::bmp::CarSource::PLAYER_1);
-        const auto enemyMapper = createCarMapper(gamelib::allegro::bmp::CarSource::ENEMY_1);
-
-        auto display = gamelib::allegro::DISPLAY_PTR(al_create_display(WINDOW_W, WINDOW_H), al_destroy_display);
-        if (display == nullptr)
-            tools::throw_allegro_error("could not create display");
-
-        auto timer = gamelib::allegro::TIMER_PTR(al_create_timer(1.0 / 30.0), al_destroy_timer);
-        if (timer == nullptr)
-            tools::throw_allegro_error("could not create timer");
-
         initialize_colors();
 
-        auto font = gamelib::allegro::FONT_PTR(al_load_font("./Stuff/font.ttf", 20, 0), al_destroy_font);
-        if (font == nullptr)
-            tools::throw_allegro_error("could not load font");
-
-        auto event_queue = gamelib::allegro::EVENT_QUEUE_PTR(al_create_event_queue(), al_destroy_event_queue);
-        if (event_queue == nullptr)
-            tools::throw_allegro_error("could not create event queue");
-
-        al_register_event_source(event_queue.get(), al_get_keyboard_event_source());
-        al_register_event_source(event_queue.get(), al_get_mouse_event_source());
-        al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
-        al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
-
+        using gamelib::allegro::make_destroyer;
+        using gamelib::allegro::TIMER_PTR;
+        auto timer = TIMER_PTR(al_create_timer(1.0 / 30.0), make_destroyer(al_destroy_timer));
+        if (timer == nullptr)
+            tools::throw_allegro_error("could not create timer");
+        al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
         al_start_timer(timer.get());
 
-        loop(gameMap, stagePath, tileMapper, actionMapper, playerMapper, enemyMapper, *font, *event_queue, *display);
+        loop(gameMap, stagePath);
     } catch (std::exception& e) {
         fprintf(stderr, "ERROR: %s\n", e.what());
         return 1;

@@ -15,8 +15,10 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <gamelib/allegro/Graphic.h>
 #include <iostream>
 #include <string>
+#include <util/Singleton.h>
 #include <vector>
 
 namespace {
@@ -76,8 +78,8 @@ void draw_arrow(const MAPPER& mapper, unsigned cur_tile) {
 }
 
 template <typename MAPPER>
-void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
-    al_draw_textf(font, TEXT_FG, IMAGES_X, TITLE_Y, 0, "number of tiles: %lu", mapper.numImages());
+void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT& font) {
+    al_draw_textf(&font, TEXT_FG, IMAGES_X, TITLE_Y, 0, "number of tiles: %lu", mapper.numImages());
 
     using enum_type = typename MAPPER::enum_type;
     for (auto i = util::from_Enum<size_t>(enum_type::FIRST); i < util::from_Enum<size_t>(enum_type::LAST); ++i) {
@@ -91,7 +93,7 @@ void draw_full_image(const MAPPER& mapper, const ALLEGRO_FONT* font) {
 }
 
 template <typename MAPPER>
-void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur_tile) {
+void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT& font, unsigned cur_tile) {
     const auto pos = position(mapper, mapper.numImages() - 1);
     auto y = pos.y + pos.maxY + IMAGES_DY;
 
@@ -100,7 +102,7 @@ void draw_curr_tile(const MAPPER& mapper, const ALLEGRO_FONT* font, unsigned cur
     y += pos.maxY + IMAGES_DY;
 
     const auto type = util::to_Enum<typename MAPPER::enum_type>(cur_tile);
-    al_draw_textf(font,
+    al_draw_textf(&font,
           TEXT_FG,
           IMAGES_X,
           y,
@@ -133,14 +135,14 @@ void move_left(unsigned& cur_tile, const unsigned max) {
 
 template <typename MAPPER>
 void show(const MAPPER& mapper,
-      const ALLEGRO_FONT* font,
-      ALLEGRO_EVENT_QUEUE* event_queue) {
+      const ALLEGRO_FONT& font,
+      ALLEGRO_EVENT_QUEUE& event_queue) {
     unsigned cur_tile = 0;
     bool done = false;
     bool draw = true;
     ALLEGRO_EVENT ev;
     while (not done) {
-        al_wait_for_event(event_queue, &ev);
+        al_wait_for_event(&event_queue, &ev);
 
         switch (ev.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -206,77 +208,39 @@ void initialize_colors() {
 
 int main(int argc, char* argv[]) {
     try {
-        if (argc != 3 && argc != 4) {
-            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/file> <car|action|tile|minimap> [<number>]\n"
-                            "    for car <number> in [0..3]\n"
-                            "    for tile <number> in [0..7]");
+        if (argc != 3) {
+            exit_visualizer("usage\npath/to/visualizer.exe <path/to/images/root> <car|action|tile|minimap>\n");
         }
 
-        const std::string fileName = argv[1];
+        const std::string filePath = argv[1];
         const std::string type = argv[2];
-        if ((type == "car" || type == "tile") && argc != 4) {
-            exit_visualizer("for car and tile you have to inform the number");
-        }
-        const std::string number = argc == 4 ? argv[3] : "";
 
-        if (not al_init())
-            tools::throw_allegro_error("could not init Allegro");
-
-        al_init_font_addon();
-        al_init_ttf_addon();
-        al_init_primitives_addon();
-        al_init_image_addon();
-        al_install_keyboard();
-
-        auto display = gamelib::allegro::DISPLAY_PTR(al_create_display(WINDOW_W, WINDOW_H), al_destroy_display);
-        if (display == nullptr)
-            tools::throw_allegro_error("could not create display");
-
-        auto timer = gamelib::allegro::TIMER_PTR(al_create_timer(1.0 / 30.0), al_destroy_timer);
-        if (timer == nullptr)
-            tools::throw_allegro_error("could not create timer");
+        using gamelib::allegro::Graphic;
+        util::Singleton<Graphic>::create(std::make_unique<Graphic>(filePath, WINDOW_W, WINDOW_H));
+        auto& graphic = util::Singleton<Graphic>::instance();
 
         initialize_colors();
 
-        auto font = gamelib::allegro::FONT_PTR(al_load_font("./Stuff/font.ttf", 18, 0), al_destroy_font);
-        if (font == nullptr)
-            tools::throw_allegro_error("could not load font");
+        using gamelib::allegro::make_destroyer;
+        using gamelib::allegro::TIMER_PTR;
+        auto timer = TIMER_PTR(al_create_timer(1.0 / 30.0), make_destroyer(al_destroy_timer));
+        if (timer == nullptr)
+            tools::throw_allegro_error("could not create timer");
 
-        auto event_queue = gamelib::allegro::EVENT_QUEUE_PTR(al_create_event_queue(), al_destroy_event_queue);
-        if (event_queue == nullptr)
-            tools::throw_allegro_error("could not create event queue");
-
-        al_register_event_source(event_queue.get(), al_get_keyboard_event_source());
-        al_register_event_source(event_queue.get(), al_get_display_event_source(display.get()));
-        al_register_event_source(event_queue.get(), al_get_timer_event_source(timer.get()));
-
-        const auto fullImage = gamelib::allegro::bmp::SpriteReader::readFullImage(fileName);
+        al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
 
         al_start_timer(timer.get());
         if (type == "car") {
-            using gamelib::allegro::bmp::CarMapper;
-            using gamelib::allegro::bmp::CarSource;
-            using gamelib::allegro::bmp::createCarMapper;
-            const auto car_type = util::to_Enum<CarSource>(std::stoi(number));
-            const auto mapper = createCarMapper(fullImage, car_type);
-            show(mapper, font.get(), event_queue.get());
+            show(graphic.carMapper(), graphic.fontSystem(), graphic.eventQueue());
         } else if (type == "minimap") {
             using gamelib::allegro::bmp::createMiniMapMapper;
             using gamelib::allegro::bmp::MiniMapMapper;
-            const auto mapper = createMiniMapMapper(fullImage);
-            show(mapper, font.get(), event_queue.get());
+            const auto mapper = createMiniMapMapper(graphic.fullImage());
+            show(mapper, graphic.fontSystem(), graphic.eventQueue());
         } else if (type == "action") {
-            using gamelib::allegro::bmp::ActionMapper;
-            using gamelib::allegro::bmp::createActionMapper;
-            const auto mapper = createActionMapper(fullImage);
-            show(mapper, font.get(), event_queue.get());
+            show(graphic.actionMapper(), graphic.fontSystem(), graphic.eventQueue());
         } else if (type == "tile") {
-            using gamelib::allegro::bmp::createTileMapper;
-            using gamelib::allegro::bmp::TileMapper;
-            using gamelib::allegro::bmp::TileSource;
-            const auto tile_type = util::to_Enum<TileSource>(std::stoi(number));
-            const auto mapper = createTileMapper(fullImage, tile_type);
-            show(mapper, font.get(), event_queue.get());
+            show(graphic.tileMapper(), graphic.fontSystem(), graphic.eventQueue());
         }
 
         al_stop_timer(timer.get());

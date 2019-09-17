@@ -14,17 +14,13 @@ using tile_type_t = std::uint8_t;
  * TOP, LEFT, RIGHT and BOTTOM refer to the sides
  * NW, SW, SE and NE refer to the corners
  \verbatim
-             top
-     NW ,-----------, NE
-        |           |
-      l |           | r
-      e |           | i
-      f |   tile    | g
-      t |           | h
-        |           | t
-        |           |
-     SW `-----------' SE
-            bottom
+             N
+     NW ,----------, NE
+        |          |
+      W |   tile   | E
+        |          |
+     SW `----------' SE
+             S
  \endverbatim
  */
 enum class TileType : tile_type_t {
@@ -35,12 +31,13 @@ enum class TileType : tile_type_t {
     N_W_SE,
     N_W_E,
     N_E_SW,
+    N_SW,
     W,
     GRASS,
     E,
-    N_W_BOTTOM,
+    N_W_S,
     NE_NW_SW_SE,
-    S_E_TOP,
+    N_S_E,
     N_W_S_E,
     W_S,
     S,
@@ -69,11 +66,18 @@ enum class TileType : tile_type_t {
     NW_SW_SE,
     NW_SE,
     NE_SW,
+    N_SE,
+    W_NE,
+    W_SE,
+    S_NE,
+    S_NW,
+    E_NW,
+    E_SW,
     LAST,
     FIRST = ROAD
 };
 
-static_assert(static_cast<int>(TileType::LAST) == 41);
+static_assert(static_cast<int>(TileType::LAST) == 49);
 /** convert a value of type \b T to a ETile value.
  * @param t the value to be converted
  */

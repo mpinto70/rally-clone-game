@@ -2,7 +2,10 @@
 
 #include "util/Exception.h"
 
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 
 #include <cmath>
 #include <map>
@@ -10,12 +13,11 @@
 namespace gamelib {
 namespace allegro {
 
-static constexpr unsigned TILE_SIZE = 32;    ///< tile size in pixels
-static constexpr unsigned SIDE_BAR_W = 200;  ///< width of the side bar
-static constexpr unsigned BOTTOM_BAR_H = 50; ///< width of the side bar
+using bmp::TILE_SIZE;
 
-static std::map<game::COLOR, ALLEGRO_COLOR> COLORS;
-static void initColor() {
+namespace {
+std::map<game::COLOR, ALLEGRO_COLOR> COLORS;
+void initColor() {
     COLORS[game::COLOR::RED] = al_map_rgb(255, 0, 0);
     COLORS[game::COLOR::WINE] = al_map_rgb(64, 0, 0);
     COLORS[game::COLOR::GREEN] = al_map_rgb(0, 255, 0);
@@ -28,47 +30,77 @@ static void initColor() {
     COLORS[game::COLOR::BLACK] = al_map_rgb(0, 0, 0);
 }
 
-static const ALLEGRO_COLOR& translate(game::COLOR color) {
+const ALLEGRO_COLOR& translate(game::COLOR color) {
     return COLORS[color];
 }
 
-Graphic::Graphic(const std::string& common_path, unsigned width, unsigned height)
+DISPLAY_PTR initDisplay(unsigned width, unsigned height) {
+    if (not al_install_system(ALLEGRO_VERSION_INT, nullptr))
+        throw util::Exception("Could not init Allegro", -1);
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_init_primitives_addon();
+    al_init_image_addon();
+    al_install_keyboard();
+    al_install_mouse();
+
+    return createElement(al_create_display, al_destroy_display, width, height);
+}
+}
+
+Graphic::Graphic(const std::string& common_path,
+      unsigned width,
+      unsigned height,
+      bmp::TileSource tileSource,
+      bmp::CarSource carSource,
+      bmp::CarSource enemySource)
       : width_(width),
         height_(height),
-        buffer_(nullptr, al_destroy_bitmap),
-        bufferMap_(nullptr, al_destroy_bitmap),
-        fontSystem_(nullptr, al_destroy_font),
-        fontMenu_(nullptr, al_destroy_font),
+        display_(initDisplay(width, height)),
         fullImage_(bmp::SpriteReader::readFullImage(common_path + "/Rally-general-sprites.png")),
-        tileMapper_(bmp::createTileMapper(fullImage_, bmp::TileSource::GREEN)),
-        actionMapper_(bmp::createActionMapper(fullImage_)) {
+        eventQueue_(createElement(al_create_event_queue, al_destroy_event_queue)),
+        mapCanvas_(createBitmap(TILE_SIZE * 10, TILE_SIZE * 10)),
+        fontSystem_(al_load_font((common_path + "/font.ttf").c_str(), 18, 0)),
+        fontMenu_(al_load_font((common_path + "/font.ttf").c_str(), 24, 0)),
+        tileMapper_(bmp::createTileMapper(*fullImage_, tileSource)),
+        actionMapper_(bmp::createActionMapper(*fullImage_)),
+        carMapper_(bmp::createCarMapper(*fullImage_, carSource)),
+        enemyMapper_(bmp::createCarMapper(*fullImage_, enemySource)) {
     using util::Exception;
-    // creates the buffer of the entire screen
-    buffer_.reset(al_create_bitmap(width, height));
-    if (buffer_.get() == nullptr) {
-        throw Exception("Graphic::Graphic - Error initializing main screen buffer", -1);
+
+    if (display_ == nullptr) {
+        throw Exception("Graphic::Graphic - Error initializing display", -1);
     }
 
-    // creates the buffer for the map.
-    bufferMap_.reset(al_create_bitmap(width - SIDE_BAR_W, width - BOTTOM_BAR_H));
-    if (bufferMap_.get() == nullptr) {
-        throw Exception("Graphic::Graphic - Error initializing map buffer", -1);
+    if (eventQueue_ == nullptr) {
+        throw Exception("Graphic::Graphic - Error initializing event queue", -2);
     }
 
-    fontMenu_.reset(al_load_font((common_path + "/Menu_font.pcx").c_str(), 18, 0));
-    if (fontMenu_.get() == nullptr) {
-        throw Exception("Graphic::Graphic - Error initializing menu font [" + common_path + "/Menu_font.pcx]", -2);
+    if (mapCanvas_ == nullptr) {
+        throw Exception("Graphic::Graphic - Error initializing map canvas", -3);
     }
 
-    fontSystem_.reset(al_load_font((common_path + "/Menu_font.pcx").c_str(), 18, 0));
-    if (fontSystem_.get() == nullptr) {
-        throw Exception("Graphic::Graphic - Error initializing system font [" + common_path + "/Menu_font.pcx]", -3);
+    if (fontMenu_ == nullptr) {
+        throw Exception("Graphic::Graphic - Error initializing menu font [" + common_path + "/font.ttf]", -4);
+    }
+
+    if (fontSystem_ == nullptr) {
+        throw Exception("Graphic::Graphic - Error initializing system font [" + common_path + "/font.ttf]", -5);
     }
 
     initColor();
+
+    al_register_event_source(eventQueue_.get(), al_get_keyboard_event_source());
+    al_register_event_source(eventQueue_.get(), al_get_mouse_event_source());
+    al_register_event_source(eventQueue_.get(), al_get_display_event_source(display_.get()));
 }
 
-Graphic::~Graphic() = default;
+Graphic::~Graphic() {
+    mapCanvas_.reset();
+    eventQueue_.reset();
+    display_.reset();
+    al_uninstall_system();
+}
 
 void Graphic::printText(const std::string& text,
       const game::GFONT gfont,
@@ -84,7 +116,7 @@ void Graphic::printText(const std::string& text,
         return;
     }
 
-    const auto font = gfont == game::GFONT::MENU_FONT ? fontMenu_.get() : fontSystem_.get();
+    const auto font = gfont == game::GFONT::MENU_FONT ? fontMenu_ : fontSystem_;
     al_draw_textf(font, translate(foreground), x, y, 0, "%s", text.c_str());
 }
 
@@ -160,9 +192,6 @@ void Graphic::draw(const map::Map& map,
     const int X = (int) (x - window_x0);
     const int Y = (int) (y - window_y0);
     al_draw_filled_rectangle(X, Y, X + 3, Y + 3, COLORS[game::COLOR::BLACK]);
-
-    // transfering rendered map to screen buffer
-    al_draw_bitmap(buffer_.get(), 0, 0, 0);
 }
 
 void Graphic::flip() {

@@ -41,12 +41,14 @@ public:
      */
     const Tile& operator()(map_dimension_t x, map_dimension_t y) const;
 
+    /** change the tiles to appropriate values according to surrounding  tiles. */
+    void adjustTiles();
+
 private:
     map_dimension_t width_;   ///< width
     map_dimension_t height_;  ///< height
     std::vector<Tile> tiles_; ///< tiles
 
-    void verifyRange(map_dimension_t x,
-          map_dimension_t y) const;
+    void verifyRange(map_dimension_t x, map_dimension_t y) const;
 };
 }

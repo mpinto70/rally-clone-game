@@ -4,7 +4,7 @@ namespace gamelib {
 namespace allegro {
 namespace bmp {
 
-ActionMapper::ActionMapper(const BITMAP_PTR& fullImage) {
+ActionMapper::ActionMapper(ALLEGRO_BITMAP& fullImage) {
     constexpr unsigned ROAD_X = 0;
     constexpr unsigned ROAD_Y = 336; // height of first road
     constexpr unsigned ROAD_SIZE = 72;
@@ -47,23 +47,23 @@ ActionMapper::ActionMapper(const BITMAP_PTR& fullImage) {
 
     using map::from_EAction;
 
-    spriteMap_.insert(std::make_pair(enum_type::NONE, std::move(road[0])));
+    spriteMap_.insert(std::make_pair(enum_type::NONE, road[0]));
 
-    spriteMap_.insert(std::make_pair(enum_type::PLAYER, std::move(player[0])));
+    spriteMap_.insert(std::make_pair(enum_type::PLAYER, player[0]));
 
-    spriteMap_.insert(std::make_pair(enum_type::BANG, std::move(bang_rocks_smoke[0])));
-    spriteMap_.insert(std::make_pair(enum_type::STONE_1, std::move(bang_rocks_smoke[1])));
-    spriteMap_.insert(std::make_pair(enum_type::STONE_2, std::move(bang_rocks_smoke[2])));
-    spriteMap_.insert(std::make_pair(enum_type::SMOKE, std::move(bang_rocks_smoke[3])));
+    spriteMap_.insert(std::make_pair(enum_type::BANG, bang_rocks_smoke[0]));
+    spriteMap_.insert(std::make_pair(enum_type::STONE_1, bang_rocks_smoke[1]));
+    spriteMap_.insert(std::make_pair(enum_type::STONE_2, bang_rocks_smoke[2]));
+    spriteMap_.insert(std::make_pair(enum_type::SMOKE, bang_rocks_smoke[3]));
 
-    spriteMap_.insert(std::make_pair(enum_type::ENEMY_NORTH, std::move(cars[0])));
-    spriteMap_.insert(std::make_pair(enum_type::ENEMY_EAST, std::move(cars[1])));
-    spriteMap_.insert(std::make_pair(enum_type::ENEMY_SOUTH, std::move(cars[2])));
-    spriteMap_.insert(std::make_pair(enum_type::ENEMY_WEST, std::move(cars[3])));
+    spriteMap_.insert(std::make_pair(enum_type::ENEMY_NORTH, cars[0]));
+    spriteMap_.insert(std::make_pair(enum_type::ENEMY_EAST, cars[1]));
+    spriteMap_.insert(std::make_pair(enum_type::ENEMY_SOUTH, cars[2]));
+    spriteMap_.insert(std::make_pair(enum_type::ENEMY_WEST, cars[3]));
 
-    spriteMap_.insert(std::make_pair(enum_type::FUEL, std::move(fuels[0])));
-    spriteMap_.insert(std::make_pair(enum_type::FUEL_S, std::move(fuels[1])));
-    spriteMap_.insert(std::make_pair(enum_type::FUEL_L, std::move(fuels[2])));
+    spriteMap_.insert(std::make_pair(enum_type::FUEL, fuels[0]));
+    spriteMap_.insert(std::make_pair(enum_type::FUEL_S, fuels[1]));
+    spriteMap_.insert(std::make_pair(enum_type::FUEL_L, fuels[2]));
 
     sizes_[enum_type::NONE] = ROAD_SIZE;
 
@@ -84,7 +84,7 @@ ActionMapper::ActionMapper(const BITMAP_PTR& fullImage) {
     sizes_[enum_type::FUEL_L] = FUEL_SIZE;
 }
 
-ActionMapper createActionMapper(const BITMAP_PTR& fullImage) {
+ActionMapper createActionMapper(ALLEGRO_BITMAP& fullImage) {
     return ActionMapper(fullImage);
 }
 }
