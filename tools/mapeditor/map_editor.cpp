@@ -29,8 +29,8 @@ constexpr unsigned FULL_MAP_COLUMNS = 32;                                     //
 constexpr unsigned FULL_MAP_ROWS = 56;                                        ///< full map number of rows
 constexpr unsigned MAP_X = 10;                                                ///< map view left side
 constexpr unsigned MAP_Y = 10;                                                ///< map view top side
-constexpr unsigned MAP_COLUMNS = 10;                                          ///< map view width in columns
-constexpr unsigned MAP_ROWS = 10;                                             ///< map view height in columns
+constexpr unsigned MAP_COLUMNS = 20;                                          ///< map view width in columns
+constexpr unsigned MAP_ROWS = 15;                                             ///< map view height in columns
 constexpr unsigned MAP_WIDTH = MAP_COLUMNS * TILE_SIZE;                       ///< map view width in pixels
 constexpr unsigned MAP_HEIGHT = MAP_ROWS * TILE_SIZE;                         ///< map view height in pixels
 constexpr unsigned MINIMAP_X = MAP_X + MAP_WIDTH + 5;                         ///< mini map view left side
@@ -71,6 +71,8 @@ ALLEGRO_COLOR HELP_BG = {};
 ALLEGRO_COLOR WINDOW_BG = {};
 ALLEGRO_COLOR MINIMAP_BG = {};
 ALLEGRO_COLOR MINIMAP_FG = {};
+ALLEGRO_COLOR MINIMAP_PLAYER = {};
+ALLEGRO_COLOR MINIMAP_ENEMY = {};
 ALLEGRO_COLOR SELECTION_FG = {};
 
 map::Action selectedAction = map::Action::NONE;
@@ -156,6 +158,27 @@ void drawMiniMap(const map::Map& gameMap) {
                 const auto Y = y * MINIMAP_TILE_SIZE + 5;
 
                 al_draw_filled_rectangle(X, Y, X + MINIMAP_TILE_SIZE, Y + MINIMAP_TILE_SIZE, MINIMAP_FG);
+                switch (tile.action()) {
+                    case map::Action::NONE:
+                    case map::Action::LAST:
+                    case map::Action::BANG:
+                    case map::Action::FUEL:
+                    case map::Action::FUEL_S:
+                    case map::Action::FUEL_L:
+                    case map::Action::SMOKE:
+                    case map::Action::STONE_1:
+                    case map::Action::STONE_2:
+                        break;
+                    case map::Action::PLAYER:
+                        al_draw_filled_circle(X + MINIMAP_TILE_SIZE / 2, Y + MINIMAP_TILE_SIZE / 2, MINIMAP_TILE_SIZE / 2, MINIMAP_PLAYER);
+                        break;
+                    case map::Action::ENEMY_NORTH:
+                    case map::Action::ENEMY_WEST:
+                    case map::Action::ENEMY_SOUTH:
+                    case map::Action::ENEMY_EAST:
+                        al_draw_filled_circle(X + MINIMAP_TILE_SIZE / 2, Y + MINIMAP_TILE_SIZE / 2, MINIMAP_TILE_SIZE / 2, MINIMAP_ENEMY);
+                        break;
+                }
             }
         }
     }
@@ -478,8 +501,8 @@ void loop(map::Map& gameMap,
 
             status_lines.push_back("x0: " + std::to_string(x0));
             status_lines.push_back("y0: " + std::to_string(y0));
-            status_lines.push_back("Selected tile: " + map::to_string(selectedTile));
-            status_lines.push_back("Selected action: " + map::to_string(selectedAction));
+            //status_lines.push_back("Selected tile: " + map::to_string(selectedTile));
+            //status_lines.push_back("Selected action: " + map::to_string(selectedAction));
 
             drawCanvas(*mapCanvas, drawMap, gameMap, x0, y0);
             drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
@@ -514,6 +537,8 @@ void initialize_colors() {
     HELP_BG = al_map_rgb(0xd9, 0xe8, 0xf6);
     MINIMAP_BG = al_map_rgb(0x16, 0x2e, 0x51);
     MINIMAP_FG = al_map_rgb(0xff, 0xbf, 0x00);
+    MINIMAP_PLAYER = al_map_rgb(0x00, 0x00, 0xff);
+    MINIMAP_ENEMY = al_map_rgb(0xff, 0x00, 0x00);
     WINDOW_BG = al_map_rgb(0x3d, 0x45, 0x51);
     SELECTION_FG = al_map_rgb(0xff, 0x00, 0xff);
 }
@@ -545,7 +570,7 @@ int main(int argc, char* argv[]) {
 
         using gamelib::allegro::make_destroyer;
         using gamelib::allegro::TIMER_PTR;
-        auto timer = TIMER_PTR(al_create_timer(1.0 / 30.0), make_destroyer(al_destroy_timer));
+        auto timer = TIMER_PTR(al_create_timer(1.0 / 10.0), make_destroyer(al_destroy_timer));
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
         al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));

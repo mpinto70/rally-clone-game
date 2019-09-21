@@ -26,7 +26,7 @@ set(CMAKE_CXX_FLAGS " \
     -Wall \
     -Wextra \
     -pedantic-errors \
-    -O2 \
+    -O3 \
     -finline-functions \
     -D PROJECT_DIR=\"\\\"${CMAKE_SOURCE_DIR}\\\"\" \
     -D ALLEGRO_NO_FIX_ALIASES \

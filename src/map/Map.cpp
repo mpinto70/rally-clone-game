@@ -318,16 +318,6 @@ Map::Map(const map_dimension_t width,
     }
 }
 
-Tile& Map::operator()(const map_dimension_t x, const map_dimension_t y) {
-    verifyRange(x, y);
-    return tiles_.at(y * width_ + x);
-}
-
-const Tile& Map::operator()(const map_dimension_t x, const map_dimension_t y) const {
-    verifyRange(x, y);
-    return tiles_.at(y * width_ + x);
-}
-
 void Map::adjustTiles() {
     for (map_dimension_t x = 0; x < width_; ++x) {
         for (map_dimension_t y = 0; y < height_; ++y) {
@@ -358,22 +348,5 @@ void Map::adjustTiles() {
             tile.type(getType(bits));
         }
     }
-}
-
-void Map::verifyRange(const map_dimension_t x, const map_dimension_t y) const {
-    if (x >= width_)
-        throw util::Exception("Map() - horizontal coordinate out of range ("
-                                    + std::to_string(x)
-                                    + "/"
-                                    + std::to_string(width_)
-                                    + ")",
-              x);
-    if (y >= height_)
-        throw util::Exception("Map() - vertical coordinate out of range ("
-                                    + std::to_string(y)
-                                    + "/"
-                                    + std::to_string(height_)
-                                    + ")",
-              y);
 }
 }
