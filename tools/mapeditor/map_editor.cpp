@@ -29,8 +29,8 @@ constexpr unsigned FULL_MAP_COLUMNS = 32;                                     //
 constexpr unsigned FULL_MAP_ROWS = 56;                                        ///< full map number of rows
 constexpr unsigned MAP_X = 10;                                                ///< map view left side
 constexpr unsigned MAP_Y = 10;                                                ///< map view top side
-constexpr unsigned MAP_COLUMNS = 20;                                          ///< map view width in columns
-constexpr unsigned MAP_ROWS = 15;                                             ///< map view height in columns
+constexpr unsigned MAP_COLUMNS = 10;                                          ///< map view width in columns
+constexpr unsigned MAP_ROWS = 10;                                             ///< map view height in columns
 constexpr unsigned MAP_WIDTH = MAP_COLUMNS * TILE_SIZE;                       ///< map view width in pixels
 constexpr unsigned MAP_HEIGHT = MAP_ROWS * TILE_SIZE;                         ///< map view height in pixels
 constexpr unsigned MINIMAP_X = MAP_X + MAP_WIDTH + 5;                         ///< mini map view left side
@@ -570,7 +570,7 @@ int main(int argc, char* argv[]) {
 
         using gamelib::allegro::make_destroyer;
         using gamelib::allegro::TIMER_PTR;
-        auto timer = TIMER_PTR(al_create_timer(1.0 / 10.0), make_destroyer(al_destroy_timer));
+        auto timer = TIMER_PTR(al_create_timer(1.0 / 60.0), make_destroyer(al_destroy_timer));
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
         al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
