@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <sstream>
 
@@ -12,9 +12,9 @@ namespace map {
 constexpr char tmpFileName[] = "tmp_file_name.map";
 
 void MapIOTest::TearDown() {
-    boost::filesystem::path pathToFile(tmpFileName);
-    if (boost::filesystem::exists(pathToFile)) {
-        boost::filesystem::remove(pathToFile);
+    std::filesystem::path pathToFile(tmpFileName);
+    if (std::filesystem::exists(pathToFile)) {
+        std::filesystem::remove(pathToFile);
     }
 }
 

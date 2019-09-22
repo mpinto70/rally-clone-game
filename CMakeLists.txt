@@ -43,7 +43,6 @@ include_directories(
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/DownloadProject.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/UnitTest.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CppCheck.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Boost.cmake)
 
 # Recurse subdirectories
 add_subdirectory (src)

@@ -7,8 +7,6 @@ set(car_srcs
 set(car_libs
     car
     util
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
 )
 
 add_unit_test(

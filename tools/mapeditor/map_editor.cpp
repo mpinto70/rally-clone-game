@@ -13,9 +13,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 
-#include <boost/filesystem.hpp>
-
 #include <cstdio>
+#include <filesystem>
 #include <gamelib/allegro/Graphic.h>
 #include <gamelib/allegro/bmp/CarMapper.h>
 #include <iostream>
@@ -89,8 +88,8 @@ map::Map createCleanMap() {
 }
 
 map::Map createOrLoadMap(const std::string& mapPath) {
-    boost::filesystem::path path_to_file(mapPath);
-    if (boost::filesystem::exists(path_to_file)) {
+    const std::filesystem::path path_to_file = mapPath;
+    if (std::filesystem::exists(path_to_file)) {
         return loadMap(mapPath);
     } else {
         return createCleanMap();

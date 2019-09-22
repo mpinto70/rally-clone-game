@@ -7,8 +7,6 @@ set(util_srcs
 
 set(util_libs
     util
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
 )
 
 add_unit_test(

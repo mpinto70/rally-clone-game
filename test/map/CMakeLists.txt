@@ -9,8 +9,7 @@ set(map_srcs
 set(map_libs
     map
     util
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
+    stdc++fs
 )
 
 add_unit_test(

@@ -4,15 +4,15 @@
 #include "util/Exception.h"
 #include "util/Wait.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace game {
 
 namespace {
 map::Map load_map(const std::string& pathToRallyDir) {
-    boost::filesystem::path root(pathToRallyDir);
-    boost::filesystem::path stage0 = root / "stages" / "stage0.dat";
-    if (not boost::filesystem::exists(stage0)) {
+    const std::filesystem::path root = pathToRallyDir;
+    const std::filesystem::path stage0 = root / "stages" / "stage0.dat";
+    if (not std::filesystem::exists(stage0)) {
         throw util::Exception("Controller - stage not found " + stage0.string(), 1);
     }
 
