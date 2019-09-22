@@ -1,10 +1,12 @@
 #include "../tools/util/helpers.h"
 
 #include "gamelib/allegro/AllegroUtil.h"
+#include "gamelib/allegro/GameLib.h"
 #include "gamelib/allegro/bmp/ActionMapper.h"
 #include "gamelib/allegro/bmp/CarMapper.h"
 #include "gamelib/allegro/bmp/MiniMapMapper.h"
 #include "gamelib/allegro/bmp/TileMapper.h"
+#include "util/Singleton.h"
 #include "util/Util.h"
 
 #include <allegro5/allegro.h>
@@ -15,10 +17,8 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <gamelib/allegro/Graphic.h>
 #include <iostream>
 #include <string>
-#include <util/Singleton.h>
 #include <vector>
 
 namespace {
@@ -215,9 +215,10 @@ int main(int argc, char* argv[]) {
         const std::string filePath = argv[1];
         const std::string type = argv[2];
 
-        using gamelib::allegro::Graphic;
-        util::Singleton<Graphic>::create(std::make_unique<Graphic>(filePath, WINDOW_W, WINDOW_H));
-        auto& graphic = util::Singleton<Graphic>::instance();
+        using gamelib::allegro::GameLib;
+        util::Singleton<GameLib>::create(std::make_unique<GameLib>(filePath, WINDOW_W, WINDOW_H));
+        auto& gamelib = util::Singleton<GameLib>::instance();
+        auto& graphic = gamelib.graphic();
 
         initialize_colors();
 
@@ -227,20 +228,20 @@ int main(int argc, char* argv[]) {
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
 
-        al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
+        al_register_event_source(&gamelib.eventQueue(), al_get_timer_event_source(timer.get()));
 
         al_start_timer(timer.get());
         if (type == "car") {
-            show(graphic.carMapper(), graphic.fontSystem(), graphic.eventQueue());
+            show(graphic.carMapper(), graphic.fontSystem(), gamelib.eventQueue());
         } else if (type == "minimap") {
             using gamelib::allegro::bmp::createMiniMapMapper;
             using gamelib::allegro::bmp::MiniMapMapper;
             const auto mapper = createMiniMapMapper(graphic.fullImage());
-            show(mapper, graphic.fontSystem(), graphic.eventQueue());
+            show(mapper, graphic.fontSystem(), gamelib.eventQueue());
         } else if (type == "action") {
-            show(graphic.actionMapper(), graphic.fontSystem(), graphic.eventQueue());
+            show(graphic.actionMapper(), graphic.fontSystem(), gamelib.eventQueue());
         } else if (type == "tile") {
-            show(graphic.tileMapper(), graphic.fontSystem(), graphic.eventQueue());
+            show(graphic.tileMapper(), graphic.fontSystem(), gamelib.eventQueue());
         }
 
         al_stop_timer(timer.get());

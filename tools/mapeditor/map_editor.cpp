@@ -1,11 +1,7 @@
 #include "../tools/util/helpers.h"
 
-#include "gamelib/allegro/bmp/ActionMapper.h"
-#include "gamelib/allegro/bmp/TileMapper.h"
-#include "map/Action.h"
-#include "map/Map.h"
+#include "gamelib/allegro/GameLib.h"
 #include "map/MapIO.h"
-#include "map/TileType.h"
 #include "util/Singleton.h"
 #include "util/Util.h"
 
@@ -15,8 +11,6 @@
 
 #include <cstdio>
 #include <filesystem>
-#include <gamelib/allegro/Graphic.h>
-#include <gamelib/allegro/bmp/CarMapper.h>
 #include <iostream>
 #include <string>
 #include <typeinfo>
@@ -72,6 +66,7 @@ ALLEGRO_COLOR MINIMAP_BG = {};
 ALLEGRO_COLOR MINIMAP_FG = {};
 ALLEGRO_COLOR MINIMAP_PLAYER = {};
 ALLEGRO_COLOR MINIMAP_ENEMY = {};
+ALLEGRO_COLOR MINIMAP_FUEL = {};
 ALLEGRO_COLOR SELECTION_FG = {};
 
 map::Action selectedAction = map::Action::NONE;
@@ -119,7 +114,7 @@ void drawGrid(const map::Map& gameMap,
 }
 
 void drawMap(const map::Map& gameMap, const int& x0, const int& y0) {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
     const unsigned begin_j = x0 < 0 ? 0 : x0 / (TILE_SIZE);
@@ -161,12 +156,14 @@ void drawMiniMap(const map::Map& gameMap) {
                     case map::Action::NONE:
                     case map::Action::LAST:
                     case map::Action::BANG:
-                    case map::Action::FUEL:
-                    case map::Action::FUEL_S:
-                    case map::Action::FUEL_L:
                     case map::Action::SMOKE:
                     case map::Action::STONE_1:
                     case map::Action::STONE_2:
+                        break;
+                    case map::Action::FUEL:
+                    case map::Action::FUEL_S:
+                    case map::Action::FUEL_L:
+                        al_draw_filled_circle(X + MINIMAP_TILE_SIZE / 2, Y + MINIMAP_TILE_SIZE / 2, MINIMAP_TILE_SIZE / 2, MINIMAP_FUEL);
                         break;
                     case map::Action::PLAYER:
                         al_draw_filled_circle(X + MINIMAP_TILE_SIZE / 2, Y + MINIMAP_TILE_SIZE / 2, MINIMAP_TILE_SIZE / 2, MINIMAP_PLAYER);
@@ -184,7 +181,7 @@ void drawMiniMap(const map::Map& gameMap) {
 }
 
 void drawActions() {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, ACTIONS_WIDTH, ACTIONS_HEIGHT, ACTIONS_BG);
 
     unsigned x = 5;
@@ -213,7 +210,7 @@ void drawActions() {
 }
 
 void drawTiles() {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, TILES_WIDTH, TILES_HEIGHT, TILES_BG);
 
     unsigned x = 5;
@@ -234,7 +231,7 @@ void drawTiles() {
 }
 
 void drawStatus(const std::vector<std::string>& lines) {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, STATUS_WIDTH, STATUS_HEIGHT, STATUS_BG);
 
     int y = 10;
@@ -245,7 +242,7 @@ void drawStatus(const std::vector<std::string>& lines) {
 }
 
 void drawHelp() {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, HELP_WIDTH, HELP_HEIGHT, HELP_BG);
 
     const std::vector<std::string> manual = {
@@ -299,7 +296,7 @@ void handleLeftClickInTiles(const int X, const int Y) {
 }
 
 void handleRightClickInActions(const int X, const int Y) {
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     unsigned x = 5;
     unsigned y = 5;
     unsigned max_y = 0;
@@ -370,7 +367,8 @@ void loop(map::Map& gameMap,
       const std::string& stagePath) {
     using gamelib::allegro::BITMAP_PTR;
     using gamelib::allegro::make_destroyer;
-    auto& graphic = util::Singleton<gamelib::allegro::Graphic>::instance();
+    auto& gamelib = util::Singleton<gamelib::allegro::GameLib>::instance();
+    auto& graphic = gamelib.graphic();
     auto mapCanvas = createBitmap(MAP_WIDTH, MAP_HEIGHT);
     auto minimapCanvas = createBitmap(MINIMAP_WIDTH, MINIMAP_HEIGHT);
     auto actionsCanvas = createBitmap(ACTIONS_WIDTH, ACTIONS_HEIGHT);
@@ -400,7 +398,7 @@ void loop(map::Map& gameMap,
     ALLEGRO_EVENT ev;
     while (not done) {
         status_lines.clear();
-        al_wait_for_event(&graphic.eventQueue(), &ev);
+        al_wait_for_event(&gamelib.eventQueue(), &ev);
 
         switch (ev.type) {
             case ALLEGRO_EVENT_DISPLAY_CLOSE:
@@ -538,6 +536,7 @@ void initialize_colors() {
     MINIMAP_FG = al_map_rgb(0xff, 0xbf, 0x00);
     MINIMAP_PLAYER = al_map_rgb(0x00, 0x00, 0xff);
     MINIMAP_ENEMY = al_map_rgb(0xff, 0x00, 0x00);
+    MINIMAP_FUEL = al_map_rgb(0xff, 0xff, 0xff);
     WINDOW_BG = al_map_rgb(0x3d, 0x45, 0x51);
     SELECTION_FG = al_map_rgb(0xff, 0x00, 0xff);
 }
@@ -554,14 +553,14 @@ int main(int argc, char* argv[]) {
     const std::string spritesFile = spritePath + "/Rally-general-sprites.png";
 
     try {
-        using gamelib::allegro::Graphic;
-        util::Singleton<Graphic>::create(std::make_unique<Graphic>(spritePath,
+        using gamelib::allegro::GameLib;
+        util::Singleton<GameLib>::create(std::make_unique<GameLib>(spritePath,
               WINDOW_W,
               WINDOW_H,
               gamelib::allegro::bmp::TileSource::GREEN,
               gamelib::allegro::bmp::CarSource::PLAYER_1,
               gamelib::allegro::bmp::CarSource::ENEMY_1));
-        auto& graphic = util::Singleton<Graphic>::instance();
+        auto& gamelib = util::Singleton<GameLib>::instance();
 
         map::Map gameMap = createOrLoadMap(stagePath);
 
@@ -572,7 +571,7 @@ int main(int argc, char* argv[]) {
         auto timer = TIMER_PTR(al_create_timer(1.0 / 60.0), make_destroyer(al_destroy_timer));
         if (timer == nullptr)
             tools::throw_allegro_error("could not create timer");
-        al_register_event_source(&graphic.eventQueue(), al_get_timer_event_source(timer.get()));
+        al_register_event_source(&gamelib.eventQueue(), al_get_timer_event_source(timer.get()));
         al_start_timer(timer.get());
 
         loop(gameMap, stagePath);

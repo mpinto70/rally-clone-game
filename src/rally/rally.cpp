@@ -5,8 +5,9 @@
 #include <iostream>
 #include <memory>
 
-// Essas duas constantes ficam por aqui mesmo?
-static constexpr unsigned int UTIL_W = 640, UTIL_H = 480;
+namespace {
+    constexpr unsigned int UTIL_W = 640, UTIL_H = 480;
+}
 
 std::string getRallyDir() {
     const char* home = getenv("HOME");
@@ -21,7 +22,7 @@ int main() {
     using gamelib::allegro::GameLib;
     try {
         const auto rallyDir = getRallyDir();
-        std::unique_ptr<game::GameLib> gameLib(new GameLib(UTIL_W, UTIL_H, rallyDir));
+        std::unique_ptr<game::GameLib> gameLib(new GameLib(rallyDir, UTIL_W, UTIL_H));
         game::Controller controller(gameLib, rallyDir, 15);
         controller.run();
         return 0;

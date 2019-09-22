@@ -3,37 +3,52 @@
 #include "util/Exception.h"
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_ttf.h>
 
 namespace gamelib {
 namespace allegro {
 
-GameLib::GameLib(unsigned int width,
+namespace {
+DISPLAY_PTR initDisplay(unsigned width, unsigned height) {
+    if (not al_install_system(ALLEGRO_VERSION_INT, nullptr))
+        throw util::Exception("Could not init Allegro", -1);
+    al_init_font_addon();
+    al_init_ttf_addon();
+    al_init_primitives_addon();
+    al_init_image_addon();
+    al_install_keyboard();
+    al_install_mouse();
+
+    return createElement(al_create_display, al_destroy_display, width, height);
+}
+}
+
+GameLib::GameLib(const std::string& commonPath,
+      unsigned int width,
       unsigned int height,
-      const std::string& path_to_data)
-      : display_(nullptr, al_destroy_display),
-        graphic_(nullptr),
-        keyboard_(nullptr),
-        sound_(nullptr),
-        timer_(nullptr) {
-    using util::Exception;
-    int allegResult = al_init();
-    if (allegResult != 0) {
-        throw Exception("GameLib - Error initializing graphics", allegResult);
-    }
+      bmp::TileSource tileSource,
+      bmp::CarSource carSource,
+      bmp::CarSource enemySource)
+      : graphic_(std::make_unique<Graphic>(initDisplay(width, height), commonPath, tileSource, carSource, enemySource)),
+        keyboard_(std::make_unique<Keyboard>()),
+        sound_(std::make_unique<Sound>()),
+        timer_(std::make_unique<Timer>()),
+        eventQueue_(createElement(al_create_event_queue, al_destroy_event_queue)) {
+    al_register_event_source(eventQueue_.get(), al_get_keyboard_event_source());
+    al_register_event_source(eventQueue_.get(), al_get_mouse_event_source());
+    al_register_event_source(eventQueue_.get(), al_get_display_event_source(&graphic_->display()));
+}
 
-    display_.reset(al_create_display(width, height));
-    if (display_ == nullptr) {
-        throw util::Exception("GameLib - Error creating display", -1);
-    }
-    allegResult = al_install_keyboard();
-    if (allegResult != 0) {
-        throw util::Exception("GameLib - Error initializing keyboard", allegResult);
-    }
+GameLib::~GameLib() {
+    timer_.reset();
+    sound_.reset();
+    keyboard_.reset();
+    graphic_.reset();
+    eventQueue_.reset();
 
-    keyboard_ = std::make_unique<Keyboard>();
-    timer_ = std::make_unique<Timer>();
-    sound_ = std::make_unique<Sound>();
-    graphic_ = std::make_unique<Graphic>(path_to_data + "/stages/common", width, height);
+    al_uninstall_system();
 }
 }
 }

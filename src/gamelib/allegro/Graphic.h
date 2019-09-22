@@ -10,16 +10,12 @@ namespace gamelib {
 namespace allegro {
 class Graphic : public ::game::Graphic {
 public:
-    explicit Graphic(const std::string& common_path,
-          unsigned width,
-          unsigned height,
-          bmp::TileSource tileSource = bmp::TileSource::GREEN,
-          bmp::CarSource carSource = bmp::CarSource::PLAYER_1,
-          bmp::CarSource enemySource = bmp::CarSource::ENEMY_1);
+    Graphic(DISPLAY_PTR&& display,
+          const std::string& commonPath,
+          bmp::TileSource tileSource,
+          bmp::CarSource carSource,
+          bmp::CarSource enemySource);
     ~Graphic() override;
-
-    [[nodiscard]] unsigned width() const override { return width_; }
-    [[nodiscard]] unsigned height() const override { return height_; }
 
     void printText(const std::string& text,
           game::GFONT gfont,
@@ -37,10 +33,6 @@ public:
 
     ALLEGRO_DISPLAY& display() {
         return *display_;
-    }
-
-    ALLEGRO_EVENT_QUEUE& eventQueue() {
-        return *eventQueue_;
     }
 
     ALLEGRO_BITMAP& mapCanvas() {
@@ -72,11 +64,8 @@ public:
     }
 
 private:
-    unsigned width_;
-    unsigned height_;
     DISPLAY_PTR display_;
     ALLEGRO_BITMAP* fullImage_;
-    EVENT_QUEUE_PTR eventQueue_;
     BITMAP_PTR mapCanvas_;
     ALLEGRO_FONT* fontSystem_;
     ALLEGRO_FONT* fontMenu_;

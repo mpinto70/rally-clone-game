@@ -10,8 +10,6 @@ namespace mck {
 class GraphicMock : public Graphic {
 public:
     ~GraphicMock() override;
-    unsigned width() const override { return 0; }
-    unsigned height() const override { return 0; }
     void printText(const std::string& text,
           GFONT font,
           unsigned x,
