@@ -180,7 +180,7 @@ void drawMiniMap(const map::Map& gameMap, const int x0, const int y0) {
     const float y = float(y0) * MINIMAP_TILE_SIZE / TILE_SIZE + 5;
     constexpr float w = MAP_COLUMNS * MINIMAP_TILE_SIZE;
     constexpr float h = MAP_ROWS * MINIMAP_TILE_SIZE;
-    al_draw_rectangle(x, y, x + w, y + h, MAP_FG, 1);
+    al_draw_rectangle(x, y, x + w, y + h, MAP_FG, 2);
 }
 
 void drawActions() {
