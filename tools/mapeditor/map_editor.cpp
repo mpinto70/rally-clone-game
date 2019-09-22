@@ -91,9 +91,7 @@ map::Map createOrLoadMap(const std::string& mapPath) {
     }
 }
 
-void drawGrid(const map::Map& gameMap,
-      const int& x0,
-      const int& y0) {
+void drawGrid(const map::Map& gameMap, const int x0, const int y0) {
     for (map::map_dimension_t i = 0; i < gameMap.height(); ++i) {
         const int Y = i * TILE_SIZE - y0;
         if (Y > int(MAP_HEIGHT))
@@ -113,7 +111,7 @@ void drawGrid(const map::Map& gameMap,
     }
 }
 
-void drawMap(const map::Map& gameMap, const int& x0, const int& y0) {
+void drawMap(const map::Map& gameMap, const int x0, const int y0) {
     auto& graphic = util::Singleton<gamelib::allegro::GameLib>::instance().graphic();
     al_draw_filled_rectangle(0, 0, MAP_WIDTH, MAP_HEIGHT, MAP_FG);
 
@@ -142,7 +140,7 @@ void drawMap(const map::Map& gameMap, const int& x0, const int& y0) {
     drawGrid(gameMap, x0, y0);
 }
 
-void drawMiniMap(const map::Map& gameMap) {
+void drawMiniMap(const map::Map& gameMap, const int x0, const int y0) {
     al_draw_filled_rectangle(0, 0, MINIMAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_BG);
     for (map::map_dimension_t y = 0; y < gameMap.height(); ++y) {
         for (map::map_dimension_t x = 0; x < gameMap.width(); ++x) {
@@ -178,6 +176,11 @@ void drawMiniMap(const map::Map& gameMap) {
             }
         }
     }
+    const float x = float(x0) * MINIMAP_TILE_SIZE / TILE_SIZE + 5;
+    const float y = float(y0) * MINIMAP_TILE_SIZE / TILE_SIZE + 5;
+    constexpr float w = MAP_COLUMNS * MINIMAP_TILE_SIZE;
+    constexpr float h = MAP_ROWS * MINIMAP_TILE_SIZE;
+    al_draw_rectangle(x, y, x + w, y + h, MAP_FG, 1);
 }
 
 void drawActions() {
@@ -341,15 +344,22 @@ void handleRightClickInMap(map::Map& gameMap, int x, int y) {
     }
 }
 
+void handleLeftClickInMiniMap(const int X, const int Y, int& x0, int& y0) {
+    x0 = (X - 5) * int(TILE_SIZE) / int(MINIMAP_TILE_SIZE);
+    y0 = (Y - 5) * int(TILE_SIZE) / int(MINIMAP_TILE_SIZE);
+}
+
 void handleLeftClick(map::Map& gameMap,
-      int x0,
-      int y0,
+      int& x0,
+      int& y0,
       int x,
       int y) {
     if (inRectangle(x, y, TILES_X, TILES_Y, TILES_X + TILES_WIDTH, TILES_Y + TILES_HEIGHT))
         handleLeftClickInTiles(x - TILES_X, y - TILES_Y);
     else if (inRectangle(x, y, MAP_X, MAP_Y, MAP_X + MAP_WIDTH, MAP_Y + MAP_HEIGHT))
         handleLeftClickInMap(gameMap, x - MAP_X + x0, y - MAP_Y + y0);
+    else if (inRectangle(x, y, MINIMAP_X, MINIMAP_Y, MINIMAP_X + MINIMAP_WIDTH, MINIMAP_Y + MINIMAP_HEIGHT))
+        handleLeftClickInMiniMap(x - MINIMAP_X, y - MINIMAP_Y, x0, y0);
 }
 
 void handleRightClick(map::Map& gameMap,
@@ -502,7 +512,7 @@ void loop(map::Map& gameMap,
             //status_lines.push_back("Selected action: " + map::to_string(selectedAction));
 
             drawCanvas(*mapCanvas, drawMap, gameMap, x0, y0);
-            drawCanvas(*minimapCanvas, drawMiniMap, gameMap);
+            drawCanvas(*minimapCanvas, drawMiniMap, gameMap, x0, y0);
             drawCanvas(*actionsCanvas, drawActions);
             drawCanvas(*tilesCanvas, drawTiles);
             drawCanvas(*statusCanvas, drawStatus, status_lines);
