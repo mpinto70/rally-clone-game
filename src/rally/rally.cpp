@@ -6,7 +6,7 @@
 #include <memory>
 
 namespace {
-    constexpr unsigned int UTIL_W = 640, UTIL_H = 480;
+constexpr unsigned int UTIL_W = 640, UTIL_H = 480;
 }
 
 std::string getRallyDir() {
