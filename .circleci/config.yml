@@ -2,12 +2,15 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/buildpack-deps:artful-curl-browsers
+      - image: circleci/buildpack-deps:19.04
     steps:
       - checkout
       - run:
           name: Install tools
-          command: sudo apt install -y g++ cmake libboost-all-dev cppcheck liballegro5-dev
+          command: sudo apt install -y g++-9 cmake cppcheck liballegro5-dev
+      - run:
+          name: Link to g++
+          command: sudo rm -f /usr/bin/g++ && sudo ln -s /usr/bin/g++-9 /usr/bin/g++
       - run:
           name: Build system
           command: ./runbuild
