@@ -26,7 +26,8 @@ public:
           const unsigned topFirst,
           const unsigned numColumns,
           const unsigned numRows)
-          : imageWidth_(spriteWidth), imageHeight_(spriteHeight) {
+          : imageWidth_(spriteWidth),
+            imageHeight_(spriteHeight) {
         auto sprites = SpriteReader::readImages(fullImage, spriteWidth, spriteHeight, leftFirst, topFirst, numColumns, numRows);
         using enum_t = typename std::underlying_type<ENUM>::type;
 

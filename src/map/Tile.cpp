@@ -6,7 +6,8 @@
 namespace map {
 
 Tile::Tile(TileType type, Action action)
-      : type_(type), action_(action) {
+      : type_(type),
+        action_(action) {
     if (action_ != Action::NONE && type_ != TileType::ROAD) {
         throw util::Exception("Tile - incompatible type "
                                     + to_string(type_)
